@@ -13,7 +13,7 @@ To add check on the checkboxes, just simply add an ` x ` inside while editing th
 ## Project Narrative
 - [x] **Project Title** – Creative / Engaging Title (*Working Title: HAU-Sync: Patient Record Management and Appointment System
 for Holy Angel University Clinic*)
-- [ ] **Background** – Well-written abstract & project description, no errors, complete coverage
+- [x] **Background** – Well-written abstract & project description, no errors, complete coverage
 
 ---
 
