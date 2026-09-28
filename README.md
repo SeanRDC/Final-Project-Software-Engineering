@@ -130,7 +130,6 @@ As the project has just been initialized, follow these steps to set up the preli
   Bash
   ```
   python -m pip install --upgrade pip
-
   ```
 
 ### Installation
@@ -140,14 +139,12 @@ As the project has just been initialized, follow these steps to set up the preli
    Bash
    ```
    git clone [https://github.com/HAU-CS302/clinic-records-system.git](https://github.com/HAU-CS302/clinic-records-system.git)
-
    ```
 2. Navigate to the backend directory
 
    Bash
    ```
    cd clinic-records-system/backend
-
    ```
 3. Create and activate a virtual environment
 
@@ -155,14 +152,12 @@ As the project has just been initialized, follow these steps to set up the preli
    ```
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-
    ```
 4. Install dependencies
 
    Bash
    ```
    pip install -r requirements.txt
-
    ```
 5. Set up your `.env` file
 
@@ -170,7 +165,6 @@ As the project has just been initialized, follow these steps to set up the preli
    ```
    DATABASE_URL="postgresql://user:password@localhost:5432/hau_clinic"
    SECRET_KEY="your_secret_key"
-
    ```
 
 ## Roadmap
@@ -207,10 +201,12 @@ clinic-records-system/
 │   ├── tests/                # Pytest unit and integration tests
 │   ├── .env.example          # Environment variables template
 │   ├── requirements.txt      # Python dependencies
-│   └── main.py               # Application entry point
+│   ├── main.py               # Application entry point
+|   └── BACKEND-README.md     # Readme documentation for backend.
 ├── docs/                     # Project documentation
 │   ├── Clinic_Support_Letter_CS-302-1-FINAL.pdf # Official project request letter
-│   └── database_schema.md    # Detailed ERD and table structures
+│   ├── database_schema.md    # Detailed ERD and table structures
+|   └── DOCS-README.md        # Readme documentation for docs.
 ├── .gitignore
 └── README.md
 
