@@ -5,7 +5,8 @@ This directory contains the compiled documentation for the Holy Angel University
 # Software Engineering Final Project Checklist
 
 This checklist is based on the **Project Evaluation Rubric (70 points)**.  
-Use it to track progress across all phases of the project.
+Use it to track progress across all phases of the project. <br />
+To add check on the checkboxes, just simply add an ` x ` inside while editing this README file.
 
 ---
 
