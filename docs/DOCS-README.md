@@ -39,7 +39,7 @@ for Holy Angel University Clinic*)
 
 ## Prerequisites
 - [x] **Clinic Support letter** – formal letter to be submitted to University Clinic for acknowledgement
-- [ ] **Interview Questions** – Open ended questions that will be asked during the interview
+- [x] **Interview Questions** – Open ended questions that will be asked during the interview
 
 ---
 
