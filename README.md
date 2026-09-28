@@ -226,7 +226,7 @@ Developed by Section CS-302 Students:
 
 - **Mclaren Ais Miranda**
 
-- **Miguel Villanueva**
+- **Paolo Villanueva**
 
 
 **Project Adviser:**
