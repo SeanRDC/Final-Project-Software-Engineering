@@ -29,7 +29,7 @@ To add check on the checkboxes, just simply add an ` x ` inside while editing th
   - [ ] **Use-Case Diagram** – Actors & interactions
 - [ ] **Process Development Model** (choose one)
   - [ ] Waterfall
-  - [ ] Agile
+  - [x] Agile
   - [ ] Spiral
   - [ ] Incremental / Iterative
 - [ ] **Implementation** – Feasibility, financial viability, support & maintenance
