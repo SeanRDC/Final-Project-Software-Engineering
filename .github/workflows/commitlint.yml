@@ -1,0 +1,14 @@
+name: Lint Commit Messages
+on: [push, pull_request]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: npm install commitlint@latest @commitlint/config-conventional
+      - name: Run commitlint
+        uses: wagoid/commitlint-github-action@v6
