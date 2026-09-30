@@ -212,6 +212,54 @@ clinic-records-system/
 
 ```
 
+## anatomy of a Commit Message - a must follow convention
+
+A conventional commit message should be structured as follows:
+
+```text
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### 1. Types
+The `<type>` communicates the intent of the commit. You must use one of the following:
+
+*   **`feat`**: Introduces a new feature to the codebase (correlates with `MINOR` in SemVer).
+*   **`fix`**: Patches a bug in your codebase (correlates with `PATCH` in SemVer).
+*   **`docs`**: Documentation only changes (e.g., updating the README).
+*   **`style`**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.).
+*   **`refactor`**: A code change that neither fixes a bug nor adds a feature (e.g., renaming a variable, simplifying a function).
+*   **`perf`**: A code change that improves performance.
+*   **`test`**: Adding missing tests or correcting existing tests.
+*   **`build`**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm).
+*   **`ci`**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, GitHub Actions).
+*   **`chore`**: Other changes that don't modify `src` or `test` files (e.g., updating tooling).
+*   **`revert`**: Reverts a previous commit.
+
+### 2. Scope (Optional)
+A scope provides additional context by specifying the section of the codebase the commit affects. It must be enclosed in parentheses. 
+*   *Example:* `feat(auth):`, `fix(ui):`, `docs(readme):`
+
+### 3. Description
+The description contains a succinct description of the change.
+*   Use the **imperative, present tense**: "change" not "changed" nor "changes".
+*   Do **not** capitalize the first letter (e.g., `feat: add login button`).
+*   No dot (`.`) at the end.
+
+### 4. Body (Optional)
+Just as in the description, use the imperative, present tense. The body should include the motivation for the change and contrast this with previous behavior.
+*   Wrap lines at 72 characters.
+*   Leave one blank line between the description and the body.
+
+### 5. Footer (Optional)
+The footer should contain any information about **Breaking Changes** and is also the place to reference GitHub issues that this commit closes.
+
+*   **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. Alternatively, you can append a `!` after the type/scope (e.g., `feat(api)!: rewrite data models`). This correlates with `MAJOR` in SemVer.
+*   **Referencing Issues**: `Closes #123`, `Fixes #45`.
+
 ## Contributors
 
 Developed by Section CS-302 Students:
