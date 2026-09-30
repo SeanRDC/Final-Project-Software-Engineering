@@ -172,17 +172,20 @@ As the project has just been initialized, follow these steps to set up the preli
 - [x] **Phase 1: Project Initialization & Approval**
   - [x] Project proposal and preliminary system architecture planning.
   - [x] Official request for support and cooperation submitted to the Holy Angel University Clinic.   
-- [ ] **Phase 2: Requirements Gathering *(Current Phase)***
-  - [ ] Conduct interviews with clinic personnel regarding current record-keeping processes.   
-  - [ ] Analyze sample copies of forms and logbooks (de-identified)[cite: 15].
+- [x] **Phase 2: Requirements Gathering**
+  - [x] Conduct interviews with clinic personnel regarding current record-keeping processes.   
+  - [x] Analyze sample copies of forms and logbooks (de-identified).
+- [ ] **Phase 2.5: Requirements Gathering *(Current Phase)***
+  - [ ] Construct required paper deiagrams and schemas.   
+  - [ ] Re-scan or doublecheck paper for before developers.
 - [ ] **Phase 3: Database & API Development**
-  - [ ] Construct PostgreSQL schemas for patients, consultations, and inventory[cite: 15].
+  - [ ] Construct PostgreSQL schemas for patients, consultations, and inventory.
   - [ ] Build secure RESTful API endpoints in Python.
 - [ ] **Phase 4: Prototyping & Integration**
   - [ ] Connect frontend interface to backend endpoints.
-  - [ ] Implement Data Privacy Act compliant security measures[cite: 15].
+  - [ ] Implement Data Privacy Act compliant security measures.
 - [ ] **Phase 5: Evaluation & Testing**
-  - [ ] System testing and evaluation involving participating clinic personnel[cite: 15].
+  - [ ] System testing and evaluation involving participating clinic personnel.
   - [ ] Final deployment and turnover.
 
 ## Project Structure *(Provisional)*
