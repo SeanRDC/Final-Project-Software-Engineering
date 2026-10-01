@@ -279,7 +279,6 @@ Developed by Section CS-302 Students:
 
 - **Paolo Villanueva**
 
-<br />
 
 **Project Adviser:**
 
