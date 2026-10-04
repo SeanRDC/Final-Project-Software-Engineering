@@ -1,0 +1,17 @@
+# Python packages the HAU-Sync backend needs to run and to be tested.
+
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+
+sqlalchemy>=2.0
+alembic>=1.13
+psycopg[binary]>=3.2
+
+pydantic-settings>=2.4
+PyJWT>=2.9
+bcrypt>=4.2
+tzdata>=2024.1
+
+pytest>=8.0
+httpx>=0.27
