@@ -12,7 +12,7 @@ import {
 } from '@/pages/appointments/appointmentValues'
 import { appointment } from '@/test/dashboardFixture'
 
-const TODAY = new Date(2026, 9, 6)
+const TODAY = '2026-10-06'
 const valid = {
   scheduled_date: '2026-10-12',
   start_time: '14:00',
@@ -101,4 +101,18 @@ test('sends only what changed and knows a move from an edit', () => {
   expect(isReschedule(moved)).toBe(true)
   expect(reworded).toEqual({ notes: 'Fasting' })
   expect(isReschedule(reworded)).toBe(false)
+})
+
+test('the date a saved appointment already has stays valid after it has passed', () => {
+  const past = { ...valid, scheduled_date: '2026-10-05' }
+
+  expect(
+    validateAppointment(past, { hasPatient: true, today: TODAY, savedDate: '2026-10-05' }),
+  ).toEqual({})
+  expect(
+    validateAppointment(
+      { ...past, scheduled_date: '2026-10-04' },
+      { hasPatient: true, today: TODAY, savedDate: '2026-10-05' },
+    ).scheduled_date,
+  ).toBe('An appointment cannot be in the past.')
 })

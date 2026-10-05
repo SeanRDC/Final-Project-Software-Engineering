@@ -2,7 +2,6 @@
 // starting values, what makes a field invalid, and what is sent to the server.
 
 import type { Appointment, AppointmentCreate, AppointmentUpdate } from '@/api/types'
-import { toDayString } from '@/lib/format'
 
 export type AppointmentValues = {
   /** "2026-10-12" */
@@ -51,14 +50,20 @@ export function appointmentValues(appointment: Appointment): AppointmentValues {
 
 export function validateAppointment(
   values: AppointmentValues,
-  options: { hasPatient: boolean; today?: Date },
+  options: {
+    hasPatient: boolean
+    /** The clinic's current day, "2026-10-06". */
+    today: string
+    /** The date a saved appointment already has, which stays valid even once it has passed. */
+    savedDate?: string
+  },
 ): AppointmentErrors {
   const errors: AppointmentErrors = {}
-  const today = toDayString(options.today ?? new Date())
+  const { today, savedDate } = options
 
   if (!options.hasPatient) errors.patient = 'Choose the patient.'
   if (!values.scheduled_date) errors.scheduled_date = 'Choose the date.'
-  else if (values.scheduled_date < today) {
+  else if (values.scheduled_date < today && values.scheduled_date !== savedDate) {
     errors.scheduled_date = 'An appointment cannot be in the past.'
   }
   if (!values.start_time) errors.start_time = 'Enter the start time.'
