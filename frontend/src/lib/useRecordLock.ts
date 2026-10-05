@@ -49,11 +49,15 @@ export function useRecordLock(resource: 'patient' | 'visit', id: number): Record
         })
     }
 
-    take()
+    // Deferred by a tick so that a mount which is undone at once (as React does to every
+    // effect in development) never sends a request. Two requests for the same lock at
+    // the same moment make the server refuse one of them.
+    const first = setTimeout(take, 0)
     const timer = setInterval(take, RENEW_EVERY_MS)
 
     return () => {
       released = true
+      clearTimeout(first)
       clearInterval(timer)
       if (isHeld) void api(path, { method: 'DELETE' }).catch(() => {})
     }

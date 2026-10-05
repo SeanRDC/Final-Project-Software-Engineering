@@ -1,4 +1,5 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { useRecordLock } from '@/lib/useRecordLock'
@@ -36,6 +37,18 @@ test('takes the lock, and releases it when editing ends', async () => {
   await waitFor(() =>
     expect(server.calls).toEqual(['PUT /locks/visit/14', 'DELETE /locks/visit/14']),
   )
+})
+
+test('asks for the lock once even when React mounts the editor twice', async () => {
+  const server = fakeServer({ 'PUT /locks/visit/14': LOCK })
+  render(
+    <StrictMode>
+      <Editor />
+    </StrictMode>,
+  )
+
+  expect(await screen.findByText('held')).toBeInTheDocument()
+  expect(server.calls).toEqual(['PUT /locks/visit/14'])
 })
 
 test('renews the lock every minute while editing continues', async () => {
