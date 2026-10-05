@@ -1,27 +1,25 @@
-import { render, screen } from '@testing-library/react'
-import { expect, test, vi } from 'vitest'
+import { screen } from '@testing-library/react'
+import { expect, test } from 'vitest'
 
 import App from '@/App'
-import { AuthContext, type AuthState } from '@/auth/authContext'
 import { nurse } from '@/test/fixtures'
+import { renderApp } from '@/test/render'
 
-function renderApp(user: AuthState['user']) {
-  const value: AuthState = { user, token: user ? 'abc' : null, login: vi.fn(), logout: vi.fn() }
-  return render(
-    <AuthContext value={value}>
-      <App />
-    </AuthContext>,
-  )
-}
-
-test('asks a visitor to sign in', () => {
-  renderApp(null)
+test('sends a visitor to the login page', () => {
+  renderApp(<App />, { route: '/' })
 
   expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument()
 })
 
 test('shows the application to a signed-in account', () => {
-  renderApp(nurse)
+  renderApp(<App />, { user: nurse, route: '/' })
 
+  expect(screen.getByRole('heading', { name: 'HAU-Sync' })).toBeInTheDocument()
+})
+
+test('takes a signed-in account away from the login page', () => {
+  renderApp(<App />, { user: nurse, route: '/login' })
+
+  expect(screen.queryByRole('heading', { name: 'Sign in' })).not.toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'HAU-Sync' })).toBeInTheDocument()
 })
