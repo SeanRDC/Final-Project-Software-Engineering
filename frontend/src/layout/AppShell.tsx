@@ -8,6 +8,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { useCan } from '@/auth/permissions'
+import { PatientSearch } from '@/layout/PatientSearch'
 import { pageFor } from '@/layout/pages'
 import { Sidebar } from '@/layout/Sidebar'
 import { TopBar } from '@/layout/TopBar'
@@ -17,6 +19,8 @@ import { UserMenu } from '@/layout/UserMenu'
 export function AppShell() {
   const location = useLocation()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const allowed = useCan()
+  const canSearch = allowed('patients:read')
   const title = pageFor(location.pathname)?.title ?? 'HAU-Sync'
 
   return (
@@ -34,7 +38,7 @@ export function AppShell() {
 
       <div className="flex flex-1">
         <aside className="sticky top-16 hidden h-[calc(100svh-4rem)] w-[260px] shrink-0 border-r bg-sidebar lg:block">
-          <Sidebar />
+          <Sidebar header={canSearch ? <PatientSearch /> : null} />
         </aside>
 
         <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -43,7 +47,10 @@ export function AppShell() {
               <SheetTitle>HAU-Sync</SheetTitle>
               <SheetDescription>University Clinic</SheetDescription>
             </SheetHeader>
-            <Sidebar onNavigate={() => setIsDrawerOpen(false)} />
+            <Sidebar
+              header={canSearch ? <PatientSearch onSearch={() => setIsDrawerOpen(false)} /> : null}
+              onNavigate={() => setIsDrawerOpen(false)}
+            />
           </SheetContent>
         </Sheet>
 
