@@ -9,7 +9,7 @@ import type {
 } from '@/api/types'
 import { staleQueriesFor } from '@/live/liveQueries'
 
-/** One day's appointments in order of time. Cancelled ones are included, marked as such. */
+/** One day's appointments in order of time. The server leaves cancelled ones out. */
 export function useAppointmentsForDay(day: string) {
   return useQuery({
     queryKey: ['appointments', 'day', day],
