@@ -22,11 +22,19 @@ export const REGISTER_PATIENT: Page = {
   title: 'Register Patient',
   permission: 'patients:write',
 }
+export const APPOINTMENTS: Page = {
+  path: '/appointments',
+  title: 'Appointments',
+  permission: 'appointments:read',
+}
+export const NEW_APPOINTMENT: Page = {
+  path: '/appointments/new',
+  title: 'New Appointment',
+  permission: 'appointments:write',
+}
 
 /** Screens that are planned but not built yet. They show a placeholder for now. */
 export const UPCOMING_PAGES: Page[] = [
-  { path: '/appointments', title: 'Appointments', permission: 'appointments:read' },
-  { path: '/appointments/new', title: 'New Appointment', permission: 'appointments:write' },
   { path: '/inventory', title: 'Medicine Inventory', permission: 'inventory:read' },
   { path: '/inventory/releases', title: 'Medicine Release Log', permission: 'inventory:read' },
   { path: '/notifications', title: 'Notifications' },
@@ -38,6 +46,8 @@ export const PAGES: Page[] = [
   VISITS,
   PATIENTS,
   REGISTER_PATIENT,
+  APPOINTMENTS,
+  NEW_APPOINTMENT,
   ...UPCOMING_PAGES,
 ]
 
