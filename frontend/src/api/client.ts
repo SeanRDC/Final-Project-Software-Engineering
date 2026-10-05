@@ -18,11 +18,14 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 
 export class ApiError extends Error {
   readonly status: number
+  /** Anything the server sent besides the message, e.g. the id of a conflicting record. */
+  readonly data: Record<string, unknown>
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, data: Record<string, unknown> = {}) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.data = data
   }
 
   /** True when the server could not be reached at all. */
@@ -97,6 +100,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     throw new ApiError(
       response.status,
       readDetail(payload, `The server returned an error (${response.status}).`),
+      typeof payload === 'object' && payload !== null ? (payload as Record<string, unknown>) : {},
     )
   }
   return payload as T

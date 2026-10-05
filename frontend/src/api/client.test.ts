@@ -67,6 +67,16 @@ test('turns the backend detail message into an ApiError', async () => {
   expect(error).toMatchObject({ status: 409, message: 'The patient already has an open visit' })
 })
 
+test('keeps the other fields the server sent with an error', async () => {
+  fetchMock.mockResolvedValue(
+    respond(409, { detail: 'Santos, Maria already has an open visit today', visit_id: 14 }),
+  )
+
+  const error = await api('/visits', { method: 'POST', json: {} }).catch((e: unknown) => e)
+
+  expect((error as ApiError).data.visit_id).toBe(14)
+})
+
 test('summarises a validation error by its first field', async () => {
   fetchMock.mockResolvedValue(
     respond(422, { detail: [{ loc: ['body', 'complaint'], msg: 'Field required' }] }),
