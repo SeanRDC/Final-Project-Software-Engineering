@@ -14,14 +14,14 @@ test('shows the four counters with their detail lines', () => {
   expect(tile('Open visits')).toHaveTextContent('Open visits2' + '3 checked in today')
   expect(tile('Completed today')).toHaveTextContent('112 visits this month')
   expect(tile('Appointments today')).toHaveTextContent('32 still to come')
-  expect(tile('Low-stock medicines')).toHaveTextContent('1Mefenamic Acid 500 mg · 18 left')
+  expect(tile('Low-stock medicines')).toHaveTextContent('1Mefenamic Acid · 18 left')
 })
 
 test('counts the other low-stock medicines after the first', () => {
   const lowStock = [medicine(), medicine({ id: 6 }), medicine({ id: 7 })]
   render(<StatTiles stats={{ ...dashboard.stats, low_stock_items: 3 }} lowStock={lowStock} />)
 
-  expect(tile('Low-stock medicines')).toHaveTextContent('Mefenamic Acid 500 mg · 18 left, +2 more')
+  expect(tile('Low-stock medicines')).toHaveTextContent('Mefenamic Acid · 18 left, +2 more')
 })
 
 test('draws no alert when every medicine is above its threshold', () => {

@@ -12,7 +12,7 @@ type Tile = {
 function lowStockDetail(lowStock: Medicine[]): string {
   const first = lowStock[0]
   if (!first) return 'All above threshold'
-  const name = `${first.display_name} · ${first.quantity_on_hand} left`
+  const name = `${first.name} · ${first.quantity_on_hand} left`
   return lowStock.length > 1 ? `${name}, +${lowStock.length - 1} more` : name
 }
 
@@ -67,7 +67,7 @@ export function StatTiles({ stats, lowStock }: StatTilesProps) {
           <dd className="mt-1 text-[28px] leading-tight font-semibold tabular-nums">
             {tile.value}
           </dd>
-          <dd className="mt-1.5 truncate text-[13px] text-muted-foreground">{tile.detail}</dd>
+          <dd className="mt-1.5 line-clamp-2 text-[13px] text-muted-foreground">{tile.detail}</dd>
         </div>
       ))}
     </dl>
