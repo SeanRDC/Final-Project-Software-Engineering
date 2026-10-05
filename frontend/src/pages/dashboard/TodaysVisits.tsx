@@ -42,8 +42,8 @@ export function TodaysVisits({ visits }: TodaysVisitsProps) {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="p-4">
-          <ul className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+        <div className="@container p-4">
+          <ul className="grid gap-3 @md:grid-cols-2 @2xl:grid-cols-3">
             {shown.map((visit) => (
               <li key={visit.id} className="grid">
                 <VisitCard visit={visit} now={now} />
