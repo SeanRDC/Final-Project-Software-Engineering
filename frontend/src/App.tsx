@@ -1,11 +1,12 @@
 import { Route, Routes } from 'react-router'
 
 import { AppShell } from '@/layout/AppShell'
-import { CHECK_IN, UPCOMING_PAGES } from '@/layout/pages'
+import { CHECK_IN, UPCOMING_PAGES, VISITS } from '@/layout/pages'
 import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
+import { VisitsPage } from '@/pages/visits/VisitsPage'
 import { LoginRoute } from '@/routes/LoginRoute'
 import { RequireAuth } from '@/routes/RequireAuth'
 import { RequirePermission } from '@/routes/RequirePermission'
@@ -22,6 +23,14 @@ function App() {
             element={
               <RequirePermission permission={CHECK_IN.permission}>
                 <CheckInPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path={VISITS.path}
+            element={
+              <RequirePermission permission={VISITS.permission}>
+                <VisitsPage />
               </RequirePermission>
             }
           />

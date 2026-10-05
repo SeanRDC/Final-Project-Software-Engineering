@@ -15,10 +15,10 @@ export const CHECK_IN: Page = {
   title: 'Check-in / Walk-in',
   permission: 'visits:record',
 }
+export const VISITS: Page = { path: '/visits', title: "Today's Visits", permission: 'visits:read' }
 
 /** Screens that are planned but not built yet. They show a placeholder for now. */
 export const UPCOMING_PAGES: Page[] = [
-  { path: '/visits', title: "Today's Visits", permission: 'visits:read' },
   { path: '/patients', title: 'Patients', permission: 'patients:read' },
   { path: '/patients/new', title: 'Register Patient', permission: 'patients:write' },
   { path: '/appointments', title: 'Appointments', permission: 'appointments:read' },
@@ -28,7 +28,7 @@ export const UPCOMING_PAGES: Page[] = [
   { path: '/notifications', title: 'Notifications' },
 ]
 
-export const PAGES: Page[] = [DASHBOARD, CHECK_IN, ...UPCOMING_PAGES]
+export const PAGES: Page[] = [DASHBOARD, CHECK_IN, VISITS, ...UPCOMING_PAGES]
 
 /** The page a browser address belongs to, e.g. "/patients/12" belongs to "/patients". */
 export function pageFor(pathname: string): Page | undefined {
