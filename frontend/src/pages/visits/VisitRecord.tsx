@@ -1,7 +1,8 @@
-import { LockIcon, TriangleAlertIcon } from 'lucide-react'
+import { LockIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import type { PatientAlerts, Visit } from '@/api/types'
+import type { Visit } from '@/api/types'
+import { PatientAlertsBox } from '@/components/PatientAlertsBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { dispositionLabel } from '@/lib/status'
 import { MedicinesSection } from '@/pages/visits/MedicinesSection'
@@ -30,13 +31,6 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
 
 const NOT_RECORDED = <p className="text-sm text-muted-foreground">Not recorded yet.</p>
 
-const ALERT_LABELS: [keyof PatientAlerts, string][] = [
-  ['allergies', 'Allergies'],
-  ['medical_conditions', 'Medical conditions'],
-  ['medication_restrictions', 'Medication restrictions'],
-  ['activity_restrictions', 'Activity restrictions'],
-]
-
 function vitalSigns(visit: Visit): [string, string][] {
   const signs: [string, string | null][] = [
     ['Temperature', visit.temperature_c === null ? null : `${visit.temperature_c} °C`],
@@ -63,7 +57,6 @@ type VisitRecordProps = {
 }
 
 export function VisitRecord({ visit, canReleaseMedicine = false }: VisitRecordProps) {
-  const alerts = ALERT_LABELS.filter(([key]) => visit.patient_alerts[key])
   const vitals = vitalSigns(visit)
   const hasNurseRecord =
     visit.assessment || visit.treatment || visit.remarks || visit.referred || visit.disposition
@@ -72,22 +65,7 @@ export function VisitRecord({ visit, canReleaseMedicine = false }: VisitRecordPr
 
   return (
     <div className="flex flex-col gap-5">
-      {alerts.length > 0 ? (
-        <Alert className="border-warning/40 bg-warning-subtle text-foreground">
-          <TriangleAlertIcon className="text-warning" />
-          <AlertTitle>Patient alerts</AlertTitle>
-          <AlertDescription className="text-foreground">
-            <dl className="mt-1 flex flex-col gap-1.5">
-              {alerts.map(([key, label]) => (
-                <div key={key}>
-                  <dt className="inline font-medium">{label}: </dt>
-                  <dd className="inline">{visit.patient_alerts[key]}</dd>
-                </div>
-              ))}
-            </dl>
-          </AlertDescription>
-        </Alert>
-      ) : null}
+      <PatientAlertsBox alerts={visit.patient_alerts} />
 
       {visit.lock ? (
         <Alert>
