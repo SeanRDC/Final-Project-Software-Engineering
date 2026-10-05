@@ -25,7 +25,7 @@ export function FormActions({ error, isSaving, onCancel }: FormActionsProps) {
           </AlertDescription>
         </Alert>
       ) : null}
-      <div className="sticky bottom-0 -mx-4 -mb-4 flex justify-end gap-2 border-t bg-card px-4 py-3">
+      <div className="sticky -bottom-4 -mx-4 -mb-4 flex justify-end gap-2 border-t bg-card px-4 py-3">
         <Button type="button" variant="outline" disabled={isSaving} onClick={onCancel}>
           Cancel
         </Button>
