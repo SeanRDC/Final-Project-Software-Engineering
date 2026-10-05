@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charcoal bar that heads each dashboard section. */
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
+
+  /* Status tones: text colour and its soft background. */
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-consult: var(--consult);
+  --color-consult-subtle: var(--consult-subtle);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Colours taken from the Clinic Main Menu baseline (proj-docs/dash.png). */
+:root {
+  --background: #f5f5f4;
+  --foreground: #1f1d1d;
+  --card: #ffffff;
+  --card-foreground: #1f1d1d;
+  --popover: #ffffff;
+  --popover-foreground: #1f1d1d;
+
+  /* HAU maroon. */
+  --primary: #7a1c2a;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f3f2;
+  --secondary-foreground: #1f1d1d;
+  --muted: #f4f3f2;
+  --muted-foreground: #6e6a69;
+  --accent: #f8eeef;
+  --accent-foreground: #6b1623;
+  --destructive: #b3261e;
+  --border: #e4e2e0;
+  --input: #d9d6d4;
+  --ring: #a5505c;
+
+  --header: #2e2c2c;
+  --header-foreground: #ffffff;
+
+  --info: #1d4ea8;
+  --info-subtle: #e7effc;
+  --success: #1b7a3d;
+  --success-subtle: #e5f4ea;
+  --warning: #a85b06;
+  --warning-subtle: #fdf1d8;
+  --danger: #b3261e;
+  --danger-subtle: #fdecea;
+  --consult: #6a3d9a;
+  --consult-subtle: #f1e9fa;
+
+  --chart-1: #7a1c2a;
+  --chart-2: #1d4ea8;
+  --chart-3: #1b7a3d;
+  --chart-4: #a85b06;
+  --chart-5: #6a3d9a;
+
+  --radius: 0.375rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1f1d1d;
+  --sidebar-primary: #7a1c2a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8eeef;
+  --sidebar-accent-foreground: #6b1623;
+  --sidebar-border: #e4e2e0;
+  --sidebar-ring: #a5505c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    /* Removes the double-tap zoom delay on touch screens. */
+    touch-action: manipulation;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* People who ask their system for less motion get no spinning or pulsing. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
