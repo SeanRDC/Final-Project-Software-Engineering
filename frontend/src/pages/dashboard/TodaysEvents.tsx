@@ -26,7 +26,7 @@ export function TodaysEvents({ appointments }: TodaysEventsProps) {
             <li key={appointment.id} className="flex items-start justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
                 <p className="truncate text-[15px] font-medium">{appointment.patient.full_name}</p>
-                <p className="truncate text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {appointment.reason}
                   {appointment.status === 'pending' ? ' · awaiting approval' : ''}
                 </p>
