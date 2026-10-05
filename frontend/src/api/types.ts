@@ -9,6 +9,12 @@ export type Token = Schemas['Token']
 export type CurrentUser = Schemas['CurrentUser']
 
 export type PatientSummary = Schemas['PatientSummary']
+export type Patient = Schemas['PatientDetail']
+export type PatientRecord = Schemas['PatientOut']
+export type PatientCreate = Schemas['PatientCreate']
+export type PatientUpdate = Schemas['PatientUpdate']
+export type PatientType = Schemas['PatientType']
+export type Sex = Schemas['Sex']
 export type PatientAlerts = Schemas['PatientAlerts']
 export type PatientPage = Schemas['Page_PatientSummary_']
 
@@ -21,6 +27,8 @@ export type ConsultationUpdate = Schemas['ConsultationUpdate']
 export type DispenseRequest = Schemas['DispenseMedicine']
 export type VisitDisposition = Schemas['VisitDisposition']
 export type LockInfo = Schemas['LockInfo']
+export type VisitListItem = Schemas['VisitListItem']
+export type VisitPage = Schemas['Page_VisitListItem_']
 export type VisitStatus = Schemas['VisitStatus']
 export type VisitType = Schemas['VisitType']
 
@@ -36,3 +44,5 @@ export type NotificationType = Schemas['NotificationType']
 
 export type Dashboard = Schemas['Dashboard']
 export type DashboardStats = Schemas['DashboardStats']
+
+export type Options = Schemas['Options']
