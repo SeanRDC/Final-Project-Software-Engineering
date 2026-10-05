@@ -64,3 +64,22 @@ test('uses the data it was given for the current month without asking the server
   expect(screen.getAllByTestId('appointment-dot')).toHaveLength(3)
   expect(server.calls).toEqual(['GET /appointments/calendar'])
 })
+
+test('fetches the current month itself when it is not given, and marks the selected day', async () => {
+  const server = fakeServer({
+    'GET /appointments/calendar': [{ date: '2026-10-12', appointment_count: 2 }],
+  })
+  renderApp(<MonthCalendar today="2026-10-04" selected="2026-10-12" />, { user: nurse })
+
+  expect(
+    await screen.findByRole('link', { name: /October 12, 2026, selected, 2 appointments/ }),
+  ).toBeInTheDocument()
+  expect(server.calls).toEqual(['GET /appointments/calendar'])
+})
+
+test('opens on the month of the selected day', () => {
+  fakeServer({ 'GET /appointments/calendar': [] })
+  renderApp(<MonthCalendar today="2026-10-04" selected="2026-12-25" />, { user: nurse })
+
+  expect(screen.getByRole('heading', { name: 'December 2026' })).toBeInTheDocument()
+})
