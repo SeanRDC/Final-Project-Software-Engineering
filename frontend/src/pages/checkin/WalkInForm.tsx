@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CircleAlertIcon, ClipboardPlusIcon } from 'lucide-react'
 import { useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 
 import { api, ApiError } from '@/api/client'
@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
 import { humanize } from '@/lib/format'
@@ -17,6 +18,7 @@ import { VISIT_TYPES } from '@/lib/status'
 import { describePatient } from '@/lib/visitState'
 import { staleQueriesFor } from '@/live/liveQueries'
 import { PatientPicker } from '@/pages/checkin/PatientPicker'
+import { usePatient } from '@/pages/patients/usePatients'
 
 /** The id of the visit the patient already has open, when that is why check-in was refused. */
 function openVisitId(error: unknown): number | null {
@@ -30,7 +32,14 @@ export function WalkInForm() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const complaintRef = useRef<HTMLTextAreaElement>(null)
-  const [patient, setPatient] = useState<PatientSummary | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [picked, setPicked] = useState<PatientSummary | null>(null)
+  // A patient record can send someone here with that patient already chosen: /check-in?patient=12
+  const linkedId = /^\d+$/.test(searchParams.get('patient') ?? '')
+    ? Number(searchParams.get('patient'))
+    : null
+  const linked = usePatient(picked ? null : linkedId)
+  const patient: PatientSummary | null = picked ?? linked.data ?? null
   const [complaint, setComplaint] = useState('')
   const [visitType, setVisitType] = useState<VisitType>('consultation')
   const [wasSubmitted, setWasSubmitted] = useState(false)
@@ -48,7 +57,8 @@ export function WalkInForm() {
   })
 
   function choosePatient(next: PatientSummary | null) {
-    setPatient(next)
+    setPicked(next)
+    if (next === null && linkedId !== null) setSearchParams({}, { replace: true })
     // What was typed belongs to the previous patient and must not follow to the next one.
     setComplaint('')
     setVisitType('consultation')
@@ -67,6 +77,13 @@ export function WalkInForm() {
     checkIn.mutate({ patient_id: patient.id, complaint: complaint.trim(), visit_type: visitType })
   }
 
+  if (!patient && linkedId !== null && linked.isPending) {
+    return (
+      <div role="status" aria-label="Loading the patient">
+        <Skeleton className="h-16" />
+      </div>
+    )
+  }
   if (!patient) return <PatientPicker onSelect={choosePatient} />
 
   const complaintMissing = wasSubmitted && !complaint.trim()

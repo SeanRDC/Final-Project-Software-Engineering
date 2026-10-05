@@ -60,13 +60,14 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                                                        | Address                   | Status                                                              |
-| ------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------- |
-| Sign in                                                       | `/login`                  | Done                                                                |
-| Clinic Main Menu (dashboard)                                  | `/`                       | Done                                                                |
-| Check-in / Walk-in                                            | `/check-in`               | Done                                                                |
-| Today's visits and the visit record                           | `/visits`, `/visits/:id`  | Done: log, record, consultation, medicine release, complete, cancel |
-| Patients, appointments, inventory, release log, notifications | see `src/layout/pages.ts` | Placeholder, built next                                             |
+| Screen                                              | Address                                                             | Status                                                                        |
+| --------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Sign in                                             | `/login`                                                            | Done                                                                          |
+| Clinic Main Menu (dashboard)                        | `/`                                                                 | Done                                                                          |
+| Check-in / Walk-in                                  | `/check-in`                                                         | Done                                                                          |
+| Today's visits and the visit record                 | `/visits`, `/visits/:id`                                            | Done: log, record, consultation, medicine release, complete, cancel           |
+| Patients                                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit` | Done: list, register, record with visit history, correct, archive and restore |
+| Appointments, inventory, release log, notifications | see `src/layout/pages.ts`                                           | Placeholder, built next                                                       |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -129,6 +130,25 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **After completion** a visit can still be corrected, as the clinic requires. A cancelled visit offers no actions.
 - **Unsaved changes.** Closing the panel with an edited form asks before discarding it.
 
+## Patients
+
+| Part                    | API                                                      | Component                            |
+| ----------------------- | -------------------------------------------------------- | ------------------------------------ |
+| List, search and filter | `GET /patients?q=&patient_type=&include_archived=&page=` | `PatientsPage`, `Pager`              |
+| Register                | `POST /patients`                                         | `RegisterPatientPage`, `PatientForm` |
+| Record                  | `GET /patients/{id}`                                     | `PatientPage`, `PatientAlertsBox`    |
+| Visit history           | `GET /patients/{id}/visits`                              | `VisitHistory`                       |
+| Correct a record        | `PATCH /patients/{id}`, under `PUT /locks/patient/{id}`  | `EditPatientPage`, `PatientForm`     |
+| Archive and restore     | `POST /patients/{id}/archive`, `/restore`                | `ArchiveControl`                     |
+
+- **Search state is in the address** (`/patients?q=santos&type=student&page=2`). The sidebar search box lands on the same list, and the back button returns to the same results.
+- **Records are never deleted.** The coordinator can archive a record, which hides it from search and from check-in, and restore it at any time.
+- **One form** registers a patient and corrects a record. A correction sends only the fields that changed (`patientValues.ts`).
+- **Departments already in use** are offered as suggestions, so one school is not spelled several ways.
+- **Leaving with unsaved changes** makes the browser ask first.
+- **Check in from the record** opens check-in with the patient already chosen (`/check-in?patient=12`), and a visit links back to its patient record.
+- **Reading a record is audited** by the server each time the page loads it.
+
 ## Live Updates
 
 `src/live` keeps one WebSocket open to `/api/v1/ws` while someone is signed in.
@@ -159,6 +179,7 @@ frontend/
 │   ├── pages/                # One folder or file per screen
 │   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
 │   │   ├── dashboard/        # The Clinic Main Menu and its panels
+│   │   ├── patients/         # Patient list, record, register and edit form, archive
 │   │   └── visits/           # Visit log, visit panel, record and consultation forms, medicine release
 │   ├── routes/               # Route guards (signed in, permission)
 │   ├── test/                 # Fixtures, fake API server and render helper

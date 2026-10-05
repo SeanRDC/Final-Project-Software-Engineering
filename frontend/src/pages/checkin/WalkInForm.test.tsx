@@ -126,3 +126,24 @@ test('lets the wrong patient be changed and forgets what was typed for them', as
   expect(screen.getByLabelText('Complaint')).toHaveValue('')
   expect(screen.getByLabelText('Type of visit')).toHaveValue('consultation')
 })
+
+test('starts with the patient named in the address already chosen', async () => {
+  fakeServer({ 'GET /patients/1': patient() })
+  const user = userEvent.setup()
+  renderApp(
+    <>
+      <Routes>
+        <Route path="/check-in" element={<WalkInForm />} />
+      </Routes>
+      <Address />
+    </>,
+    { user: nurse, route: '/check-in?patient=1' },
+  )
+
+  expect(await screen.findByText('Santos, Maria')).toBeInTheDocument()
+  expect(screen.getByLabelText('Complaint')).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Change' }))
+
+  expect(screen.getByRole('searchbox', { name: 'Find the patient' })).toBeInTheDocument()
+})
