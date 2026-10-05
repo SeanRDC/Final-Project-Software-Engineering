@@ -63,6 +63,7 @@ The primary objective is to transition the University Clinic from a manual, pape
 * **Framework:** FastAPI / Flask *(Provisional)*
 * **Database:** PostgreSQL *(Provisional)*
 * **ORM:** SQLAlchemy *(Provisional)*
+* **Frontend:** React, TypeScript and Vite, with Tailwind CSS and shadcn/ui
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -206,6 +207,15 @@ clinic-records-system/
 │   ├── requirements.txt      # Python dependencies
 │   ├── main.py               # Application entry point
 |   └── BACKEND-README.md     # Readme documentation for backend.
+├── frontend/                 # React + TypeScript browser client (Vite)
+│   ├── src/
+│   │   ├── api/              # API client and types generated from the backend
+│   │   ├── auth/             # Sign-in session and role permissions
+│   │   ├── layout/           # App shell, top bar and sidebar
+│   │   ├── live/             # WebSocket live updates
+│   │   └── pages/            # One folder per screen (login, dashboard)
+│   ├── package.json          # Node dependencies and scripts
+│   └── FRONTEND-README.md    # Readme documentation for frontend.
 ├── docs/                     # Project documentation
 │   ├── Clinic_Support_Letter_CS-302-1-FINAL.pdf # Official project request letter
 │   ├── database_schema.md    # Detailed ERD and table structures
