@@ -10,7 +10,7 @@
   </p>
 </div>
 
-> **🚧 WORK IN PROGRESS:** The frontend is being built screen by screen on top of the finished backend API.
+> **🚧 WORK IN PROGRESS:** Every screen in the navigation is built. Attachments, reports, user accounts and the audit log have API routes but no screen yet.
 
 ## Tech Stack
 
@@ -60,14 +60,17 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                                              | Address                                                             | Status                                                                        |
-| --------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Sign in                                             | `/login`                                                            | Done                                                                          |
-| Clinic Main Menu (dashboard)                        | `/`                                                                 | Done                                                                          |
-| Check-in / Walk-in                                  | `/check-in`                                                         | Done                                                                          |
-| Today's visits and the visit record                 | `/visits`, `/visits/:id`                                            | Done: log, record, consultation, medicine release, complete, cancel           |
-| Patients                                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit` | Done: list, register, record with visit history, correct, archive and restore |
-| Appointments, inventory, release log, notifications | see `src/layout/pages.ts`                                           | Placeholder, built next                                                       |
+| Screen                              | Address                                                             | Status                                                                             |
+| ----------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Sign in                             | `/login`                                                            | Done                                                                               |
+| Clinic Main Menu (dashboard)        | `/`                                                                 | Done                                                                               |
+| Check-in / Walk-in                  | `/check-in`                                                         | Done                                                                               |
+| Today's visits and the visit record | `/visits`, `/visits/:id`                                            | Done: log, record, consultation, medicine release, complete, cancel                |
+| Patients                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit` | Done: list, register, record with visit history, correct, archive and restore      |
+| Appointments                        | `/appointments`, `/appointments/new`, `/appointments/:id/edit`      | Done: calendar, day schedule, book, reschedule, confirm, cancel, no-show, check-in |
+| Medicine inventory                  | `/inventory`                                                        | Done: stock list, add and edit medicines, stock in, count adjustment               |
+| Medicine release log                | `/inventory/releases`                                               | Done: releases to patients, plus all stock movements                               |
+| Notifications                       | `/notifications`                                                    | Done: list, unread filter, mark as read                                            |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -149,6 +152,43 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Check in from the record** opens check-in with the patient already chosen (`/check-in?patient=12`), and a visit links back to its patient record.
 - **Reading a record is audited** by the server each time the page loads it.
 
+## Appointments
+
+| Part                               | API                                                                   | Component                                   |
+| ---------------------------------- | --------------------------------------------------------------------- | ------------------------------------------- |
+| Month calendar                     | `GET /appointments/calendar`                                          | `MonthCalendar` (shared with the dashboard) |
+| A day's schedule                   | `GET /appointments/today?day=`                                        | `AppointmentsPage`, `AppointmentList`       |
+| Pending on other days              | `GET /appointments?status=pending`                                    | `AppointmentsPage`                          |
+| Book                               | `POST /appointments`                                                  | `NewAppointmentPage`, `AppointmentForm`     |
+| Reschedule or edit                 | `PATCH /appointments/{id}`                                            | `EditAppointmentPage`, `AppointmentForm`    |
+| Confirm, cancel, no-show, check in | `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` | `AppointmentActions`                        |
+
+- **The day on screen is in the address** (`/appointments?date=2026-10-12`). The dashboard calendar links straight to a day.
+- **Who may do what** follows the API: the coordinator confirms and cancels; the front desk books, reschedules, checks in and marks no-shows. Each action is offered only in a state where the server accepts it.
+- **A booking starts as pending.** Moving a confirmed appointment sends it back to pending unless the coordinator made the change; the form says so beforehand.
+- **Dates are checked against the clinic's day** as the server reports it (`useClinicToday`), not the station's clock.
+- **The API has no route for one appointment**, so the edit screen finds it in its day's list (`?date=` in the address).
+- **Cancelled appointments** are left out of a day's schedule by the server.
+
+## Inventory and Release Log
+
+| Part                          | API                                                             | Component        |
+| ----------------------------- | --------------------------------------------------------------- | ---------------- |
+| Stock list                    | `GET /inventory/medicines?q=&low_stock_only=&include_inactive=` | `InventoryPage`  |
+| Add or edit a medicine        | `POST`, `PATCH /inventory/medicines`                            | `MedicineDialog` |
+| Stock in, adjust count        | `POST /inventory/medicines/{id}/stock-in`, `/adjust`            | `StockDialog`    |
+| Release log and stock history | `GET /inventory/movements?movement_type=&start=&end=&page=`     | `ReleaseLogPage` |
+
+- **The quantity is never edited directly.** It changes through stock in, release during a visit, and count adjustment, each of which writes a movement, so the history always adds up.
+- **An adjustment needs a reason** and shows the difference from the records before it is saved.
+- **Flags:** low stock, out of stock, expired, and expiring within sixty days.
+- **The release log** starts on releases to patients, each linked to its visit, and can show deliveries and adjustments too.
+- **The doctor** can view both screens but change nothing.
+
+## Notifications
+
+`NotificationsPage` lists the account's alerts (`GET /notifications`): low stock and appointment decisions. Opening one marks it read for that account (`POST /notifications/{id}/read`) and goes to the inventory or the appointments. Read state is per account; the bell and sidebar counts come from the dashboard request.
+
 ## Live Updates
 
 `src/live` keeps one WebSocket open to `/api/v1/ws` while someone is signed in.
@@ -171,14 +211,17 @@ frontend/
 ├── src/
 │   ├── api/                  # Fetch client, generated schema and type aliases
 │   ├── auth/                 # Session storage, auth provider, permission helper
-│   ├── components/           # Shared components (SectionCard, StatusPill, BrandMark)
+│   ├── components/           # Shared components (SectionCard, StatusPill, Pager, calendar)
 │   │   └── ui/               # shadcn/ui primitives, added with `npx shadcn add`
 │   ├── layout/               # App shell, top bar, sidebar, page and navigation lists
 │   ├── lib/                  # Formatting helpers, query client, status labels, record lock hook
 │   ├── live/                 # WebSocket connection and event-to-query mapping
 │   ├── pages/                # One folder or file per screen
+│   │   ├── appointments/     # Calendar and schedule, booking form, actions by role
 │   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
 │   │   ├── dashboard/        # The Clinic Main Menu and its panels
+│   │   ├── inventory/        # Stock list, medicine and stock dialogs, release log
+│   │   ├── notifications/    # Notification list
 │   │   ├── patients/         # Patient list, record, register and edit form, archive
 │   │   └── visits/           # Visit log, visit panel, record and consultation forms, medicine release
 │   ├── routes/               # Route guards (signed in, permission)
@@ -193,7 +236,7 @@ frontend/
 
 ## Adding a Screen
 
-1. Move the screen's entry from `UPCOMING_PAGES` in `src/layout/pages.ts` to its own route in `src/App.tsx`.
+1. Add the screen to `src/layout/pages.ts` (address, title, permission) and give it a route in `src/App.tsx`. Add a sidebar entry in `src/layout/nav.ts` if it needs one.
 2. Build it in `src/pages/<screen>/`, loading data with TanStack Query through `api()` and a query key that starts with the resource name (`['patients', id]`), so live events refresh it.
 3. Reuse `SectionCard`, `StatusPill` and the shadcn/ui primitives. Colours come from the tokens in `src/index.css`.
 4. Cover loading, empty and error states, and add tests next to the components.
