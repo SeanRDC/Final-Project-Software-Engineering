@@ -9,6 +9,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { useCan } from '@/auth/permissions'
+import { ConnectionStatus } from '@/layout/ConnectionStatus'
 import { PatientSearch } from '@/layout/PatientSearch'
 import { pageFor } from '@/layout/pages'
 import { Sidebar } from '@/layout/Sidebar'
@@ -33,6 +34,7 @@ export function AppShell() {
       </a>
 
       <TopBar title={title} onOpenNavigation={() => setIsDrawerOpen(true)}>
+        <ConnectionStatus className="max-md:hidden" />
         <UserMenu />
       </TopBar>
 

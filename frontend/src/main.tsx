@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router'
 
 import App from '@/App'
 import { AuthProvider } from '@/auth/AuthProvider'
+import { LiveProvider } from '@/live/LiveProvider'
 import { createQueryClient } from '@/lib/queryClient'
 
 import './index.css'
@@ -15,9 +16,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <LiveProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </LiveProvider>
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
