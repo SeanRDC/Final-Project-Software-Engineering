@@ -49,6 +49,9 @@ export function WalkInForm() {
 
   function choosePatient(next: PatientSummary | null) {
     setPatient(next)
+    // What was typed belongs to the previous patient and must not follow to the next one.
+    setComplaint('')
+    setVisitType('consultation')
     setWasSubmitted(false)
     checkIn.reset()
   }

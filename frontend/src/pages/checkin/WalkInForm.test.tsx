@@ -108,14 +108,21 @@ test('links to the visit the patient already has open', async () => {
   expect(screen.getByTestId('address')).toHaveTextContent('/check-in')
 })
 
-test('lets the wrong patient be changed', async () => {
+test('lets the wrong patient be changed and forgets what was typed for them', async () => {
   serverWithSantos()
   const user = userEvent.setup()
   renderForm()
 
   await pickSantos(user)
+  await user.type(screen.getByLabelText('Complaint'), 'Dizziness')
+  await user.selectOptions(screen.getByLabelText('Type of visit'), 'Treatment')
   await user.click(screen.getByRole('button', { name: 'Change' }))
 
   expect(screen.getByRole('searchbox', { name: 'Find the patient' })).toBeInTheDocument()
   expect(screen.queryByLabelText('Complaint')).not.toBeInTheDocument()
+
+  await pickSantos(user)
+
+  expect(screen.getByLabelText('Complaint')).toHaveValue('')
+  expect(screen.getByLabelText('Type of visit')).toHaveValue('consultation')
 })
