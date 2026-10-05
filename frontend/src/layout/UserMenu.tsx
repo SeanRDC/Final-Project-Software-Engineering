@@ -1,4 +1,4 @@
-import { ChevronDownIcon, LogOutIcon } from 'lucide-react'
+import { ChevronDownIcon, CircleUserRoundIcon, LogOutIcon } from 'lucide-react'
 
 import { useAuth } from '@/auth/authContext'
 import {
@@ -27,7 +27,8 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2 rounded-md py-1 pr-1 pl-2 text-right outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-muted">
-        <span className="flex min-w-0 flex-col leading-tight">
+        <CircleUserRoundIcon aria-hidden="true" className="size-5 text-foreground/80 sm:hidden" />
+        <span className="flex min-w-0 flex-col leading-tight max-sm:sr-only">
           <span className="truncate text-sm font-medium">{user.full_name}</span>
           <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
         </span>
