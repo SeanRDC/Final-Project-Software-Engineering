@@ -1,6 +1,6 @@
 import { PencilIcon, StethoscopeIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 
 import { ApiError } from '@/api/client'
 import { useCan } from '@/auth/permissions'
@@ -73,6 +73,17 @@ export function VisitPanel() {
                 <span className="tabular-nums">{visit.patient.id_number}</span> ·{' '}
                 {describePatient(visit.patient)}
                 {visit.patient.department ? ` · ${visit.patient.department}` : ''}
+                {allowed('patients:read') ? (
+                  <>
+                    {' · '}
+                    <Link
+                      to={`/patients/${visit.patient.id}`}
+                      className="font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      Patient record
+                    </Link>
+                  </>
+                ) : null}
                 <br />
                 {humanize(visit.visit_type)} · checked in {formatTimeOfDay(visit.checked_in_at)}
                 {visit.status === 'cancelled'
