@@ -60,11 +60,13 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                                                                          | Address                   | Status                  |
-| ------------------------------------------------------------------------------- | ------------------------- | ----------------------- |
-| Sign in                                                                         | `/login`                  | Done                    |
-| Clinic Main Menu (dashboard)                                                    | `/`                       | Done                    |
-| Check-in, visits, patients, appointments, inventory, release log, notifications | see `src/layout/pages.ts` | Placeholder, built next |
+| Screen                                                        | Address                   | Status                                                                 |
+| ------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------- |
+| Sign in                                                       | `/login`                  | Done                                                                   |
+| Clinic Main Menu (dashboard)                                  | `/`                       | Done                                                                   |
+| Check-in / Walk-in                                            | `/check-in`               | Done                                                                   |
+| Today's visits                                                | `/visits`, `/visits/:id`  | Log and read-only record done; recording vital signs and notes is next |
+| Patients, appointments, inventory, release log, notifications | see `src/layout/pages.ts` | Placeholder, built next                                                |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -90,6 +92,24 @@ The baseline shows a live queue with ticket numbers, an Urgent flag, Intake / Qu
 - A visit is **Open**, **In consultation** once the doctor has added notes to it, **Completed** or **Cancelled**.
 - The counters are open visits, completed today, appointments today and low-stock medicines.
 - An open visit's timer turns amber after 20 minutes and red after 40.
+
+## Check-in and Today's Visits
+
+| Part                  | API                                                           | Component                                   |
+| --------------------- | ------------------------------------------------------------- | ------------------------------------------- |
+| Find the patient      | `GET /patients?q=` as the term is typed                       | `PatientPicker`, `usePatientSearch`         |
+| Walk-in check-in      | `POST /visits`                                                | `WalkInForm`                                |
+| Expected appointments | `GET /appointments/today`; `POST /appointments/{id}/check-in` | `ArrivingByAppointment`, `CheckInButton`    |
+| Visit log             | `GET /visits/today`                                           | `VisitsPage`, `VisitsFilter`, `VisitsTable` |
+| One visit             | `GET /visits/{id}`                                            | `VisitPanel`, `VisitRecord`                 |
+| Cancel a visit        | `POST /visits/{id}/cancel`                                    | `CancelVisitDialog`                         |
+
+- **One open visit per patient.** When check-in is refused for that reason, the form links to the visit that is already open.
+- **Pending appointments** cannot be checked in. The screen says to check the patient in as a walk-in, which is the clinic's rule.
+- **The filter is in the address** (`/visits?status=open`), so it survives a reload and opening a visit.
+- **A visit has its own address** (`/visits/14`) and opens in a panel over the log. Dashboard cards and a successful check-in lead there.
+- **Patient alerts** (allergies, conditions, restrictions) are shown first in every visit record.
+- **Reading a visit is audited** by the server each time the panel loads it.
 
 ## Live Updates
 
@@ -119,7 +139,9 @@ frontend/
 │   ├── lib/                  # Formatting helpers, query client, status labels
 │   ├── live/                 # WebSocket connection and event-to-query mapping
 │   ├── pages/                # One folder or file per screen
-│   │   └── dashboard/        # The Clinic Main Menu and its panels
+│   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
+│   │   ├── dashboard/        # The Clinic Main Menu and its panels
+│   │   └── visits/           # Visit log, visit panel and record, cancel dialog
 │   ├── routes/               # Route guards (signed in, permission)
 │   ├── test/                 # Fixtures, fake API server and render helper
 │   ├── App.tsx               # Route table

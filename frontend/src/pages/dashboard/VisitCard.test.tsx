@@ -1,8 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { screen } from '@testing-library/react'
 import { expect, test } from 'vitest'
 
 import { VisitCard } from '@/pages/dashboard/VisitCard'
 import { FIXTURE_NOW, patient, visit } from '@/test/dashboardFixture'
+import { nurse } from '@/test/fixtures'
+import { renderApp } from '@/test/render'
+
+const render = (ui: ReactElement) => renderApp(ui, { user: nurse })
 
 test('shows an open visit with how long it has been open', () => {
   render(<VisitCard visit={visit()} now={FIXTURE_NOW} />)
@@ -12,6 +17,7 @@ test('shows an open visit with how long it has been open', () => {
   expect(card).toHaveTextContent('Difficulty breathing')
   expect(card).toHaveTextContent('Open for6 min')
   expect(card).toHaveTextContent('Consultation')
+  expect(screen.getByRole('link', { name: 'Santos, Maria' })).toHaveAttribute('href', '/visits/14')
 })
 
 test('marks a visit the doctor has taken up', () => {

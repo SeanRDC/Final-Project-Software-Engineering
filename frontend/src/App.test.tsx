@@ -19,9 +19,9 @@ test('takes a signed-in account away from the login page', () => {
 })
 
 test('opens a screen the account is allowed to use', () => {
-  renderApp(<App />, { user: nurse, route: '/check-in' })
+  renderApp(<App />, { user: nurse, route: '/inventory' })
 
-  expect(screen.getByRole('heading', { name: 'Check-in / Walk-in' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Medicine Inventory' })).toBeInTheDocument()
   expect(screen.getByText(/being built next/)).toBeInTheDocument()
 })
 
@@ -29,7 +29,14 @@ test('refuses a screen outside the account’s role', () => {
   renderApp(<App />, { user: doctor, route: '/check-in' })
 
   expect(screen.getByText('Not available for your account')).toBeInTheDocument()
-  expect(screen.queryByText(/being built next/)).not.toBeInTheDocument()
+  expect(screen.queryByRole('searchbox', { name: 'Find the patient' })).not.toBeInTheDocument()
+})
+
+test('opens check-in for the front desk', () => {
+  renderApp(<App />, { user: nurse, route: '/check-in' })
+
+  expect(screen.getByRole('heading', { name: 'Check-in / Walk-in' })).toBeInTheDocument()
+  expect(screen.getByRole('searchbox', { name: 'Find the patient' })).toBeInTheDocument()
 })
 
 test('explains an unknown address', () => {

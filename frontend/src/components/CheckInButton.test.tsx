@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { Toaster } from '@/components/ui/sonner'
-import { CheckInButton } from '@/pages/dashboard/CheckInButton'
+import { CheckInButton } from '@/components/CheckInButton'
 import { appointment } from '@/test/dashboardFixture'
 import { nurse } from '@/test/fixtures'
 import { renderApp } from '@/test/render'
