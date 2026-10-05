@@ -6,7 +6,8 @@ const QUERIES_BY_EVENT: Record<string, readonly string[]> = {
   'appointments.updated': ['dashboard', 'appointments'],
   'inventory.updated': ['dashboard', 'inventory'],
   'notifications.updated': ['dashboard', 'notifications'],
-  'lock.updated': ['locks'],
+  // An open visit record shows who is editing it.
+  'lock.updated': ['locks', 'visits'],
 }
 
 /** The first element of every query key that should be refetched after this event. */
