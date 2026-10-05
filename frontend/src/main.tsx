@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router'
 import App from '@/App'
 import { AuthProvider } from '@/auth/AuthProvider'
 import { LiveProvider } from '@/live/LiveProvider'
+import { Toaster } from '@/components/ui/sonner'
 import { createQueryClient } from '@/lib/queryClient'
 
 import './index.css'
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </BrowserRouter>
         </LiveProvider>
+        <Toaster position="bottom-right" />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
