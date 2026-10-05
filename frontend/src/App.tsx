@@ -6,10 +6,12 @@ import { AppShell } from '@/layout/AppShell'
 import {
   APPOINTMENTS,
   CHECK_IN,
+  INVENTORY,
   NEW_APPOINTMENT,
+  NOTIFICATIONS,
   PATIENTS,
   REGISTER_PATIENT,
-  UPCOMING_PAGES,
+  RELEASE_LOG,
   VISITS,
 } from '@/layout/pages'
 import { AppointmentsPage } from '@/pages/appointments/AppointmentsPage'
@@ -17,12 +19,14 @@ import { EditAppointmentPage } from '@/pages/appointments/EditAppointmentPage'
 import { NewAppointmentPage } from '@/pages/appointments/NewAppointmentPage'
 import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
+import { InventoryPage } from '@/pages/inventory/InventoryPage'
+import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { NotificationsPage } from '@/pages/notifications/NotificationsPage'
 import { EditPatientPage } from '@/pages/patients/EditPatientPage'
 import { PatientPage } from '@/pages/patients/PatientPage'
 import { PatientsPage } from '@/pages/patients/PatientsPage'
 import { RegisterPatientPage } from '@/pages/patients/RegisterPatientPage'
-import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { VisitPanel } from '@/pages/visits/VisitPanel'
 import { VisitsPage } from '@/pages/visits/VisitsPage'
 import { LoginRoute } from '@/routes/LoginRoute'
@@ -74,13 +78,13 @@ function App() {
             element={guarded(NEW_APPOINTMENT.permission, <EditAppointmentPage />)}
           />
 
-          {UPCOMING_PAGES.map((page) => (
-            <Route
-              key={page.path}
-              path={page.path}
-              element={guarded(page.permission, <PlaceholderPage title={page.title} />)}
-            />
-          ))}
+          <Route path={INVENTORY.path} element={guarded(INVENTORY.permission, <InventoryPage />)} />
+          <Route
+            path={RELEASE_LOG.path}
+            element={guarded(RELEASE_LOG.permission, <ReleaseLogPage />)}
+          />
+          <Route path={NOTIFICATIONS.path} element={<NotificationsPage />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>

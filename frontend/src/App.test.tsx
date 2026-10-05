@@ -22,7 +22,7 @@ test('opens a screen the account is allowed to use', () => {
   renderApp(<App />, { user: nurse, route: '/inventory' })
 
   expect(screen.getByRole('heading', { name: 'Medicine Inventory' })).toBeInTheDocument()
-  expect(screen.getByText(/being built next/)).toBeInTheDocument()
+  expect(screen.getByRole('searchbox', { name: 'Search medicines by name' })).toBeInTheDocument()
 })
 
 test('refuses a screen outside the account’s role', () => {
