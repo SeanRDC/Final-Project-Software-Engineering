@@ -15,18 +15,23 @@ function renderLogin(login: AuthState['login']) {
   )
 }
 
-test('keeps the button disabled until both fields are filled', async () => {
+test('points out a missing field instead of sending the request', async () => {
+  const login = vi.fn<AuthState['login']>()
   const user = userEvent.setup()
-  renderLogin(vi.fn())
+  renderLogin(login)
 
-  const button = screen.getByRole('button', { name: 'Sign in' })
-  expect(button).toBeDisabled()
+  await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
-  await user.type(screen.getByLabelText('Username'), 'nurse')
-  expect(button).toBeDisabled()
+  expect(screen.getByText('Enter your username.')).toBeInTheDocument()
+  expect(screen.getByLabelText('Username')).toHaveFocus()
+  expect(screen.getByLabelText('Username')).toBeInvalid()
 
-  await user.type(screen.getByLabelText('Password'), 'secret')
-  expect(button).toBeEnabled()
+  await user.type(screen.getByLabelText('Username'), 'nurse{Enter}')
+
+  expect(screen.queryByText('Enter your username.')).not.toBeInTheDocument()
+  expect(screen.getByText('Enter your password.')).toBeInTheDocument()
+  expect(screen.getByLabelText('Password')).toHaveFocus()
+  expect(login).not.toHaveBeenCalled()
 })
 
 test('submits the trimmed username and the password', async () => {

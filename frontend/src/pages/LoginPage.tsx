@@ -1,12 +1,12 @@
 import { CircleAlertIcon, LogInIcon } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 
 import { ApiError } from '@/api/client'
 import { useAuth } from '@/auth/authContext'
 import { BrandLockup } from '@/components/BrandMark'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -17,14 +17,30 @@ function messageFor(error: unknown): string {
 
 export function LoginPage() {
   const { login } = useAuth()
+  const usernameRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Missing fields are pointed out only after the first attempt to sign in.
+  const [wasSubmitted, setWasSubmitted] = useState(false)
+
+  const usernameMissing = wasSubmitted && !username.trim()
+  const passwordMissing = wasSubmitted && !password
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setWasSubmitted(true)
     setError(null)
+    if (!username.trim()) {
+      usernameRef.current?.focus()
+      return
+    }
+    if (!password) {
+      passwordRef.current?.focus()
+      return
+    }
     setIsSubmitting(true)
     try {
       await login(username.trim(), password)
@@ -56,9 +72,10 @@ export function LoginPage() {
                   </Alert>
                 ) : null}
 
-                <Field>
+                <Field data-invalid={usernameMissing || undefined}>
                   <FieldLabel htmlFor="username">Username</FieldLabel>
                   <Input
+                    ref={usernameRef}
                     id="username"
                     name="username"
                     autoComplete="username"
@@ -66,25 +83,36 @@ export function LoginPage() {
                     spellCheck={false}
                     autoFocus
                     required
+                    aria-invalid={usernameMissing || undefined}
+                    aria-describedby={usernameMissing ? 'username-error' : undefined}
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
                   />
+                  {usernameMissing ? (
+                    <FieldError id="username-error">Enter your username.</FieldError>
+                  ) : null}
                 </Field>
 
-                <Field>
+                <Field data-invalid={passwordMissing || undefined}>
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <Input
+                    ref={passwordRef}
                     id="password"
                     name="password"
                     type="password"
                     autoComplete="current-password"
                     required
+                    aria-invalid={passwordMissing || undefined}
+                    aria-describedby={passwordMissing ? 'password-error' : undefined}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                   />
+                  {passwordMissing ? (
+                    <FieldError id="password-error">Enter your password.</FieldError>
+                  ) : null}
                 </Field>
 
-                <Button type="submit" disabled={isSubmitting || !username.trim() || !password}>
+                <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <Spinner data-icon="inline-start" />
                   ) : (
