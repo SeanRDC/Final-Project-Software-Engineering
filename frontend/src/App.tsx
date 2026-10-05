@@ -1,10 +1,14 @@
 import { Route, Routes } from 'react-router'
 
 import { AppShell } from '@/layout/AppShell'
-import { CHECK_IN, UPCOMING_PAGES, VISITS } from '@/layout/pages'
+import { CHECK_IN, PATIENTS, REGISTER_PATIENT, UPCOMING_PAGES, VISITS } from '@/layout/pages'
 import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { EditPatientPage } from '@/pages/patients/EditPatientPage'
+import { PatientPage } from '@/pages/patients/PatientPage'
+import { PatientsPage } from '@/pages/patients/PatientsPage'
+import { RegisterPatientPage } from '@/pages/patients/RegisterPatientPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { VisitPanel } from '@/pages/visits/VisitPanel'
 import { VisitsPage } from '@/pages/visits/VisitsPage'
@@ -37,6 +41,38 @@ function App() {
           >
             <Route path=":visitId" element={<VisitPanel />} />
           </Route>
+          <Route
+            path={PATIENTS.path}
+            element={
+              <RequirePermission permission={PATIENTS.permission}>
+                <PatientsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path={REGISTER_PATIENT.path}
+            element={
+              <RequirePermission permission={REGISTER_PATIENT.permission}>
+                <RegisterPatientPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/patients/:patientId"
+            element={
+              <RequirePermission permission={PATIENTS.permission}>
+                <PatientPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/patients/:patientId/edit"
+            element={
+              <RequirePermission permission={REGISTER_PATIENT.permission}>
+                <EditPatientPage />
+              </RequirePermission>
+            }
+          />
           {UPCOMING_PAGES.map((page) => (
             <Route
               key={page.path}
