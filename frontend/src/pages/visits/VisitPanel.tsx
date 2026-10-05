@@ -40,7 +40,7 @@ export function VisitPanel() {
 
   return (
     <Sheet open onOpenChange={(open) => !open && close()}>
-      <SheetContent className="w-full gap-0 overscroll-contain sm:max-w-xl">
+      <SheetContent className="gap-0 overscroll-contain data-[side=right]:w-full data-[side=right]:sm:max-w-xl">
         <SheetHeader className="border-b pr-12">
           <SheetTitle className="flex flex-wrap items-center gap-2 text-lg">
             {visit ? visit.patient.full_name : notFound ? 'Visit not found' : 'Visit'}
