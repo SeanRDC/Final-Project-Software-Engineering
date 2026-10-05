@@ -6,6 +6,7 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
+import { VisitPanel } from '@/pages/visits/VisitPanel'
 import { VisitsPage } from '@/pages/visits/VisitsPage'
 import { LoginRoute } from '@/routes/LoginRoute'
 import { RequireAuth } from '@/routes/RequireAuth'
@@ -33,7 +34,9 @@ function App() {
                 <VisitsPage />
               </RequirePermission>
             }
-          />
+          >
+            <Route path=":visitId" element={<VisitPanel />} />
+          </Route>
           {UPCOMING_PAGES.map((page) => (
             <Route
               key={page.path}
