@@ -14,7 +14,7 @@ import {
   shiftMonth,
   type CalendarCell,
   type MonthRef,
-} from '@/pages/dashboard/calendarGrid'
+} from '@/components/calendar/calendarGrid'
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 

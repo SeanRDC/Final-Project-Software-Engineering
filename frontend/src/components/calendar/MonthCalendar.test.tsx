@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, test, vi } from 'vitest'
 
-import { MonthCalendar } from '@/pages/dashboard/MonthCalendar'
+import { MonthCalendar } from '@/components/calendar/MonthCalendar'
 import { dashboard } from '@/test/dashboardFixture'
 import { nurse } from '@/test/fixtures'
 import { renderApp } from '@/test/render'

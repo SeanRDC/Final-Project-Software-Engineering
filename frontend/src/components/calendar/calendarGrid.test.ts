@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { monthGrid, monthLabel, monthOf, shiftMonth } from '@/pages/dashboard/calendarGrid'
+import { monthGrid, monthLabel, monthOf, shiftMonth } from '@/components/calendar/calendarGrid'
 
 test('October 2026 starts on a Thursday and fills five weeks', () => {
   const weeks = monthGrid({ year: 2026, month: 10 })
