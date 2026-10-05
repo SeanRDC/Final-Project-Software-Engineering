@@ -33,10 +33,18 @@ export type VisitStatus = Schemas['VisitStatus']
 export type VisitType = Schemas['VisitType']
 
 export type Appointment = Schemas['AppointmentOut']
+export type AppointmentCreate = Schemas['AppointmentCreate']
+export type AppointmentUpdate = Schemas['AppointmentUpdate']
+export type AppointmentPage = Schemas['Page_AppointmentOut_']
 export type AppointmentStatus = Schemas['AppointmentStatus']
 export type CalendarDay = Schemas['CalendarDay']
 
 export type Medicine = Schemas['MedicineOut']
+export type MedicineCreate = Schemas['MedicineCreate']
+export type MedicineUpdate = Schemas['MedicineUpdate']
+export type StockMovement = Schemas['StockMovementOut']
+export type StockMovementPage = Schemas['Page_StockMovementOut_']
+export type StockMovementType = Schemas['StockMovementType']
 
 export type Notification = Schemas['NotificationOut']
 export type NotificationList = Schemas['NotificationList']

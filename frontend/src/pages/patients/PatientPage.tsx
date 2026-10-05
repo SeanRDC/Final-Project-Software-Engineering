@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, ClipboardPlusIcon, PencilIcon } from 'lucide-react'
+import { ArrowLeftIcon, CalendarPlusIcon, ClipboardPlusIcon, PencilIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 
@@ -161,6 +161,14 @@ export function PatientPage() {
               <Link to={`/patients/${patient.id}/edit`}>
                 <PencilIcon data-icon="inline-start" />
                 Edit record
+              </Link>
+            </Button>
+          ) : null}
+          {allowed('appointments:write') && !patient.is_archived ? (
+            <Button asChild variant="outline">
+              <Link to={`/appointments/new?patient=${patient.id}`}>
+                <CalendarPlusIcon data-icon="inline-start" />
+                Book appointment
               </Link>
             </Button>
           ) : null}

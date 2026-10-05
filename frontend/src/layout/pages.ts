@@ -22,15 +22,28 @@ export const REGISTER_PATIENT: Page = {
   title: 'Register Patient',
   permission: 'patients:write',
 }
+export const APPOINTMENTS: Page = {
+  path: '/appointments',
+  title: 'Appointments',
+  permission: 'appointments:read',
+}
+export const NEW_APPOINTMENT: Page = {
+  path: '/appointments/new',
+  title: 'New Appointment',
+  permission: 'appointments:write',
+}
 
-/** Screens that are planned but not built yet. They show a placeholder for now. */
-export const UPCOMING_PAGES: Page[] = [
-  { path: '/appointments', title: 'Appointments', permission: 'appointments:read' },
-  { path: '/appointments/new', title: 'New Appointment', permission: 'appointments:write' },
-  { path: '/inventory', title: 'Medicine Inventory', permission: 'inventory:read' },
-  { path: '/inventory/releases', title: 'Medicine Release Log', permission: 'inventory:read' },
-  { path: '/notifications', title: 'Notifications' },
-]
+export const INVENTORY: Page = {
+  path: '/inventory',
+  title: 'Medicine Inventory',
+  permission: 'inventory:read',
+}
+export const RELEASE_LOG: Page = {
+  path: '/inventory/releases',
+  title: 'Medicine Release Log',
+  permission: 'inventory:read',
+}
+export const NOTIFICATIONS: Page = { path: '/notifications', title: 'Notifications' }
 
 export const PAGES: Page[] = [
   DASHBOARD,
@@ -38,7 +51,11 @@ export const PAGES: Page[] = [
   VISITS,
   PATIENTS,
   REGISTER_PATIENT,
-  ...UPCOMING_PAGES,
+  APPOINTMENTS,
+  NEW_APPOINTMENT,
+  INVENTORY,
+  RELEASE_LOG,
+  NOTIFICATIONS,
 ]
 
 /** The page a browser address belongs to, e.g. "/patients/12" belongs to "/patients". */

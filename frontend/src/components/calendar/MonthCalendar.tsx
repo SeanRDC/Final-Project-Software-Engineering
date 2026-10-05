@@ -14,11 +14,16 @@ import {
   shiftMonth,
   type CalendarCell,
   type MonthRef,
-} from '@/pages/dashboard/calendarGrid'
+} from '@/components/calendar/calendarGrid'
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
-function cellLabel(cell: CalendarCell, isToday: boolean, count: number): string {
+function cellLabel(
+  cell: CalendarCell,
+  isToday: boolean,
+  isSelected: boolean,
+  count: number,
+): string {
   const date = parseDay(cell.day).toLocaleDateString('en-US', {
     weekday: 'long',
     day: 'numeric',
@@ -27,6 +32,7 @@ function cellLabel(cell: CalendarCell, isToday: boolean, count: number): string 
   })
   const parts = [date]
   if (isToday) parts.push('today')
+  if (isSelected) parts.push('selected')
   if (count > 0) parts.push(`${count} ${count === 1 ? 'appointment' : 'appointments'}`)
   return parts.join(', ')
 }
@@ -34,28 +40,34 @@ function cellLabel(cell: CalendarCell, isToday: boolean, count: number): string 
 type MonthCalendarProps = {
   /** The clinic's current day, "2026-10-04". */
   today: string
-  /** Days of the current month that have appointments, from the dashboard payload. */
-  days: CalendarDay[]
+  /**
+   * Days of the current month that have appointments, when the caller already has them
+   * (the dashboard does). Left out, the calendar fetches the current month itself.
+   */
+  days?: CalendarDay[]
+  /** The day whose appointments are on screen, drawn with a ring. */
+  selected?: string
 }
 
 /** Month view with a dot on each day that has appointments. Each day opens its appointments. */
-export function MonthCalendar({ today, days }: MonthCalendarProps) {
+export function MonthCalendar({ today, days, selected }: MonthCalendarProps) {
   const currentMonth = monthOf(today)
-  const [viewed, setViewed] = useState<MonthRef>(currentMonth)
+  const [viewed, setViewed] = useState<MonthRef>(() => monthOf(selected ?? today))
   const isCurrentMonth = viewed.year === currentMonth.year && viewed.month === currentMonth.month
 
-  // The dashboard already carries the current month; other months are fetched when opened.
-  const otherMonth = useQuery({
+  // A month the caller did not supply is fetched when it is opened.
+  const hasGivenDays = isCurrentMonth && days !== undefined
+  const fetched = useQuery({
     queryKey: ['appointments', 'calendar', viewed.year, viewed.month],
     queryFn: ({ signal }) =>
       api<CalendarDay[]>('/appointments/calendar', {
         query: { year: viewed.year, month: viewed.month },
         signal,
       }),
-    enabled: !isCurrentMonth,
+    enabled: !hasGivenDays,
   })
 
-  const shownDays = isCurrentMonth ? days : (otherMonth.data ?? [])
+  const shownDays = hasGivenDays ? days : (fetched.data ?? [])
   const counts = new Map(shownDays.map((day) => [day.date, day.appointment_count]))
   const label = monthLabel(viewed)
 
@@ -110,12 +122,13 @@ export function MonthCalendar({ today, days }: MonthCalendarProps) {
             <tr key={week[0]?.day}>
               {week.map((cell) => {
                 const isToday = cell.day === today
+                const isSelected = cell.day === selected
                 const count = counts.get(cell.day) ?? 0
                 return (
                   <td key={cell.day} className="p-0">
                     <Link
                       to={`/appointments?date=${cell.day}`}
-                      aria-label={cellLabel(cell, isToday, count)}
+                      aria-label={cellLabel(cell, isToday, isSelected, count)}
                       aria-current={isToday ? 'date' : undefined}
                       className="group relative mx-auto flex h-[38px] w-full flex-col items-center rounded-md pt-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
@@ -126,6 +139,7 @@ export function MonthCalendar({ today, days }: MonthCalendarProps) {
                           !cell.inMonth && 'text-muted-foreground/70',
                           isToday &&
                             'bg-primary font-semibold text-primary-foreground group-hover:bg-primary',
+                          isSelected && 'ring-2 ring-primary ring-offset-1',
                         )}
                       >
                         {cell.dayOfMonth}
