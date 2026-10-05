@@ -1,0 +1,18 @@
+import { QuickActions } from '@/pages/dashboard/QuickActions'
+import { StatTiles } from '@/pages/dashboard/StatTiles'
+import { useDashboard } from '@/pages/dashboard/useDashboard'
+
+/** The Clinic Main Menu: today's activity at a glance. */
+export function DashboardPage() {
+  const { data } = useDashboard()
+
+  return (
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="flex min-w-0 flex-col gap-6">
+        <QuickActions />
+        {data ? <StatTiles stats={data.stats} lowStock={data.low_stock} /> : null}
+      </div>
+      <aside aria-label="Calendar and alerts" className="flex min-w-0 flex-col gap-6" />
+    </div>
+  )
+}
