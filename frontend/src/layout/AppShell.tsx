@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 
+import { useCan } from '@/auth/permissions'
 import {
   Sheet,
   SheetContent,
@@ -8,13 +9,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { useCan } from '@/auth/permissions'
 import { ConnectionStatus } from '@/layout/ConnectionStatus'
-import { PatientSearch } from '@/layout/PatientSearch'
+import { NotificationBell } from '@/layout/NotificationBell'
 import { pageFor } from '@/layout/pages'
-import { Sidebar } from '@/layout/Sidebar'
+import { PatientSearch } from '@/layout/PatientSearch'
+import { Sidebar, type NavBadgeCounts } from '@/layout/Sidebar'
 import { TopBar } from '@/layout/TopBar'
 import { UserMenu } from '@/layout/UserMenu'
+import { useDashboard } from '@/pages/dashboard/useDashboard'
 
 /** The frame around every signed-in screen: top bar, sidebar and the page itself. */
 export function AppShell() {
@@ -23,6 +25,14 @@ export function AppShell() {
   const allowed = useCan()
   const canSearch = allowed('patients:read')
   const title = pageFor(location.pathname)?.title ?? 'HAU-Sync'
+
+  // The counts ride on the dashboard request, which live events keep fresh on every screen.
+  const { data: dashboard } = useDashboard()
+  const unread = dashboard?.notifications.unread_count ?? 0
+  const badges: NavBadgeCounts = {
+    openVisits: dashboard?.stats.open_visits ?? 0,
+    unreadNotifications: unread,
+  }
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -35,12 +45,13 @@ export function AppShell() {
 
       <TopBar title={title} onOpenNavigation={() => setIsDrawerOpen(true)}>
         <ConnectionStatus className="max-md:hidden" />
+        <NotificationBell unread={unread} />
         <UserMenu />
       </TopBar>
 
       <div className="flex flex-1">
         <aside className="sticky top-16 hidden h-[calc(100svh-4rem)] w-[260px] shrink-0 border-r bg-sidebar lg:block">
-          <Sidebar header={canSearch ? <PatientSearch /> : null} />
+          <Sidebar badges={badges} header={canSearch ? <PatientSearch /> : null} />
         </aside>
 
         <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -50,6 +61,7 @@ export function AppShell() {
               <SheetDescription>University Clinic</SheetDescription>
             </SheetHeader>
             <Sidebar
+              badges={badges}
               header={canSearch ? <PatientSearch onSearch={() => setIsDrawerOpen(false)} /> : null}
               onNavigate={() => setIsDrawerOpen(false)}
             />
