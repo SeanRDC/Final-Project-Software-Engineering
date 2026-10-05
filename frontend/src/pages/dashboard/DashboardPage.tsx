@@ -1,6 +1,7 @@
 import { useCan } from '@/auth/permissions'
 import { AppointmentsTable } from '@/pages/dashboard/AppointmentsTable'
 import { CheckInButton } from '@/pages/dashboard/CheckInButton'
+import { MonthCalendar } from '@/pages/dashboard/MonthCalendar'
 import { QuickActions } from '@/pages/dashboard/QuickActions'
 import { StatTiles } from '@/pages/dashboard/StatTiles'
 import { TodaysVisits } from '@/pages/dashboard/TodaysVisits'
@@ -34,7 +35,13 @@ export function DashboardPage() {
           </>
         ) : null}
       </div>
-      <aside aria-label="Calendar and alerts" className="flex min-w-0 flex-col gap-6" />
+      <aside aria-label="Calendar and alerts" className="flex min-w-0 flex-col gap-6">
+        {data ? (
+          <>
+            <MonthCalendar today={data.date} days={data.calendar} />
+          </>
+        ) : null}
+      </aside>
     </div>
   )
 }
