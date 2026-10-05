@@ -60,13 +60,13 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                                                        | Address                   | Status                                                                 |
-| ------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------- |
-| Sign in                                                       | `/login`                  | Done                                                                   |
-| Clinic Main Menu (dashboard)                                  | `/`                       | Done                                                                   |
-| Check-in / Walk-in                                            | `/check-in`               | Done                                                                   |
-| Today's visits                                                | `/visits`, `/visits/:id`  | Log and read-only record done; recording vital signs and notes is next |
-| Patients, appointments, inventory, release log, notifications | see `src/layout/pages.ts` | Placeholder, built next                                                |
+| Screen                                                        | Address                   | Status                                                              |
+| ------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------- |
+| Sign in                                                       | `/login`                  | Done                                                                |
+| Clinic Main Menu (dashboard)                                  | `/`                       | Done                                                                |
+| Check-in / Walk-in                                            | `/check-in`               | Done                                                                |
+| Today's visits and the visit record                           | `/visits`, `/visits/:id`  | Done: log, record, consultation, medicine release, complete, cancel |
+| Patients, appointments, inventory, release log, notifications | see `src/layout/pages.ts` | Placeholder, built next                                             |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -111,6 +111,24 @@ The baseline shows a live queue with ticket numbers, an Urgent flag, Intake / Qu
 - **Patient alerts** (allergies, conditions, restrictions) are shown first in every visit record.
 - **Reading a visit is audited** by the server each time the panel loads it.
 
+## Recording a Visit
+
+The visit panel (`/visits/:id`) switches between the record and a form.
+
+| Action                                                        | Who                     | API                                        | Component                                 |
+| ------------------------------------------------------------- | ----------------------- | ------------------------------------------ | ----------------------------------------- |
+| Record complaint, vital signs, assessment, treatment, outcome | `visits:record`         | `PATCH /visits/{id}`                       | `RecordForm`                              |
+| Consultation notes, diagnosis, medication details             | `visits:consult`        | `PATCH /visits/{id}/consultation`          | `ConsultationForm`                        |
+| Release medicine, undo a release                              | `medicines:dispense`    | `POST` and `DELETE /visits/{id}/medicines` | `ReleaseMedicineForm`, `MedicinesSection` |
+| Complete the visit                                            | either of the first two | `POST /visits/{id}/complete`               | `CompleteVisitDialog`                     |
+
+- **Edit lock.** Opening a form takes the lock on the visit (`useRecordLock`, `PUT /locks/visit/{id}`), renews it every minute and releases it when the form closes. If someone else holds it, the form does not open and the panel says who is editing. The hook also works for patient records.
+- **Only changes are sent.** `visitForm.ts` compares the form with the saved visit and sends the fields that differ, so the audit log lists what was really changed.
+- **Validation mirrors the API.** Vital sign limits are the ones in `backend/app/schemas/visit.py`; half a blood pressure reading is refused.
+- **Stock.** A medicine with nothing on hand cannot be chosen and a quantity above the stock is refused before it is sent. The server makes the final check when it deducts the stock.
+- **After completion** a visit can still be corrected, as the clinic requires. A cancelled visit offers no actions.
+- **Unsaved changes.** Closing the panel with an edited form asks before discarding it.
+
 ## Live Updates
 
 `src/live` keeps one WebSocket open to `/api/v1/ws` while someone is signed in.
@@ -136,12 +154,12 @@ frontend/
 │   ├── components/           # Shared components (SectionCard, StatusPill, BrandMark)
 │   │   └── ui/               # shadcn/ui primitives, added with `npx shadcn add`
 │   ├── layout/               # App shell, top bar, sidebar, page and navigation lists
-│   ├── lib/                  # Formatting helpers, query client, status labels
+│   ├── lib/                  # Formatting helpers, query client, status labels, record lock hook
 │   ├── live/                 # WebSocket connection and event-to-query mapping
 │   ├── pages/                # One folder or file per screen
 │   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
 │   │   ├── dashboard/        # The Clinic Main Menu and its panels
-│   │   └── visits/           # Visit log, visit panel and record, cancel dialog
+│   │   └── visits/           # Visit log, visit panel, record and consultation forms, medicine release
 │   ├── routes/               # Route guards (signed in, permission)
 │   ├── test/                 # Fixtures, fake API server and render helper
 │   ├── App.tsx               # Route table
