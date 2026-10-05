@@ -22,7 +22,7 @@ export function BrandMark({ className }: BrandMarkProps) {
 /** Emblem with "Holy Angel University" and the system name beside it. */
 export function BrandLockup({ className }: BrandMarkProps) {
   return (
-    <div className={cn('flex items-center gap-3', className)}>
+    <div translate="no" className={cn('flex items-center gap-3', className)}>
       <BrandMark />
       <div className="flex flex-col leading-tight">
         <span className="font-serif text-[13px] font-bold tracking-[0.12em] uppercase">
