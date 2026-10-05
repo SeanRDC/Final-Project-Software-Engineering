@@ -1,4 +1,5 @@
 import { ClockIcon, StethoscopeIcon } from 'lucide-react'
+import { Link } from 'react-router'
 
 import type { VisitSummary } from '@/api/types'
 import { StatusPill } from '@/components/StatusPill'
@@ -12,7 +13,7 @@ type VisitCardProps = {
   now: Date
 }
 
-/** One entry of today's visit log. */
+/** One entry of today's visit log. The whole card opens the visit. */
 export function VisitCard({ visit, now }: VisitCardProps) {
   const state = visitState(visit, now)
   const isOpen = visit.status === 'open'
@@ -22,13 +23,18 @@ export function VisitCard({ visit, now }: VisitCardProps) {
     <article
       aria-label={`${visit.patient.full_name}, ${state.label}`}
       className={cn(
-        'flex flex-col rounded-md border bg-card p-3.5',
+        'relative flex flex-col rounded-md border bg-card p-3.5 focus-within:ring-2 focus-within:ring-ring hover:border-foreground/30',
         isWithDoctor && 'border-primary ring-1 ring-primary',
         !isOpen && 'bg-muted/40',
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="min-w-0 truncate text-base font-semibold">{visit.patient.full_name}</h3>
+        <h3 className="min-w-0 truncate text-base font-semibold">
+          {/* The link's hit area is stretched over the whole card. */}
+          <Link to={`/visits/${visit.id}`} className="outline-none after:absolute after:inset-0">
+            {visit.patient.full_name}
+          </Link>
+        </h3>
         <StatusPill tone={state.tone} className="shrink-0">
           {state.label}
         </StatusPill>
