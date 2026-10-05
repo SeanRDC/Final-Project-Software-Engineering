@@ -3,6 +3,7 @@ import { AppointmentsTable } from '@/pages/dashboard/AppointmentsTable'
 import { CheckInButton } from '@/pages/dashboard/CheckInButton'
 import { MonthCalendar } from '@/pages/dashboard/MonthCalendar'
 import { TodaysEvents } from '@/pages/dashboard/TodaysEvents'
+import { NotificationsPanel } from '@/pages/dashboard/NotificationsPanel'
 import { QuickActions } from '@/pages/dashboard/QuickActions'
 import { StatTiles } from '@/pages/dashboard/StatTiles'
 import { TodaysVisits } from '@/pages/dashboard/TodaysVisits'
@@ -41,6 +42,7 @@ export function DashboardPage() {
           <>
             <MonthCalendar today={data.date} days={data.calendar} />
             <TodaysEvents appointments={data.todays_appointments} />
+            <NotificationsPanel notifications={data.notifications} />
           </>
         ) : null}
       </aside>
