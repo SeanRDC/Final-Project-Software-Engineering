@@ -1,3 +1,4 @@
+import { AppointmentsTable } from '@/pages/dashboard/AppointmentsTable'
 import { QuickActions } from '@/pages/dashboard/QuickActions'
 import { StatTiles } from '@/pages/dashboard/StatTiles'
 import { TodaysVisits } from '@/pages/dashboard/TodaysVisits'
@@ -15,6 +16,7 @@ export function DashboardPage() {
           <>
             <StatTiles stats={data.stats} lowStock={data.low_stock} />
             <TodaysVisits visits={data.todays_visits} />
+            <AppointmentsTable appointments={data.todays_appointments} />
           </>
         ) : null}
       </div>
