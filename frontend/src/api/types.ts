@@ -9,8 +9,13 @@ export type Token = Schemas['Token']
 export type CurrentUser = Schemas['CurrentUser']
 
 export type PatientSummary = Schemas['PatientSummary']
+export type PatientAlerts = Schemas['PatientAlerts']
+export type PatientPage = Schemas['Page_PatientSummary_']
 
 export type VisitSummary = Schemas['VisitSummary']
+export type Visit = Schemas['VisitOut']
+export type VisitMedicine = Schemas['VisitMedicineOut']
+export type CheckInRequest = Schemas['CheckIn']
 export type VisitStatus = Schemas['VisitStatus']
 export type VisitType = Schemas['VisitType']
 
