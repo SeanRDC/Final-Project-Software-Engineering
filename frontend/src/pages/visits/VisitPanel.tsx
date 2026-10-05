@@ -1,8 +1,11 @@
+import { PencilIcon, StethoscopeIcon } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 
 import { ApiError } from '@/api/client'
 import { useCan } from '@/auth/permissions'
 import { StatusPill } from '@/components/StatusPill'
+import { Button } from '@/components/ui/button'
 import {
   Sheet,
   SheetContent,
@@ -16,8 +19,12 @@ import { formatDuration, formatTimeOfDay, humanize } from '@/lib/format'
 import { useNow } from '@/lib/useNow'
 import { describePatient, visitState } from '@/lib/visitState'
 import { CancelVisitDialog } from '@/pages/visits/CancelVisitDialog'
+import { CompleteVisitDialog } from '@/pages/visits/CompleteVisitDialog'
+import { EditVisit, type EditMode } from '@/pages/visits/EditVisit'
 import { useVisit } from '@/pages/visits/useVisits'
 import { VisitRecord } from '@/pages/visits/VisitRecord'
+
+const DISCARD_QUESTION = 'Discard the changes you have not saved?'
 
 /** The visit at /visits/:visitId, shown in a panel over the visit log. */
 export function VisitPanel() {
@@ -26,17 +33,31 @@ export function VisitPanel() {
   const [searchParams] = useSearchParams()
   const now = useNow()
   const allowed = useCan()
+  // null shows the record; otherwise the named form is open for editing.
+  const [editing, setEditing] = useState<EditMode | null>(null)
+  const [isDirty, setIsDirty] = useState(false)
 
   const visitId = /^\d+$/.test(params.visitId ?? '') ? Number(params.visitId) : null
   const { data: visit, error, isPending } = useVisit(visitId)
   const state = visit ? visitState(visit, now) : null
 
+  function stopEditing() {
+    setEditing(null)
+    setIsDirty(false)
+  }
+
   function close() {
+    if (editing && isDirty && !window.confirm(DISCARD_QUESTION)) return
     const search = searchParams.toString()
     void navigate(`/visits${search ? `?${search}` : ''}`)
   }
 
   const notFound = visitId === null || (error instanceof ApiError && error.status === 404)
+  const canRecord = allowed('visits:record')
+  const canConsult = allowed('visits:consult')
+  // A completed visit can still be corrected; a cancelled one is closed for good.
+  const isEditable = visit !== undefined && visit.status !== 'cancelled'
+  const isOpen = visit?.status === 'open'
 
   return (
     <Sheet open onOpenChange={(open) => !open && close()}>
@@ -81,15 +102,43 @@ export function VisitPanel() {
             </p>
           ) : null}
 
-          {visit ? <VisitRecord visit={visit} /> : null}
+          {visit && editing ? (
+            <EditVisit
+              // A different visit or form starts from that visit's saved values.
+              key={`${visit.id}-${editing}`}
+              visit={visit}
+              mode={editing}
+              onDone={stopEditing}
+              onDirtyChange={setIsDirty}
+            />
+          ) : null}
+
+          {visit && !editing ? (
+            <VisitRecord
+              visit={visit}
+              canReleaseMedicine={isEditable && allowed('medicines:dispense')}
+            />
+          ) : null}
         </div>
 
-        {visit && visit.status === 'open' && allowed('visits:record') ? (
-          <SheetFooter className="flex-row items-center justify-between border-t">
-            <p className="text-[13px] text-muted-foreground">
-              Recording vital signs and notes is the next screen to be built.
-            </p>
-            <CancelVisitDialog visit={visit} />
+        {visit && !editing && isEditable && (canRecord || canConsult) ? (
+          <SheetFooter className="flex-row flex-wrap items-center justify-between gap-2 border-t">
+            <div>{isOpen && canRecord ? <CancelVisitDialog visit={visit} /> : null}</div>
+            <div className="flex flex-wrap items-center gap-2">
+              {canRecord ? (
+                <Button variant="outline" onClick={() => setEditing('record')}>
+                  <PencilIcon data-icon="inline-start" />
+                  {isOpen ? 'Record' : 'Correct record'}
+                </Button>
+              ) : null}
+              {canConsult ? (
+                <Button variant="outline" onClick={() => setEditing('consultation')}>
+                  <StethoscopeIcon data-icon="inline-start" />
+                  Consultation
+                </Button>
+              ) : null}
+              {isOpen ? <CompleteVisitDialog visit={visit} /> : null}
+            </div>
           </SheetFooter>
         ) : null}
       </SheetContent>

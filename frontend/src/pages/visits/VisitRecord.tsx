@@ -3,7 +3,8 @@ import type { ReactNode } from 'react'
 
 import type { PatientAlerts, Visit } from '@/api/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { formatTimeOfDay, humanize } from '@/lib/format'
+import { dispositionLabel } from '@/lib/status'
+import { MedicinesSection } from '@/pages/visits/MedicinesSection'
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -54,8 +55,14 @@ function vitalSigns(visit: Visit): [string, string][] {
   return signs.filter((sign): sign is [string, string] => sign[1] !== null)
 }
 
-/** Everything recorded on a visit, read-only: alerts, vital signs, the nurse's and the doctor's notes. */
-export function VisitRecord({ visit }: { visit: Visit }) {
+/** Everything recorded on a visit: alerts, vital signs, the nurse's and the doctor's notes, medicines. */
+type VisitRecordProps = {
+  visit: Visit
+  /** Show the form for releasing medicine and the means to undo a release. */
+  canReleaseMedicine?: boolean
+}
+
+export function VisitRecord({ visit, canReleaseMedicine = false }: VisitRecordProps) {
   const alerts = ALERT_LABELS.filter(([key]) => visit.patient_alerts[key])
   const vitals = vitalSigns(visit)
   const hasNurseRecord =
@@ -127,7 +134,7 @@ export function VisitRecord({ visit }: { visit: Visit }) {
               {visit.referred ? (visit.referral_details ?? 'Yes') : null}
             </Detail>
             <Detail label="Outcome">
-              {visit.disposition ? humanize(visit.disposition) : null}
+              {visit.disposition ? dispositionLabel(visit.disposition) : null}
             </Detail>
           </dl>
         ) : (
@@ -152,33 +159,7 @@ export function VisitRecord({ visit }: { visit: Visit }) {
       </Section>
 
       <Section title="Medicine released">
-        {visit.medicines.length === 0 ? (
-          <p className="text-sm text-muted-foreground">None.</p>
-        ) : (
-          <ul className="divide-y rounded-md border">
-            {visit.medicines.map((entry) => (
-              <li key={entry.id} className="flex items-start justify-between gap-3 px-3 py-2">
-                <div className="min-w-0">
-                  <p className="text-[15px] font-medium">
-                    {entry.medicine_name}{' '}
-                    <span className="font-normal text-muted-foreground tabular-nums">
-                      × {entry.quantity}
-                    </span>
-                  </p>
-                  {entry.instructions ? (
-                    <p className="text-sm text-muted-foreground">{entry.instructions}</p>
-                  ) : null}
-                </div>
-                <p className="shrink-0 text-right text-[13px] text-muted-foreground">
-                  {formatTimeOfDay(entry.dispensed_at)}
-                  {entry.dispensed_by_name ? (
-                    <span className="block">{entry.dispensed_by_name}</span>
-                  ) : null}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+        <MedicinesSection visit={visit} canRelease={canReleaseMedicine} />
       </Section>
     </div>
   )

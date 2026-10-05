@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </BrowserRouter>
         </LiveProvider>
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
