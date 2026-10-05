@@ -10,10 +10,14 @@ export type Page = {
 }
 
 export const DASHBOARD: Page = { path: '/', title: 'Clinic Main Menu' }
+export const CHECK_IN: Page = {
+  path: '/check-in',
+  title: 'Check-in / Walk-in',
+  permission: 'visits:record',
+}
 
 /** Screens that are planned but not built yet. They show a placeholder for now. */
 export const UPCOMING_PAGES: Page[] = [
-  { path: '/check-in', title: 'Check-in / Walk-in', permission: 'visits:record' },
   { path: '/visits', title: "Today's Visits", permission: 'visits:read' },
   { path: '/patients', title: 'Patients', permission: 'patients:read' },
   { path: '/patients/new', title: 'Register Patient', permission: 'patients:write' },
@@ -24,7 +28,7 @@ export const UPCOMING_PAGES: Page[] = [
   { path: '/notifications', title: 'Notifications' },
 ]
 
-export const PAGES: Page[] = [DASHBOARD, ...UPCOMING_PAGES]
+export const PAGES: Page[] = [DASHBOARD, CHECK_IN, ...UPCOMING_PAGES]
 
 /** The page a browser address belongs to, e.g. "/patients/12" belongs to "/patients". */
 export function pageFor(pathname: string): Page | undefined {

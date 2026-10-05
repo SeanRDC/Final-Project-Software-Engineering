@@ -1,7 +1,8 @@
 import { Route, Routes } from 'react-router'
 
 import { AppShell } from '@/layout/AppShell'
-import { UPCOMING_PAGES } from '@/layout/pages'
+import { CHECK_IN, UPCOMING_PAGES } from '@/layout/pages'
+import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
@@ -16,6 +17,14 @@ function App() {
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
+          <Route
+            path={CHECK_IN.path}
+            element={
+              <RequirePermission permission={CHECK_IN.permission}>
+                <CheckInPage />
+              </RequirePermission>
+            }
+          />
           {UPCOMING_PAGES.map((page) => (
             <Route
               key={page.path}
