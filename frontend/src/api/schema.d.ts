@@ -350,6 +350,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/visits/{visit_id}/vitals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a vital-signs reading for a patient kept for monitoring */
+        post: operations["add_vital_reading_api_v1_visits__visit_id__vitals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/visits/{visit_id}/vitals/{reading_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a wrongly recorded reading (FR-10) */
+        delete: operations["remove_vital_reading_api_v1_visits__visit_id__vitals__reading_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/appointments": {
         parameters: {
             query?: never;
@@ -1045,6 +1079,8 @@ export interface components {
             complaint: string;
             /** @default consultation */
             visit_type: components["schemas"]["VisitType"];
+            /** Visit Date */
+            visit_date?: string | null;
         };
         /** CompleteVisit */
         CompleteVisit: {
@@ -1749,6 +1785,11 @@ export interface components {
             visits_by_patient_type: components["schemas"]["CountItem"][];
             /** Visits By Type */
             visits_by_type: components["schemas"]["CountItem"][];
+            /**
+             * Visits By Type And Patient Type
+             * @default []
+             */
+            visits_by_type_and_patient_type: components["schemas"]["TypeByPatientType"][];
             /** Visits By Department */
             visits_by_department: components["schemas"]["CountItem"][];
             /** Visits By Month */
@@ -1838,6 +1879,15 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["CurrentUser"];
+        };
+        /** TypeByPatientType */
+        TypeByPatientType: {
+            /** Label */
+            label: string;
+            /** Students */
+            students: number;
+            /** Employees */
+            employees: number;
         };
         /** UserCreate */
         UserCreate: {
@@ -2029,6 +2079,8 @@ export interface components {
              */
             updated_at: string;
             patient_alerts: components["schemas"]["PatientAlerts"];
+            /** Vital Readings */
+            vital_readings: components["schemas"]["VitalReadingOut"][];
             lock?: components["schemas"]["LockInfo"] | null;
         };
         /** VisitRecordUpdate */
@@ -2102,6 +2154,49 @@ export interface components {
          * @enum {string}
          */
         VisitType: "consultation" | "medicine_request" | "treatment" | "medical_clearance" | "excuse_letter" | "follow_up" | "monitoring" | "other";
+        /** VitalReadingCreate */
+        VitalReadingCreate: {
+            /** Temperature C */
+            temperature_c?: number | null;
+            /** Bp Systolic */
+            bp_systolic?: number | null;
+            /** Bp Diastolic */
+            bp_diastolic?: number | null;
+            /** Pulse Rate */
+            pulse_rate?: number | null;
+            /** Respiratory Rate */
+            respiratory_rate?: number | null;
+            /** Oxygen Saturation */
+            oxygen_saturation?: number | null;
+            /** Note */
+            note?: string | null;
+        };
+        /** VitalReadingOut */
+        VitalReadingOut: {
+            /** Id */
+            id: number;
+            /**
+             * Taken At
+             * Format: date-time
+             */
+            taken_at: string;
+            /** Temperature C */
+            temperature_c: number | null;
+            /** Bp Systolic */
+            bp_systolic: number | null;
+            /** Bp Diastolic */
+            bp_diastolic: number | null;
+            /** Pulse Rate */
+            pulse_rate: number | null;
+            /** Respiratory Rate */
+            respiratory_rate: number | null;
+            /** Oxygen Saturation */
+            oxygen_saturation: number | null;
+            /** Note */
+            note: string | null;
+            /** Recorded By Name */
+            recorded_by_name: string | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -2935,6 +3030,73 @@ export interface operations {
             path: {
                 visit_id: number;
                 visit_medicine_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_vital_reading_api_v1_visits__visit_id__vitals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VitalReadingCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_vital_reading_api_v1_visits__visit_id__vitals__reading_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: number;
+                reading_id: number;
             };
             cookie?: never;
         };

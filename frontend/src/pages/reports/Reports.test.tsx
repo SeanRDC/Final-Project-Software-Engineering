@@ -38,6 +38,10 @@ const summary: ReportSummary = {
     { label: 'medicine_request', count: 4 },
   ],
   visits_by_department: [{ label: 'School of Computing', count: 5 }],
+  visits_by_type_and_patient_type: [
+    { label: 'consultation', students: 6, employees: 2 },
+    { label: 'medicine_request', students: 3, employees: 1 },
+  ],
   visits_by_month: [{ label: '2026-10', count: 12 }],
   visits_by_disposition: [{ label: 'sent_home', count: 3 }],
   top_complaints: [{ label: 'Headache', count: 4 }],
@@ -117,6 +121,17 @@ test('shows this month’s statistics by default, with readable labels', async (
     within(screen.getByRole('region', { name: 'Medicine released' })).getByText('24'),
   ).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Santos, Maria' })).toHaveAttribute('href', '/patients/1')
+})
+
+test('splits each type of request between students and employees', async () => {
+  clinic()
+  renderReports(nurse, '/reports')
+
+  const table = within(
+    await screen.findByRole('region', { name: 'Requests by students and employees' }),
+  )
+  expect(table.getByRole('row', { name: 'Consultation 6 2' })).toBeInTheDocument()
+  expect(table.getByRole('row', { name: 'Medicine request 3 1' })).toBeInTheDocument()
 })
 
 test('changes the period with a preset and keeps it in the address', async () => {

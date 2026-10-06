@@ -93,6 +93,40 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
 
       <div className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
         <CountTable title="Visits by type" what="Type" items={summary.visits_by_type} readable />
+        {summary.visits_by_type_and_patient_type.length > 0 ? (
+          <SectionCard title="Requests by students and employees">
+            <table className="w-full text-[15px]">
+              <thead>
+                <tr className="border-b text-[13px] text-muted-foreground">
+                  <th scope="col" className="py-2 pl-4 text-left font-medium">
+                    Type
+                  </th>
+                  <th scope="col" className="px-4 py-2 text-right font-medium">
+                    Students
+                  </th>
+                  <th scope="col" className="py-2 pr-4 text-right font-medium">
+                    Employees
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {summary.visits_by_type_and_patient_type.map((item) => (
+                  <tr key={item.label}>
+                    <th scope="row" className="w-full py-2 pl-4 text-left font-normal">
+                      {humanize(item.label)}
+                    </th>
+                    <td className="px-4 py-2 text-right font-medium tabular-nums">
+                      {item.students}
+                    </td>
+                    <td className="py-2 pr-4 text-right font-medium tabular-nums">
+                      {item.employees}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </SectionCard>
+        ) : null}
         <CountTable
           title="Visits by patient type"
           what="Patient type"
