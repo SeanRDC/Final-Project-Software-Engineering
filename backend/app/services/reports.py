@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models import Appointment, Medicine, Patient, Report, User, Visit, VisitMedicine
-from app.models.enums import VisitStatus
+from app.models.enums import PatientType, VisitStatus
 from app.schemas.support import (
     CountItem,
     FrequentVisitor,
@@ -18,6 +18,7 @@ from app.schemas.support import (
     ReportDetail,
     ReportOut,
     ReportSummary,
+    TypeByPatientType,
 )
 from app.services import audit
 from app.services.common import get_or_404
@@ -63,11 +64,15 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
     by_month, by_disposition, complaints, per_patient = (
         Counter(), Counter(), Counter(), Counter()
     )
+    type_by_patient_type: dict[str, Counter] = {}
     patients: dict[int, tuple] = {}
     referrals = guardian_notifications = 0
     for row in rows:
         by_patient_type[_label(row.patient_type)] += 1
         by_type[_label(row.visit_type)] += 1
+        type_by_patient_type.setdefault(_label(row.visit_type), Counter())[
+            _label(row.patient_type)
+        ] += 1
         by_department[_label(row.department)] += 1
         by_month[row.visit_date.strftime("%Y-%m")] += 1
         if row.disposition is not None:
@@ -101,6 +106,14 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
         unique_patients=len(per_patient),
         visits_by_patient_type=_items(by_patient_type),
         visits_by_type=_items(by_type),
+        visits_by_type_and_patient_type=[
+            TypeByPatientType(
+                label=label,
+                students=type_by_patient_type[label][PatientType.STUDENT.value],
+                employees=type_by_patient_type[label][PatientType.EMPLOYEE.value],
+            )
+            for label, _ in by_type.most_common()
+        ],
         visits_by_department=_items(by_department),
         visits_by_month=[CountItem(label=m, count=by_month[m]) for m in sorted(by_month)],
         visits_by_disposition=_items(by_disposition),
@@ -195,6 +208,14 @@ def to_csv(summary: ReportSummary, title: str = "Clinic summary report") -> str:
         writer.writerow([])
         writer.writerow([heading, "Count"])
         writer.writerows([item.label, item.count] for item in items)
+
+    if summary.visits_by_type_and_patient_type:
+        writer.writerow([])
+        writer.writerow(["Requests by students and employees", "Students", "Employees"])
+        writer.writerows(
+            [item.label, item.students, item.employees]
+            for item in summary.visits_by_type_and_patient_type
+        )
 
     writer.writerow([])
     writer.writerow(["Medicines released", "Quantity", "Unit"])

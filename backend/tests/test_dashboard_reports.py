@@ -41,6 +41,9 @@ def test_report_summary_statistics(nurse, doctor, coordinator, patient, medicine
     assert summary["unique_patients"] == 2
     assert counts("visits_by_patient_type") == {"student": 2, "employee": 1}
     assert counts("visits_by_type") == {"consultation": 2, "medicine_request": 1}
+    assert summary["visits_by_type_and_patient_type"] == [
+        {"label": "consultation", "students": 1, "employees": 1},
+        {"label": "medicine_request", "students": 1, "employees": 0}]
     assert counts("visits_by_department") == {"School of Computing": 2, "Registrar": 1}
     assert counts("top_complaints") == {"headache": 2, "dizziness": 1}
     assert counts("visits_by_disposition") == {"returned": 1, "referred": 1}
