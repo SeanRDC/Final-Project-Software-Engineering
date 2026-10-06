@@ -43,6 +43,8 @@ export type RequestOptions = {
   json?: unknown
   /** Sent as application/x-www-form-urlencoded, which the login route expects. */
   form?: Record<string, string>
+  /** Sent as multipart/form-data, for file uploads. */
+  formData?: FormData
   signal?: AbortSignal
 }
 
@@ -70,14 +72,18 @@ function readDetail(body: unknown, fallback: string): string {
   return fallback
 }
 
-export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', query, json, form, signal } = options
-  const headers = new Headers({ Accept: 'application/json' })
+/** Sends the request with the token and turns a refusal into an ApiError. */
+async function send(path: string, options: RequestOptions, accept: string): Promise<Response> {
+  const { method = 'GET', query, json, form, formData, signal } = options
+  const headers = new Headers({ Accept: accept })
   const sentToken = accessToken
   if (sentToken) headers.set('Authorization', `Bearer ${sentToken}`)
 
   let body: BodyInit | undefined
-  if (form) {
+  if (formData) {
+    // The browser sets the multipart content type itself, with the boundary.
+    body = formData
+  } else if (form) {
     body = new URLSearchParams(form)
   } else if (json !== undefined) {
     headers.set('Content-Type', 'application/json')
@@ -92,10 +98,8 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
     throw new ApiError(0, 'Cannot reach the clinic server. Check the connection and try again.')
   }
 
-  if (response.status === 204) return undefined as T
-
-  const payload: unknown = await response.json().catch(() => null)
   if (!response.ok) {
+    const payload: unknown = await response.json().catch(() => null)
     if (response.status === 401 && sentToken) unauthorizedHandler?.()
     throw new ApiError(
       response.status,
@@ -103,5 +107,41 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
       typeof payload === 'object' && payload !== null ? (payload as Record<string, unknown>) : {},
     )
   }
-  return payload as T
+  return response
+}
+
+export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await send(path, options, 'application/json')
+  if (response.status === 204) return undefined as T
+  return (await response.json().catch(() => null)) as T
+}
+
+export type Download = {
+  blob: Blob
+  /** The name the server gave the file, or the fallback passed in. */
+  filename: string
+}
+
+/** Fetches a file that needs the token, such as a CSV report or an attachment. */
+export async function apiDownload(
+  path: string,
+  fallbackName: string,
+  options: RequestOptions = {},
+): Promise<Download> {
+  const response = await send(path, options, '*/*')
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const named = /filename="?([^";]+)"?/i.exec(disposition)
+  return { blob: await response.blob(), filename: named?.[1] ?? fallbackName }
+}
+
+/** Hands a downloaded file to the browser to save. */
+export function saveDownload({ blob, filename }: Download): void {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
