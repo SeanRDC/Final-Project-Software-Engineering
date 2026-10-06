@@ -3,6 +3,7 @@ import { useRef, useState, type FormEvent } from 'react'
 
 import { ApiError } from '@/api/client'
 import { useAuth } from '@/auth/authContext'
+import { takeIdleSignOutNotice } from '@/auth/useIdleLogout'
 import { BrandLockup } from '@/components/BrandMark'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,8 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Set when the station signed itself out for being left unused.
+  const [wasIdle] = useState(takeIdleSignOutNotice)
   // Missing fields are pointed out only after the first attempt to sign in.
   const [wasSubmitted, setWasSubmitted] = useState(false)
 
@@ -64,6 +67,15 @@ export function LoginPage() {
 
             <form onSubmit={handleSubmit} className="mt-6" noValidate>
               <FieldGroup>
+                {wasIdle && !error ? (
+                  <Alert>
+                    <CircleAlertIcon />
+                    <AlertTitle>You were signed out</AlertTitle>
+                    <AlertDescription>
+                      This station was not used for an hour. Sign in again to continue.
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
                 {error ? (
                   <Alert variant="destructive">
                     <CircleAlertIcon />

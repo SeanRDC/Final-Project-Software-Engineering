@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router'
 
 import { useAuth } from '@/auth/authContext'
 import { useCan } from '@/auth/permissions'
+import { useIdleLogout } from '@/auth/useIdleLogout'
 import {
   Sheet,
   SheetContent,
@@ -24,6 +25,7 @@ export function AppShell() {
   const location = useLocation()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { user } = useAuth()
+  useIdleLogout()
   const allowed = useCan()
   const canSearch = allowed('patients:read')
   const title = pageFor(location.pathname)?.title ?? 'HAU-Sync'
