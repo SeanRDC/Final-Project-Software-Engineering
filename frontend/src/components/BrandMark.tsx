@@ -1,25 +1,25 @@
+import hauLogo from '@/assets/hau-logo.png'
 import { cn } from '@/lib/utils'
 
 type BrandMarkProps = {
   className?: string
 }
 
-/** The round "HAU" emblem next to the university name. */
+/** The seal of Holy Angel University, shown next to the university name. */
 export function BrandMark({ className }: BrandMarkProps) {
+  // The name is written beside the seal, so the image itself says nothing to a screen reader.
   return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        'flex size-10 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-accent font-serif text-[11px] font-bold tracking-wide text-primary',
-        className,
-      )}
-    >
-      HAU
-    </span>
+    <img
+      src={hauLogo}
+      alt=""
+      width={44}
+      height={44}
+      className={cn('size-11 shrink-0 object-contain', className)}
+    />
   )
 }
 
-/** Emblem with "Holy Angel University" and the system name beside it. */
+/** Seal with "Holy Angel University" and the system name beside it. */
 export function BrandLockup({ className }: BrandMarkProps) {
   return (
     <div translate="no" className={cn('flex items-center gap-3', className)}>
