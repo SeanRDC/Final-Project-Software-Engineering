@@ -4,6 +4,7 @@ import type { CountItem, ReportSummary } from '@/api/types'
 import { useCan } from '@/auth/permissions'
 import { SectionCard } from '@/components/SectionCard'
 import { humanize } from '@/lib/format'
+import { VisitsByMonthChart } from '@/pages/reports/VisitsByMonthChart'
 
 function Tile({ label, value }: { label: string; value: number }) {
   return (
@@ -24,7 +25,7 @@ type CountTableProps = {
   empty?: string
 }
 
-/** A breakdown as a two-column table: what, and how many. */
+/** A breakdown as a two-column table: what, and how many, with a bar under each name. */
 function CountTable({
   title,
   what,
@@ -32,6 +33,9 @@ function CountTable({
   readable = false,
   empty = 'Nothing in this period.',
 }: CountTableProps) {
+  // Every bar in a table is measured against its largest count.
+  const max = Math.max(1, ...items.map((item) => item.count))
+
   return (
     <SectionCard title={title}>
       {items.length === 0 ? (
@@ -47,10 +51,21 @@ function CountTable({
           <tbody className="divide-y">
             {items.map((item) => (
               <tr key={item.label}>
-                <th scope="row" className="px-4 py-2 text-left font-normal">
+                <th scope="row" className="w-full py-2 pl-4 text-left font-normal">
                   {readable ? humanize(item.label) : item.label}
+                  <span aria-hidden="true" className="mt-1.5 block h-2">
+                    <span
+                      className="block h-full rounded-r-sm bg-chart-1"
+                      style={{
+                        width: `${(item.count / max) * 100}%`,
+                        minWidth: item.count > 0 ? 2 : 0,
+                      }}
+                    />
+                  </span>
                 </th>
-                <td className="px-4 py-2 text-right font-medium tabular-nums">{item.count}</td>
+                <td className="px-4 py-2 text-right align-top font-medium tabular-nums">
+                  {item.count}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -74,8 +89,44 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
         <Tile label="Guardians notified" value={summary.guardian_notifications} />
       </dl>
 
+      <VisitsByMonthChart items={summary.visits_by_month} />
+
       <div className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
         <CountTable title="Visits by type" what="Type" items={summary.visits_by_type} readable />
+        {summary.visits_by_type_and_patient_type.length > 0 ? (
+          <SectionCard title="Requests by students and employees">
+            <table className="w-full text-[15px]">
+              <thead>
+                <tr className="border-b text-[13px] text-muted-foreground">
+                  <th scope="col" className="py-2 pl-4 text-left font-medium">
+                    Type
+                  </th>
+                  <th scope="col" className="px-4 py-2 text-right font-medium">
+                    Students
+                  </th>
+                  <th scope="col" className="py-2 pr-4 text-right font-medium">
+                    Employees
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {summary.visits_by_type_and_patient_type.map((item) => (
+                  <tr key={item.label}>
+                    <th scope="row" className="w-full py-2 pl-4 text-left font-normal">
+                      {humanize(item.label)}
+                    </th>
+                    <td className="px-4 py-2 text-right font-medium tabular-nums">
+                      {item.students}
+                    </td>
+                    <td className="py-2 pr-4 text-right font-medium tabular-nums">
+                      {item.employees}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </SectionCard>
+        ) : null}
         <CountTable
           title="Visits by patient type"
           what="Patient type"
@@ -93,7 +144,6 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
           what="Department"
           items={summary.visits_by_department}
         />
-        <CountTable title="Visits by month" what="Month" items={summary.visits_by_month} />
         <CountTable
           title="Most common complaints"
           what="Complaint"

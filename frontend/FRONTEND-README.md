@@ -36,7 +36,9 @@ npm install
 npm run dev
 ```
 
-The app opens at `http://localhost:5173`. The dev server forwards every request under `/api`, including the WebSocket, to the backend, so no CORS setup is needed in development. To use a backend on another address:
+The app opens at `http://localhost:5173`. The dev server forwards every request under `/api`, including the WebSocket, to the backend, so no CORS setup is needed in development. At the clinic there is no dev server: the backend serves the files built by `npm run build` (see "Running at the clinic" in `backend/BACKEND-README.md`).
+
+To use a backend on another address:
 
 ```powershell
 $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
@@ -118,6 +120,8 @@ The baseline shows a live queue with ticket numbers, an Urgent flag, Intake / Qu
 - **The filter is in the address** (`/visits?status=open`), so it survives a reload and opening a visit.
 - **A visit has its own address** (`/visits/14`) and opens in a panel over the log. Dashboard cards and a successful check-in lead there.
 - **Patient alerts** (allergies, conditions, restrictions) are shown first in every visit record.
+- **Common complaints are one tap** under the complaint box (`src/lib/quickPicks.ts`); several can be combined and the text stays editable.
+- **A visit written on paper can be entered later** by changing "Date of visit". A late entry is not in today's log; it is reached from the patient's visit history.
 - **Reading a visit is audited** by the server each time the panel loads it.
 
 ## Recording a Visit
@@ -136,6 +140,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Validation mirrors the API.** Vital sign limits are the ones in `backend/app/schemas/visit.py`; half a blood pressure reading is refused.
 - **Stock.** A medicine with nothing on hand cannot be chosen and a quantity above the stock is refused before it is sent. The server makes the final check when it deducts the stock.
 - **After completion** a visit can still be corrected, as the clinic requires. A cancelled visit offers no actions.
+- **Monitoring.** `MonitoringSection` lists the vital signs taken again while a patient rests (`POST` and `DELETE /visits/{id}/vitals`), oldest first, with who took them. It needs `visits:record`; the doctor reads them.
 - **Unsaved changes.** Closing the panel with an edited form asks before discarding it.
 
 ## Patients
@@ -174,6 +179,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Dates are checked against the clinic's day** as the server reports it (`useClinicToday`), not the station's clock.
 - **The API has no route for one appointment**, so the edit screen finds it in its day's list (`?date=` in the address).
 - **Cancelled appointments** are left out of a day's schedule by the server.
+- **Usual reasons are suggested** as the reason is typed (medical clearance for OJT, an off-campus activity or varsity).
 
 ## Inventory and Release Log
 
@@ -204,9 +210,11 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 | Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
 
 - **The period is in the address** (`/reports?from=2026-08-01&to=2026-12-15`); it starts on the current month.
+- **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
-- The figures are shown as tables. Charts are not built.
+- **Requests by students and employees** is its own table, the tally the clinic submits each term.
+- **Charts.** Visits by month is a column chart (`VisitsByMonthChart`), drawn when the period covers two months or more; months without visits are filled in as zero. Each breakdown table has a bar under every name, measured against the table's largest count. Both are plain HTML and CSS in one colour (`--chart-1`), so no chart library is loaded, and every figure stays in a table for screen readers.
 
 ## Accounts and Passwords
 
@@ -240,6 +248,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 ## Sessions and Permissions
 
 - The token is kept in `sessionStorage`, so it lasts for the browser tab only. The stations are shared, and closing the tab signs the person out.
+- A station left untouched for an hour signs itself out (`useIdleLogout`), with a warning a minute before. The sign-in page says why.
 - Signing out clears every cached response, so one account's patient data is never shown to the next.
 - The server enforces permissions. The client uses the list returned at login only to hide what would be refused (`src/auth/permissions.ts`).
 

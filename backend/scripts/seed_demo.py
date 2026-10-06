@@ -1,7 +1,8 @@
 # Command-line tool that fills an empty development database with made-up demo data.
 
+import random
 import sys
-from datetime import date, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 
 from sqlalchemy import func, select
 
@@ -9,7 +10,7 @@ from app.core.clock import clinic_today, utcnow
 from app.core.permissions import Role
 from app.db.session import SessionLocal
 from app.models import Patient, User, Visit
-from app.models.enums import PatientType, Sex, VisitType
+from app.models.enums import PatientType, Sex, VisitDisposition, VisitType
 from app.schemas.appointment import AppointmentCreate
 from app.schemas.inventory import MedicineCreate
 from app.schemas.patient import PatientCreate
@@ -59,6 +60,49 @@ MEDICINES = [
     ("Oral Rehydration Salts", "", "sachet", 12, 15),
     ("Salbutamol Nebule", "2.5 mg", "nebule", 30, 10),
 ]
+
+# Past visits, so the reports and their charts have a trend to show. Each entry is
+# (months before the current one, number of visits); the quiet month is a term break.
+HISTORY = [(8, 14), (7, 22), (6, 31), (5, 18), (4, 9), (3, 0), (2, 6), (1, 27)]
+# Weighted the way the clinic described its days: headaches, dizziness and colds first.
+PAST_COMPLAINTS = (
+    ["Headache"] * 6 + ["Dizziness"] * 4 + ["Colds"] * 4 + ["Fever"] * 3
+    + ["Stomach ache"] * 2 + ["Wound", "Sprain", "Toothache"]
+)
+PAST_TYPES = (
+    [VisitType.CONSULTATION] * 5 + [VisitType.MEDICINE_REQUEST] * 3
+    + [VisitType.TREATMENT] * 2 + [VisitType.EXCUSE_LETTER, VisitType.MEDICAL_CLEARANCE]
+)
+PAST_OUTCOMES = (
+    [VisitDisposition.RETURNED] * 7 + [VisitDisposition.SENT_HOME] * 2
+    + [VisitDisposition.REFERRED]
+)
+
+
+def seed_history(db, people: dict, nurse: User, today: date) -> None:
+    """Completed visits in the months before this one, entered the way a late entry is."""
+    rng = random.Random(2026)
+    patients_ = list(people.values())
+    for months_ago, count in HISTORY:
+        first_of_month = date(today.year, today.month, 1)
+        for _ in range(months_ago):
+            first_of_month = (first_of_month - timedelta(days=1)).replace(day=1)
+        for _ in range(count):
+            day = first_of_month + timedelta(days=rng.randrange(28))
+            outcome = rng.choice(PAST_OUTCOMES)
+            visit = visits.check_in(db, CheckIn(
+                patient_id=rng.choice(patients_).id, complaint=rng.choice(PAST_COMPLAINTS),
+                visit_type=rng.choice(PAST_TYPES), visit_date=day), nurse)
+            visits.update_record(db, visit.id, VisitRecordUpdate(
+                referred=outcome is VisitDisposition.REFERRED,
+                guardian_notified=outcome is VisitDisposition.SENT_HOME), nurse)
+            visits.complete(db, visit.id, CompleteVisit(disposition=outcome), nurse)
+            # Mid-morning in the clinic on that day, not the moment the seed ran.
+            arrived = datetime(day.year, day.month, day.day, 2, rng.randrange(60),
+                               tzinfo=timezone.utc)
+            visit.checked_in_at = arrived
+            visit.completed_at = arrived + timedelta(minutes=rng.randrange(10, 40))
+            db.commit()
 
 
 def main() -> int:
@@ -144,6 +188,8 @@ def main() -> int:
         appointments.create(db, AppointmentCreate(
             patient_id=people["Garcia"].id, scheduled_date=today + timedelta(days=1),
             start_time=time(9, 0), end_time=time(9, 30), reason="Follow-up check"), nurse)
+
+        seed_history(db, people, nurse, today)
 
         visit_count = db.scalar(select(func.count()).select_from(Visit))
 

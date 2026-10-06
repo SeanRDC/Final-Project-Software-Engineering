@@ -12,7 +12,7 @@ from app.models.support import (
     Report,
 )
 from app.models.user import User
-from app.models.visit import Visit, VisitMedicine
+from app.models.visit import Visit, VisitMedicine, VisitVitalReading
 
 __all__ = [
     "Appointment",
@@ -28,4 +28,5 @@ __all__ = [
     "User",
     "Visit",
     "VisitMedicine",
+    "VisitVitalReading",
 ]

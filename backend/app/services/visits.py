@@ -8,7 +8,15 @@ from sqlalchemy.orm import Session
 from app.core.clock import clinic_today, utcnow
 from app.core.exceptions import AppError, ConflictError, NotFoundError
 from app.core.permissions import Role
-from app.models import Appointment, Medicine, Patient, User, Visit, VisitMedicine
+from app.models import (
+    Appointment,
+    Medicine,
+    Patient,
+    User,
+    Visit,
+    VisitMedicine,
+    VisitVitalReading,
+)
 from app.models.enums import AppointmentStatus, StockMovementType, VisitStatus
 from app.schemas.visit import (
     CancelVisit,
@@ -19,6 +27,7 @@ from app.schemas.visit import (
     LockInfo,
     VisitOut,
     VisitRecordUpdate,
+    VitalReadingCreate,
 )
 from app.services import audit, inventory, locks
 from app.services.common import apply_updates, get_or_404, paginate
@@ -51,23 +60,27 @@ def check_in(
     if patient.is_archived:
         raise AppError("This patient record is archived. Restore it before checking in.")
     today = clinic_today()
+    visit_date = data.visit_date or today
+    if visit_date > today:
+        raise AppError("A visit cannot be logged for a date that has not come yet.")
 
     open_visit_id = db.scalar(
         select(Visit.id).where(
             Visit.patient_id == patient.id,
-            Visit.visit_date == today,
+            Visit.visit_date == visit_date,
             Visit.status == VisitStatus.OPEN,
         )
     )
     if open_visit_id is not None:
+        when = "today" if visit_date == today else f"on {visit_date:%B %d, %Y}"
         raise ConflictError(
-            f"{patient.full_name} already has an open visit today", visit_id=open_visit_id
+            f"{patient.full_name} already has an open visit {when}", visit_id=open_visit_id
         )
 
     visit = Visit(
         patient_id=patient.id,
         appointment_id=appointment.id if appointment else None,
-        visit_date=today,
+        visit_date=visit_date,
         status=VisitStatus.OPEN,
         visit_type=data.visit_type,
         complaint=data.complaint.strip(),
@@ -78,7 +91,9 @@ def check_in(
     db.flush()
     if appointment is not None:
         appointment.status = AppointmentStatus.CHECKED_IN
-    audit.record(db, actor, "visit.check_in", "visit", visit.id, patient_id=patient.id)
+    # checked_in_at keeps the real entry time, so a late entry is recorded as one.
+    late = {"entered_late_for": str(visit_date)} if visit_date < today else {}
+    audit.record(db, actor, "visit.check_in", "visit", visit.id, patient_id=patient.id, **late)
     db.commit()
     return visit
 
@@ -247,5 +262,32 @@ def undo_dispense(db: Session, visit_id: int, visit_medicine_id: int, actor: Use
                  medicine=item.medicine_name, quantity=item.quantity)
     visit.medicines.remove(item)
     db.delete(item)
+    db.commit()
+    return visit
+
+
+def add_vital_reading(
+    db: Session, visit_id: int, data: VitalReadingCreate, actor: User
+) -> Visit:
+    visit = _get(db, visit_id)
+    if visit.status == VisitStatus.CANCELLED:
+        raise ConflictError("Readings cannot be added to a cancelled visit")
+    values = data.model_dump(exclude_none=True)
+    visit.vital_readings.append(VisitVitalReading(**values, recorded_by_id=actor.id))
+    audit.record(db, actor, "visit.vitals_add", "visit", visit.id,
+                 fields=sorted(values.keys() - {"note"}))
+    db.commit()
+    return visit
+
+
+def remove_vital_reading(db: Session, visit_id: int, reading_id: int, actor: User) -> Visit:
+    visit = _get(db, visit_id)
+    reading = db.get(VisitVitalReading, reading_id)
+    if reading is None or reading.visit_id != visit.id:
+        raise NotFoundError("That reading does not belong to this visit")
+    audit.record(db, actor, "visit.vitals_remove", "visit", visit.id,
+                 taken_at=reading.taken_at.isoformat())
+    visit.vital_readings.remove(reading)
+    db.delete(reading)
     db.commit()
     return visit

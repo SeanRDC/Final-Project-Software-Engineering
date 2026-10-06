@@ -1,5 +1,8 @@
 # Tests for the patient log, visit records and the doctor's consultation notes.
 
+from datetime import timedelta
+
+from app.core.clock import clinic_today
 from tests.conftest import check_in
 
 
@@ -24,6 +27,26 @@ def test_patient_cannot_have_two_open_visits(nurse, patient):
     again = nurse.post("/visits", json={"patient_id": patient["id"], "complaint": "Fever"})
     assert again.status_code == 409
     assert again.json()["visit_id"] == first["id"]
+
+
+def test_a_visit_written_on_paper_can_be_entered_for_an_earlier_date(nurse, coordinator, patient):
+    yesterday = clinic_today() - timedelta(days=1)
+    late = check_in(nurse, patient["id"], visit_date=str(yesterday))
+    assert late["visit_date"] == str(yesterday)
+    assert late["id"] not in [v["id"] for v in nurse.get("/visits/today").json()]
+
+    # An open visit on another day does not block today's check-in.
+    assert check_in(nurse, patient["id"])["visit_date"] == str(clinic_today())
+
+    entry = coordinator.get("/audit-logs", params={"action": "visit.check_in"}).json()["items"][-1]
+    assert str(yesterday) in str(entry)
+
+
+def test_a_visit_cannot_be_logged_for_a_future_date(nurse, patient):
+    tomorrow = clinic_today() + timedelta(days=1)
+    response = nurse.post("/visits", json={
+        "patient_id": patient["id"], "complaint": "Fever", "visit_date": str(tomorrow)})
+    assert response.status_code == 400
 
 
 def test_todays_log_lists_open_visits_in_arrival_order_then_completed(nurse, patient):
@@ -137,3 +160,33 @@ def test_vital_signs_are_validated(nurse, patient):
     assert nurse.patch(f"/visits/{visit['id']}", json={"temperature_c": 98.6}).status_code == 422
     assert nurse.patch(f"/visits/{visit['id']}",
                        json={"oxygen_saturation": 140}).status_code == 422
+
+
+def test_monitoring_readings_are_kept_in_order_and_can_be_corrected(nurse, doctor, patient):
+    visit = check_in(nurse, patient["id"], visit_type="monitoring")
+    first = nurse.post(f"/visits/{visit['id']}/vitals", json={
+        "temperature_c": 38.6, "pulse_rate": 104, "note": "Resting in the ward"})
+    assert first.status_code == 201
+    second = nurse.post(f"/visits/{visit['id']}/vitals", json={"temperature_c": 37.4})
+    readings = second.json()["vital_readings"]
+    assert [r["temperature_c"] for r in readings] == [38.6, 37.4]
+    assert readings[0]["recorded_by_name"] == "Reyes, Ana"
+    assert readings[0]["note"] == "Resting in the ward"
+
+    # The doctor reads them with the rest of the visit.
+    assert len(doctor.get(f"/visits/{visit['id']}").json()["vital_readings"]) == 2
+
+    removed = nurse.delete(f"/visits/{visit['id']}/vitals/{readings[0]['id']}")
+    assert [r["temperature_c"] for r in removed.json()["vital_readings"]] == [37.4]
+    assert nurse.delete(f"/visits/{visit['id']}/vitals/{readings[0]['id']}").status_code == 404
+
+
+def test_monitoring_reading_rules(nurse, doctor, patient):
+    visit = check_in(nurse, patient["id"])
+    path = f"/visits/{visit['id']}/vitals"
+    assert nurse.post(path, json={"note": "No values"}).status_code == 422
+    assert nurse.post(path, json={"temperature_c": 60}).status_code == 422
+    assert doctor.post(path, json={"temperature_c": 37}).status_code == 403
+
+    nurse.post(f"/visits/{visit['id']}/cancel")
+    assert nurse.post(path, json={"temperature_c": 37}).status_code == 409

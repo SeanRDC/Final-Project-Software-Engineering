@@ -1,8 +1,9 @@
 # Request and response schemas for visits, consultations and medicine releases.
 
 from datetime import date, datetime
+from typing import Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.models.enums import VisitDisposition, VisitStatus, VisitType
 from app.schemas.common import OptionalText, ORMModel
@@ -13,6 +14,8 @@ class CheckIn(BaseModel):
     patient_id: int
     complaint: str = Field(min_length=1)
     visit_type: VisitType = VisitType.CONSULTATION
+    # A past date, for a visit written on paper and entered later. Today when left out.
+    visit_date: date | None = None
 
 
 class AppointmentCheckIn(BaseModel):
@@ -60,6 +63,36 @@ class DispenseMedicine(BaseModel):
     medicine_id: int
     quantity: int = Field(gt=0, le=1000)
     instructions: OptionalText = Field(default=None, max_length=255)
+
+
+class VitalReadingCreate(BaseModel):
+    temperature_c: float | None = Field(default=None, ge=30, le=45)
+    bp_systolic: int | None = Field(default=None, ge=40, le=300)
+    bp_diastolic: int | None = Field(default=None, ge=20, le=200)
+    pulse_rate: int | None = Field(default=None, ge=20, le=250)
+    respiratory_rate: int | None = Field(default=None, ge=5, le=80)
+    oxygen_saturation: int | None = Field(default=None, ge=50, le=100)
+    note: OptionalText = Field(default=None, max_length=255)
+
+    @model_validator(mode="after")
+    def _has_a_reading(self) -> Self:
+        values = self.model_dump(exclude={"note"})
+        if all(value is None for value in values.values()):
+            raise ValueError("Enter at least one vital sign")
+        return self
+
+
+class VitalReadingOut(ORMModel):
+    id: int
+    taken_at: datetime
+    temperature_c: float | None
+    bp_systolic: int | None
+    bp_diastolic: int | None
+    pulse_rate: int | None
+    respiratory_rate: int | None
+    oxygen_saturation: int | None
+    note: str | None
+    recorded_by_name: str | None
 
 
 class VisitMedicineOut(ORMModel):
@@ -121,4 +154,5 @@ class VisitOut(VisitListItem):
     cancelled_reason: str | None
     updated_at: datetime
     patient_alerts: PatientAlerts
+    vital_readings: list[VitalReadingOut]
     lock: LockInfo | None = None

@@ -15,7 +15,8 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatDuration, formatTimeOfDay, humanize } from '@/lib/format'
+import { formatDuration, formatTimeOfDay, humanize, parseDay } from '@/lib/format'
+import { useClinicToday } from '@/lib/useClinicToday'
 import { useNow } from '@/lib/useNow'
 import { describePatient, visitState } from '@/lib/visitState'
 import { CancelVisitDialog } from '@/pages/visits/CancelVisitDialog'
@@ -54,6 +55,7 @@ export function VisitPanel() {
 
   const notFound = visitId === null || (error instanceof ApiError && error.status === 404)
   const canRecord = allowed('visits:record')
+  const today = useClinicToday()
   const canConsult = allowed('visits:consult')
   // A completed visit can still be corrected; a cancelled one is closed for good.
   const isEditable = visit !== undefined && visit.status !== 'cancelled'
@@ -85,6 +87,10 @@ export function VisitPanel() {
                   </>
                 ) : null}
                 <br />
+                {/* A visit entered late belongs to another day, which the times alone do not show. */}
+                {visit.visit_date === today
+                  ? ''
+                  : `Visit of ${parseDay(visit.visit_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · `}
                 {humanize(visit.visit_type)} · checked in {formatTimeOfDay(visit.checked_in_at)}
                 {visit.status === 'cancelled'
                   ? ''
@@ -128,6 +134,7 @@ export function VisitPanel() {
             <VisitRecord
               visit={visit}
               canReleaseMedicine={isEditable && allowed('medicines:dispense')}
+              canAddReadings={isEditable && canRecord}
             />
           ) : null}
         </div>

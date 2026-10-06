@@ -56,6 +56,12 @@ class CountItem(BaseModel):
     count: int
 
 
+class TypeByPatientType(BaseModel):
+    label: str
+    students: int
+    employees: int
+
+
 class FrequentVisitor(BaseModel):
     patient_id: int
     id_number: str
@@ -78,6 +84,8 @@ class ReportSummary(BaseModel):
     unique_patients: int
     visits_by_patient_type: list[CountItem]
     visits_by_type: list[CountItem]
+    # Empty in reports saved before this breakdown existed.
+    visits_by_type_and_patient_type: list[TypeByPatientType] = []
     visits_by_department: list[CountItem]
     visits_by_month: list[CountItem]
     visits_by_disposition: list[CountItem]

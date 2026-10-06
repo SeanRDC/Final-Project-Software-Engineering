@@ -45,6 +45,7 @@ export function visitRecord(overrides: Partial<Visit> = {}): Visit {
       activity_restrictions: 'No strenuous physical activity',
     },
     lock: null,
+    vital_readings: [],
     ...overrides,
   }
 }

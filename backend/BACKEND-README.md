@@ -98,7 +98,7 @@ For a demo or for frontend development, fill an empty database with made-up data
 python -m scripts.seed_demo
 ```
 
-This creates the accounts `coordinator`, `nurse`, `assistant` and `doctor`, all with the password `hau-sync-demo`. Never run it against the clinic's real database.
+This creates the accounts `coordinator`, `nurse`, `assistant` and `doctor`, all with the password `hau-sync-demo`, today's visits and appointments, and about eight months of past visits so the reports have a trend. Never run it against the clinic's real database.
 
 ### Run the server
 
@@ -109,7 +109,22 @@ uvicorn main:app --host 0.0.0.0 --port 8000    # clinic LAN, reachable by the st
 
 Interactive API documentation is at `http://localhost:8000/docs`. Click **Authorize** and log in to try the endpoints.
 
-When serving the LAN, set `DEBUG=False` and list the frontend's addresses in `CORS_ORIGINS`. The server refuses to start with `DEBUG=False` and the placeholder `SECRET_KEY`.
+When serving the LAN, set `DEBUG=False`. The server refuses to start with `DEBUG=False` and the placeholder `SECRET_KEY`.
+
+### Running at the clinic
+
+The backend serves the built frontend, so the clinic has one address for the whole system and no second server to run. When `frontend/dist` exists (`npm run build`, or `FRONTEND_DIST` for another folder), every address that is not the API opens the app; without a build the backend is the API alone, as in development.
+
+First time, on the clinic's server computer:
+
+1. Install Python 3.10 or higher, and Node.js 20.19 or higher to build the screens.
+2. Copy `backend/.env.example` to `backend/.env`. Set `SECRET_KEY` to a long random value and `DEBUG=False`.
+3. Double-click `start-clinic.bat` in the project folder. It installs the backend's packages, builds the screens, creates the database tables and starts the system.
+4. In a second window, create the coordinator's account once: `.venv\Scripts\python.exe -m scripts.create_admin --username coordinator --name "Last name, First name"`.
+
+Every day after that, double-click `start-clinic.bat` and keep its window open. It prints the address for the stations, for example `http://192.168.1.10:8000`. If a station cannot open it, allow the port through Windows Firewall on the server computer.
+
+After an update of the code, run `.\start-clinic.ps1 -Rebuild` once so the screens are built again. The script applies database migrations on every start; take a backup first (see Operations).
 
 ### Run the tests
 
@@ -167,7 +182,7 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Authentication | `POST /auth/login`, `GET /auth/me`, `POST /auth/change-password` |
 | Users | `GET /users`, `POST /users`, `PATCH /users/{id}`, `POST /users/{id}/reset-password` |
 | Patients | `GET /patients` (search), `POST /patients`, `GET /patients/{id}`, `PATCH /patients/{id}`, `POST /patients/{id}/archive`, `POST /patients/{id}/restore`, `GET /patients/{id}/visits` |
-| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/cancel` |
+| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/cancel`, `POST /visits/{id}/vitals`, `DELETE /visits/{id}/vitals/{reading_id}` |
 | Medicine release | `POST /visits/{id}/medicines`, `DELETE /visits/{id}/medicines/{entry_id}` |
 | Appointments | `GET /appointments`, `GET /appointments/today`, `GET /appointments/calendar`, `POST /appointments`, `PATCH /appointments/{id}`, `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` |
 | Inventory | `GET /inventory/medicines`, `POST /inventory/medicines`, `PATCH /inventory/medicines/{id}`, `POST /inventory/medicines/{id}/stock-in`, `/adjust`, `GET /inventory/low-stock`, `GET /inventory/movements` (release log with `movement_type=release`) |
@@ -262,6 +277,7 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 | `patients` | Demographics, guardian, allergies, conditions, restrictions |
 | `visits` | One row per clinic visit: log entry, vital signs, nurse record, doctor's consultation |
 | `visit_medicines` | Medicines given during a visit |
+| `visit_vital_readings` | Vital signs taken again while a patient is monitored |
 | `appointments` | Scheduled appointments and the coordinator's decision |
 | `medicines` | Inventory items with quantity and low-stock threshold |
 | `stock_movements` | Every stock change; release rows are the release log |
@@ -339,6 +355,9 @@ These follow the project paper, the interview with the clinic and the dashboard 
 - **A low-stock alert fires once**, when a release takes the quantity to or below the threshold. `GET /inventory/low-stock` always lists every medicine currently low.
 - **Visits are a plain log.** A visit is an entry that is open or completed, with no waiting-line numbers, priority flag or room assignment. The doctor adds notes to the visit directly.
 - **One open visit per patient.** A second check-in while a visit is still open is rejected.
+- **Late entries.** `POST /visits` takes an optional `visit_date` for a visit written on paper and entered later. It may not be in the future, `checked_in_at` keeps the real entry time, and the audit entry records `entered_late_for`.
+- **Monitoring readings.** The first vital signs stay on the visit. Readings taken later, for a patient resting in a ward, are separate timed rows, so the record shows how the patient changed.
+- **The report splits each type of request by students and employees** (`visits_by_type_and_patient_type`), the tally the clinic submits every semester. Reports saved before this was added show it as empty.
 - **Saved reports are snapshots.** `POST /reports` stores the figures at generation time so a submitted report does not change. `GET /reports/summary` always computes live figures.
 - **Times.** Timestamps are stored in UTC. "Today" and report periods follow `TIMEZONE` (default `Asia/Manila`).
 

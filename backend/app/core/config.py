@@ -35,6 +35,9 @@ class Settings(BaseSettings):
 
     BACKUP_DIR: str = "./data/backups"
 
+    # The built frontend (npm run build). Served by the backend when the folder exists.
+    FRONTEND_DIST: str = "../frontend/dist"
+
     @field_validator("DATABASE_URL")
     @classmethod
     def _use_psycopg3_driver(cls, value: str) -> str:
@@ -66,6 +69,10 @@ class Settings(BaseSettings):
     @property
     def backup_dir(self) -> Path:
         return self.resolve_path(self.BACKUP_DIR)
+
+    @property
+    def frontend_dist(self) -> Path:
+        return self.resolve_path(self.FRONTEND_DIST)
 
     @property
     def sqlite_path(self) -> Path | None:

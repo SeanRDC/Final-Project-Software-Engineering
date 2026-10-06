@@ -1,4 +1,4 @@
-# Entry point that creates the HAU-Sync FastAPI application and mounts the API routes.
+# Entry point that creates the HAU-Sync FastAPI application, mounts the API routes and serves the built frontend.
 
 import logging
 
@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import __version__
+from app.api.frontend import mount_frontend
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.exceptions import AppError
@@ -50,6 +51,9 @@ async def handle_app_error(_: Request, exc: AppError) -> JSONResponse:
 app.include_router(api_router, prefix=settings.API_PREFIX)
 
 
-@app.get("/", include_in_schema=False)
-def root() -> dict[str, str]:
-    return {"name": settings.APP_NAME, "version": __version__, "docs": "/docs"}
+# With a frontend build present the app itself answers at "/"; otherwise the API says what it is.
+if not mount_frontend(app, settings.frontend_dist):
+
+    @app.get("/", include_in_schema=False)
+    def root() -> dict[str, str]:
+        return {"name": settings.APP_NAME, "version": __version__, "docs": "/docs"}
