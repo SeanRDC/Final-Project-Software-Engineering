@@ -11,6 +11,8 @@ os.environ["BACKUP_DIR"] = str(_TMP / "backups")
 os.environ["SECRET_KEY"] = "test-secret-key-that-is-long-enough-for-hs256"
 os.environ["DEBUG"] = "True"
 os.environ["MAX_UPLOAD_MB"] = "1"
+# The API is tested on its own, whether or not a frontend build is lying around.
+os.environ["FRONTEND_DIST"] = str(_TMP / "no-frontend")
 
 import pytest
 from fastapi.testclient import TestClient
