@@ -207,7 +207,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
-- The figures are shown as tables. Charts are not built.
+- **Charts.** Visits by month is a column chart (`VisitsByMonthChart`), drawn when the period covers two months or more; months without visits are filled in as zero. Each breakdown table has a bar under every name, measured against the table's largest count. Both are plain HTML and CSS in one colour (`--chart-1`), so no chart library is loaded, and every figure stays in a table for screen readers.
 
 ## Accounts and Passwords
 
