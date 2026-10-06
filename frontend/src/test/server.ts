@@ -42,7 +42,9 @@ export function fakeServer(routes: Record<string, Handler> = {}): FakeServer {
         typeof match.handler === 'function'
           ? (match.handler as (request: { url: URL; init: RequestInit }) => unknown)({ url, init })
           : match.handler
-      return Promise.resolve(new Response(JSON.stringify(body), { status: match.status }))
+      // A 204 has no body; giving it one makes the Response constructor throw.
+      const content = match.status === 204 ? null : JSON.stringify(body)
+      return Promise.resolve(new Response(content, { status: match.status }))
     }),
   )
 
