@@ -51,23 +51,27 @@ def check_in(
     if patient.is_archived:
         raise AppError("This patient record is archived. Restore it before checking in.")
     today = clinic_today()
+    visit_date = data.visit_date or today
+    if visit_date > today:
+        raise AppError("A visit cannot be logged for a date that has not come yet.")
 
     open_visit_id = db.scalar(
         select(Visit.id).where(
             Visit.patient_id == patient.id,
-            Visit.visit_date == today,
+            Visit.visit_date == visit_date,
             Visit.status == VisitStatus.OPEN,
         )
     )
     if open_visit_id is not None:
+        when = "today" if visit_date == today else f"on {visit_date:%B %d, %Y}"
         raise ConflictError(
-            f"{patient.full_name} already has an open visit today", visit_id=open_visit_id
+            f"{patient.full_name} already has an open visit {when}", visit_id=open_visit_id
         )
 
     visit = Visit(
         patient_id=patient.id,
         appointment_id=appointment.id if appointment else None,
-        visit_date=today,
+        visit_date=visit_date,
         status=VisitStatus.OPEN,
         visit_type=data.visit_type,
         complaint=data.complaint.strip(),
@@ -78,7 +82,9 @@ def check_in(
     db.flush()
     if appointment is not None:
         appointment.status = AppointmentStatus.CHECKED_IN
-    audit.record(db, actor, "visit.check_in", "visit", visit.id, patient_id=patient.id)
+    # checked_in_at keeps the real entry time, so a late entry is recorded as one.
+    late = {"entered_late_for": str(visit_date)} if visit_date < today else {}
+    audit.record(db, actor, "visit.check_in", "visit", visit.id, patient_id=patient.id, **late)
     db.commit()
     return visit
 

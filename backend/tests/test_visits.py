@@ -1,5 +1,8 @@
 # Tests for the patient log, visit records and the doctor's consultation notes.
 
+from datetime import timedelta
+
+from app.core.clock import clinic_today
 from tests.conftest import check_in
 
 
@@ -24,6 +27,26 @@ def test_patient_cannot_have_two_open_visits(nurse, patient):
     again = nurse.post("/visits", json={"patient_id": patient["id"], "complaint": "Fever"})
     assert again.status_code == 409
     assert again.json()["visit_id"] == first["id"]
+
+
+def test_a_visit_written_on_paper_can_be_entered_for_an_earlier_date(nurse, coordinator, patient):
+    yesterday = clinic_today() - timedelta(days=1)
+    late = check_in(nurse, patient["id"], visit_date=str(yesterday))
+    assert late["visit_date"] == str(yesterday)
+    assert late["id"] not in [v["id"] for v in nurse.get("/visits/today").json()]
+
+    # An open visit on another day does not block today's check-in.
+    assert check_in(nurse, patient["id"])["visit_date"] == str(clinic_today())
+
+    entry = coordinator.get("/audit-logs", params={"action": "visit.check_in"}).json()["items"][-1]
+    assert str(yesterday) in str(entry)
+
+
+def test_a_visit_cannot_be_logged_for_a_future_date(nurse, patient):
+    tomorrow = clinic_today() + timedelta(days=1)
+    response = nurse.post("/visits", json={
+        "patient_id": patient["id"], "complaint": "Fever", "visit_date": str(tomorrow)})
+    assert response.status_code == 400
 
 
 def test_todays_log_lists_open_visits_in_arrival_order_then_completed(nurse, patient):

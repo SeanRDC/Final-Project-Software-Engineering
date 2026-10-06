@@ -13,6 +13,8 @@ class CheckIn(BaseModel):
     patient_id: int
     complaint: str = Field(min_length=1)
     visit_type: VisitType = VisitType.CONSULTATION
+    # A past date, for a visit written on paper and entered later. Today when left out.
+    visit_date: date | None = None
 
 
 class AppointmentCheckIn(BaseModel):
