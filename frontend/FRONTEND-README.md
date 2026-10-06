@@ -204,6 +204,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 | Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
 
 - **The period is in the address** (`/reports?from=2026-08-01&to=2026-12-15`); it starts on the current month.
+- **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
 - The figures are shown as tables. Charts are not built.
