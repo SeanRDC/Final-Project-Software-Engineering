@@ -8,13 +8,16 @@ import { api, ApiError } from '@/api/client'
 import type { CheckInRequest, PatientSummary, Visit, VisitType } from '@/api/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
-import { humanize } from '@/lib/format'
+import { humanize, parseDay } from '@/lib/format'
+import { addComplaint, COMMON_COMPLAINTS } from '@/lib/quickPicks'
 import { VISIT_TYPES } from '@/lib/status'
+import { useClinicToday } from '@/lib/useClinicToday'
 import { describePatient } from '@/lib/visitState'
 import { staleQueriesFor } from '@/live/liveQueries'
 import { PatientPicker } from '@/pages/checkin/PatientPicker'
@@ -42,6 +45,12 @@ export function WalkInForm() {
   const patient: PatientSummary | null = picked ?? linked.data ?? null
   const [complaint, setComplaint] = useState('')
   const [visitType, setVisitType] = useState<VisitType>('consultation')
+  const today = useClinicToday()
+  // Null means today. An earlier date is for a visit written on paper and entered later.
+  const [earlierDate, setEarlierDate] = useState<string | null>(null)
+  const visitDate = earlierDate ?? today
+  const isLate = visitDate < today
+  const isFuture = visitDate > today
   const [wasSubmitted, setWasSubmitted] = useState(false)
 
   const checkIn = useMutation({
@@ -62,6 +71,7 @@ export function WalkInForm() {
     // What was typed belongs to the previous patient and must not follow to the next one.
     setComplaint('')
     setVisitType('consultation')
+    setEarlierDate(null)
     setWasSubmitted(false)
     checkIn.reset()
   }
@@ -74,7 +84,17 @@ export function WalkInForm() {
       complaintRef.current?.focus()
       return
     }
-    checkIn.mutate({ patient_id: patient.id, complaint: complaint.trim(), visit_type: visitType })
+    if (isFuture) {
+      document.getElementById('visit-date')?.focus()
+      return
+    }
+    checkIn.mutate({
+      patient_id: patient.id,
+      complaint: complaint.trim(),
+      visit_type: visitType,
+      // Left out for today, so the server decides what today is.
+      ...(isLate ? { visit_date: visitDate } : {}),
+    })
   }
 
   if (!patient && linkedId !== null && linked.isPending) {
@@ -146,6 +166,22 @@ export function WalkInForm() {
           {complaintMissing ? (
             <FieldError id="complaint-error">Enter the patient’s complaint.</FieldError>
           ) : null}
+          <div role="group" aria-label="Common complaints" className="flex flex-wrap gap-1.5">
+            {COMMON_COMPLAINTS.map((pick) => (
+              <Button
+                key={pick}
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setComplaint(addComplaint(complaint, pick))
+                  complaintRef.current?.focus()
+                }}
+              >
+                {pick}
+              </Button>
+            ))}
+          </div>
         </Field>
 
         <Field>
@@ -162,6 +198,44 @@ export function WalkInForm() {
               </NativeSelectOption>
             ))}
           </NativeSelect>
+        </Field>
+
+        <Field data-invalid={isFuture || undefined}>
+          <FieldLabel htmlFor="visit-date">Date of visit</FieldLabel>
+          <Input
+            id="visit-date"
+            name="visit_date"
+            type="date"
+            className="w-auto self-start"
+            max={today}
+            aria-invalid={isFuture || undefined}
+            aria-describedby={
+              isFuture ? 'visit-date-error' : isLate ? 'visit-date-note' : undefined
+            }
+            value={visitDate}
+            onChange={(event) =>
+              setEarlierDate(
+                event.target.value && event.target.value !== today ? event.target.value : null,
+              )
+            }
+          />
+          {isFuture ? (
+            <FieldError id="visit-date-error">
+              A visit cannot be logged for a future date.
+            </FieldError>
+          ) : null}
+          {isLate ? (
+            <FieldDescription id="visit-date-note">
+              This is saved as a visit on{' '}
+              {parseDay(visitDate).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+              , entered late. It will not appear in today’s visits; find it in the patient’s visit
+              history.
+            </FieldDescription>
+          ) : null}
         </Field>
 
         <Button

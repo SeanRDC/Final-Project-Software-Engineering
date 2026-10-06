@@ -1,11 +1,11 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes, useLocation } from 'react-router'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { Toaster } from '@/components/ui/sonner'
 import { WalkInForm } from '@/pages/checkin/WalkInForm'
-import { patient, visit } from '@/test/dashboardFixture'
+import { dashboard, patient, visit } from '@/test/dashboardFixture'
 import { nurse } from '@/test/fixtures'
 import { renderApp } from '@/test/render'
 import { fakeServer, type FakeServer } from '@/test/server'
@@ -146,4 +146,68 @@ test('starts with the patient named in the address already chosen', async () => 
   await user.click(screen.getByRole('button', { name: 'Change' }))
 
   expect(screen.getByRole('searchbox', { name: 'Find the patient' })).toBeInTheDocument()
+})
+
+test('a common complaint is added with one tap and can be combined', async () => {
+  const server = serverWithSantos()
+  let sent: { complaint?: string } = {}
+  server.on(
+    'POST /visits',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body))
+      return { ...visit({ id: 31 }), patient_alerts: {} }
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderForm()
+
+  await pickSantos(user)
+  await user.click(screen.getByRole('button', { name: 'Headache' }))
+  await user.click(screen.getByRole('button', { name: 'Dizziness' }))
+  // Picking the same one again does not repeat it.
+  await user.click(screen.getByRole('button', { name: 'Headache' }))
+  expect(screen.getByLabelText('Complaint')).toHaveValue('Headache, dizziness')
+
+  await user.click(screen.getByRole('button', { name: 'Check in patient' }))
+  // Toasts from earlier tests may still be on screen, so wait for the request itself.
+  await waitFor(() => expect(sent.complaint).toBe('Headache, dizziness'))
+})
+
+test('a visit written on paper can be entered for an earlier date', async () => {
+  const server = serverWithSantos()
+  // The clinic's today is 4 October 2026 in the fixture.
+  server.on('GET /dashboard', dashboard)
+  let sent: unknown
+  server.on(
+    'POST /visits',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body))
+      return { ...visit({ id: 31 }), patient_alerts: {} }
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderForm()
+
+  await pickSantos(user)
+  await waitFor(() => expect(screen.getByLabelText('Date of visit')).toHaveValue('2026-10-04'))
+  await user.type(screen.getByLabelText('Complaint'), 'Fever')
+
+  fireEvent.change(screen.getByLabelText('Date of visit'), { target: { value: '2026-10-07' } })
+  await user.click(screen.getByRole('button', { name: 'Check in patient' }))
+  expect(screen.getByText('A visit cannot be logged for a future date.')).toBeInTheDocument()
+  expect(server.calls).not.toContain('POST /visits')
+
+  fireEvent.change(screen.getByLabelText('Date of visit'), { target: { value: '2026-10-02' } })
+  expect(screen.getByText(/saved as a visit on October 2, 2026, entered late/)).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Check in patient' }))
+
+  await waitFor(() => expect(server.calls).toContain('POST /visits'))
+  expect(sent).toEqual({
+    patient_id: 1,
+    complaint: 'Fever',
+    visit_type: 'consultation',
+    visit_date: '2026-10-02',
+  })
 })

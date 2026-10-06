@@ -9,6 +9,7 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/c
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
+import { APPOINTMENT_REASONS } from '@/lib/quickPicks'
 import { describePatient } from '@/lib/visitState'
 import {
   defaultEnd,
@@ -188,10 +189,16 @@ export function AppointmentForm({
             maxLength={255}
             placeholder="e.g. follow-up for asthma, medical clearance…"
             required
+            list="reason-options"
             {...describedBy('reason')}
             value={values.reason}
             onChange={(event) => change({ reason: event.target.value })}
           />
+          <datalist id="reason-options">
+            {APPOINTMENT_REASONS.map((reason) => (
+              <option key={reason} value={reason} />
+            ))}
+          </datalist>
           {errors.reason ? <FieldError id="reason-error">{errors.reason}</FieldError> : null}
         </Field>
 
