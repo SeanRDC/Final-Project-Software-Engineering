@@ -98,7 +98,7 @@ For a demo or for frontend development, fill an empty database with made-up data
 python -m scripts.seed_demo
 ```
 
-This creates the accounts `coordinator`, `nurse`, `assistant` and `doctor`, all with the password `hau-sync-demo`. Never run it against the clinic's real database.
+This creates the accounts `coordinator`, `nurse`, `assistant` and `doctor`, all with the password `hau-sync-demo`, today's visits and appointments, and about eight months of past visits so the reports have a trend. Never run it against the clinic's real database.
 
 ### Run the server
 
@@ -109,7 +109,22 @@ uvicorn main:app --host 0.0.0.0 --port 8000    # clinic LAN, reachable by the st
 
 Interactive API documentation is at `http://localhost:8000/docs`. Click **Authorize** and log in to try the endpoints.
 
-When serving the LAN, set `DEBUG=False` and list the frontend's addresses in `CORS_ORIGINS`. The server refuses to start with `DEBUG=False` and the placeholder `SECRET_KEY`.
+When serving the LAN, set `DEBUG=False`. The server refuses to start with `DEBUG=False` and the placeholder `SECRET_KEY`.
+
+### Running at the clinic
+
+The backend serves the built frontend, so the clinic has one address for the whole system and no second server to run. When `frontend/dist` exists (`npm run build`, or `FRONTEND_DIST` for another folder), every address that is not the API opens the app; without a build the backend is the API alone, as in development.
+
+First time, on the clinic's server computer:
+
+1. Install Python 3.10 or higher, and Node.js 20.19 or higher to build the screens.
+2. Copy `backend/.env.example` to `backend/.env`. Set `SECRET_KEY` to a long random value and `DEBUG=False`.
+3. Double-click `start-clinic.bat` in the project folder. It installs the backend's packages, builds the screens, creates the database tables and starts the system.
+4. In a second window, create the coordinator's account once: `.venv\Scripts\python.exe -m scripts.create_admin --username coordinator --name "Last name, First name"`.
+
+Every day after that, double-click `start-clinic.bat` and keep its window open. It prints the address for the stations, for example `http://192.168.1.10:8000`. If a station cannot open it, allow the port through Windows Firewall on the server computer.
+
+After an update of the code, run `.\start-clinic.ps1 -Rebuild` once so the screens are built again. The script applies database migrations on every start; take a backup first (see Operations).
 
 ### Run the tests
 

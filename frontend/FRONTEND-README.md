@@ -36,7 +36,9 @@ npm install
 npm run dev
 ```
 
-The app opens at `http://localhost:5173`. The dev server forwards every request under `/api`, including the WebSocket, to the backend, so no CORS setup is needed in development. To use a backend on another address:
+The app opens at `http://localhost:5173`. The dev server forwards every request under `/api`, including the WebSocket, to the backend, so no CORS setup is needed in development. At the clinic there is no dev server: the backend serves the files built by `npm run build` (see "Running at the clinic" in `backend/BACKEND-README.md`).
+
+To use a backend on another address:
 
 ```powershell
 $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
