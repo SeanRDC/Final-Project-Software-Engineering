@@ -9,6 +9,7 @@ import type {
   VisitDisposition,
   VisitRecordUpdate,
   VisitSummary,
+  VitalReadingCreate,
 } from '@/api/types'
 import { staleQueriesFor } from '@/live/liveQueries'
 
@@ -121,5 +122,19 @@ export function useUndoDispense(visitId: number) {
     (entryId: number) =>
       api<Visit>(`/visits/${visitId}/medicines/${entryId}`, { method: 'DELETE' }),
     ['inventory.updated'],
+  )
+}
+
+/** Adds a vital-signs reading for a patient kept for monitoring. */
+export function useAddVitalReading(visitId: number) {
+  return useVisitMutation(visitId, (reading: VitalReadingCreate) =>
+    api<Visit>(`/visits/${visitId}/vitals`, { method: 'POST', json: reading }),
+  )
+}
+
+/** Removes a reading recorded by mistake. */
+export function useRemoveVitalReading(visitId: number) {
+  return useVisitMutation(visitId, (readingId: number) =>
+    api<Visit>(`/visits/${visitId}/vitals/${readingId}`, { method: 'DELETE' }),
   )
 }

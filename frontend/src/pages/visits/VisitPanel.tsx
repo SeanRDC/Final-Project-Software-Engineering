@@ -128,6 +128,7 @@ export function VisitPanel() {
             <VisitRecord
               visit={visit}
               canReleaseMedicine={isEditable && allowed('medicines:dispense')}
+              canAddReadings={isEditable && canRecord}
             />
           ) : null}
         </div>

@@ -6,6 +6,7 @@ import { PatientAlertsBox } from '@/components/PatientAlertsBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { dispositionLabel } from '@/lib/status'
 import { MedicinesSection } from '@/pages/visits/MedicinesSection'
+import { MonitoringSection } from '@/pages/visits/MonitoringSection'
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -54,9 +55,15 @@ type VisitRecordProps = {
   visit: Visit
   /** Show the form for releasing medicine and the means to undo a release. */
   canReleaseMedicine?: boolean
+  /** Show the means to add a monitoring reading or remove one. */
+  canAddReadings?: boolean
 }
 
-export function VisitRecord({ visit, canReleaseMedicine = false }: VisitRecordProps) {
+export function VisitRecord({
+  visit,
+  canReleaseMedicine = false,
+  canAddReadings = false,
+}: VisitRecordProps) {
   const vitals = vitalSigns(visit)
   const hasNurseRecord =
     visit.assessment || visit.treatment || visit.remarks || visit.referred || visit.disposition
@@ -101,6 +108,12 @@ export function VisitRecord({ visit, canReleaseMedicine = false }: VisitRecordPr
           </dl>
         )}
       </Section>
+
+      {canAddReadings || visit.vital_readings.length > 0 ? (
+        <Section title="Monitoring">
+          <MonitoringSection visit={visit} canRecord={canAddReadings} />
+        </Section>
+      ) : null}
 
       <Section title="Nurse’s record">
         {hasNurseRecord ? (

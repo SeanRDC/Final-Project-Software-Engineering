@@ -117,7 +117,7 @@ export function consultationValues(visit: Visit): ConsultationValues {
   }
 }
 
-function vitalError(field: VitalField, raw: string): string | undefined {
+export function vitalError(field: VitalField, raw: string): string | undefined {
   const value = raw.trim()
   if (!value) return undefined
   const number = Number(value)
