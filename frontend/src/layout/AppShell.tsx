@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 
+import { useAuth } from '@/auth/authContext'
 import { useCan } from '@/auth/permissions'
 import {
   Sheet,
@@ -11,7 +12,7 @@ import {
 } from '@/components/ui/sheet'
 import { ConnectionStatus } from '@/layout/ConnectionStatus'
 import { NotificationBell } from '@/layout/NotificationBell'
-import { pageFor } from '@/layout/pages'
+import { CHANGE_PASSWORD, pageFor } from '@/layout/pages'
 import { PatientSearch } from '@/layout/PatientSearch'
 import { Sidebar, type NavBadgeCounts } from '@/layout/Sidebar'
 import { TopBar } from '@/layout/TopBar'
@@ -22,6 +23,7 @@ import { useDashboard } from '@/pages/dashboard/useDashboard'
 export function AppShell() {
   const location = useLocation()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { user } = useAuth()
   const allowed = useCan()
   const canSearch = allowed('patients:read')
   const title = pageFor(location.pathname)?.title ?? 'HAU-Sync'
@@ -32,6 +34,11 @@ export function AppShell() {
   const badges: NavBadgeCounts = {
     openVisits: dashboard?.stats.open_visits ?? 0,
     unreadNotifications: unread,
+  }
+
+  // An account still on the password the coordinator set must replace it before anything else.
+  if (user?.must_change_password && location.pathname !== CHANGE_PASSWORD.path) {
+    return <Navigate to={CHANGE_PASSWORD.path} replace />
   }
 
   return (
