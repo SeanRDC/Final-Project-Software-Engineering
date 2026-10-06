@@ -1,6 +1,7 @@
 // The sidebar: what it lists, in which groups, and the permission each entry needs.
 
 import {
+  BarChart3Icon,
   BellIcon,
   BoxesIcon,
   CalendarDaysIcon,
@@ -8,6 +9,8 @@ import {
   LayoutGridIcon,
   ListOrderedIcon,
   PillIcon,
+  ScrollTextIcon,
+  UserCogIcon,
   UsersIcon,
   type LucideIcon,
 } from 'lucide-react'
@@ -95,6 +98,14 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: BoxesIcon,
         permission: 'inventory:read',
       },
+    ],
+  },
+  {
+    heading: 'Records and admin',
+    items: [
+      { to: '/reports', label: 'Reports', icon: BarChart3Icon, permission: 'reports:view' },
+      { to: '/users', label: 'Accounts', icon: UserCogIcon, permission: 'users:manage' },
+      { to: '/audit', label: 'Audit log', icon: ScrollTextIcon, permission: 'audit:view' },
     ],
   },
   {

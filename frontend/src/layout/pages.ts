@@ -45,6 +45,11 @@ export const RELEASE_LOG: Page = {
 }
 export const NOTIFICATIONS: Page = { path: '/notifications', title: 'Notifications' }
 
+export const REPORTS: Page = { path: '/reports', title: 'Reports', permission: 'reports:view' }
+export const USERS: Page = { path: '/users', title: 'Accounts', permission: 'users:manage' }
+export const AUDIT_LOG: Page = { path: '/audit', title: 'Audit Log', permission: 'audit:view' }
+export const CHANGE_PASSWORD: Page = { path: '/account/password', title: 'Change Password' }
+
 export const PAGES: Page[] = [
   DASHBOARD,
   CHECK_IN,
@@ -56,6 +61,10 @@ export const PAGES: Page[] = [
   INVENTORY,
   RELEASE_LOG,
   NOTIFICATIONS,
+  REPORTS,
+  USERS,
+  AUDIT_LOG,
+  CHANGE_PASSWORD,
 ]
 
 /** The page a browser address belongs to, e.g. "/patients/12" belongs to "/patients". */

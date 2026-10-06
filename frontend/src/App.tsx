@@ -5,6 +5,8 @@ import type { Permission } from '@/auth/permissions'
 import { AppShell } from '@/layout/AppShell'
 import {
   APPOINTMENTS,
+  AUDIT_LOG,
+  CHANGE_PASSWORD,
   CHECK_IN,
   INVENTORY,
   NEW_APPOINTMENT,
@@ -12,11 +14,15 @@ import {
   PATIENTS,
   REGISTER_PATIENT,
   RELEASE_LOG,
+  REPORTS,
+  USERS,
   VISITS,
 } from '@/layout/pages'
+import { ChangePasswordPage } from '@/pages/account/ChangePasswordPage'
 import { AppointmentsPage } from '@/pages/appointments/AppointmentsPage'
 import { EditAppointmentPage } from '@/pages/appointments/EditAppointmentPage'
 import { NewAppointmentPage } from '@/pages/appointments/NewAppointmentPage'
+import { AuditLogPage } from '@/pages/audit/AuditLogPage'
 import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
@@ -27,6 +33,9 @@ import { EditPatientPage } from '@/pages/patients/EditPatientPage'
 import { PatientPage } from '@/pages/patients/PatientPage'
 import { PatientsPage } from '@/pages/patients/PatientsPage'
 import { RegisterPatientPage } from '@/pages/patients/RegisterPatientPage'
+import { ReportsPage } from '@/pages/reports/ReportsPage'
+import { SavedReportPage } from '@/pages/reports/SavedReportPage'
+import { UsersPage } from '@/pages/users/UsersPage'
 import { VisitPanel } from '@/pages/visits/VisitPanel'
 import { VisitsPage } from '@/pages/visits/VisitsPage'
 import { LoginRoute } from '@/routes/LoginRoute'
@@ -84,6 +93,15 @@ function App() {
             element={guarded(RELEASE_LOG.permission, <ReleaseLogPage />)}
           />
           <Route path={NOTIFICATIONS.path} element={<NotificationsPage />} />
+
+          <Route path={REPORTS.path} element={guarded(REPORTS.permission, <ReportsPage />)} />
+          <Route
+            path="/reports/:reportId"
+            element={guarded(REPORTS.permission, <SavedReportPage />)}
+          />
+          <Route path={USERS.path} element={guarded(USERS.permission, <UsersPage />)} />
+          <Route path={AUDIT_LOG.path} element={guarded(AUDIT_LOG.permission, <AuditLogPage />)} />
+          <Route path={CHANGE_PASSWORD.path} element={<ChangePasswordPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>

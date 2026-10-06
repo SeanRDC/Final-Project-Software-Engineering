@@ -24,6 +24,7 @@ test('shows the front desk everything it works with', () => {
     'Appointments',
     'Inventory',
     'Release log',
+    'Reports',
     'Notifications',
   ])
 })
@@ -48,4 +49,22 @@ test('shows a count only when there is something to count', () => {
 
   expect(screen.getByRole('link', { name: /Today's visits.*5 open/ })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Notifications' })).toBeInTheDocument()
+})
+
+test('shows accounts and the audit log to the coordinator only', () => {
+  const coordinator = {
+    ...nurse,
+    role: 'coordinator' as const,
+    permissions: [...nurse.permissions, 'users:manage', 'audit:view'],
+  }
+  const view = renderApp(<Sidebar />, { user: coordinator })
+
+  expect(screen.getByRole('link', { name: 'Accounts' })).toHaveAttribute('href', '/users')
+  expect(screen.getByRole('link', { name: 'Audit log' })).toHaveAttribute('href', '/audit')
+
+  view.unmount()
+  renderApp(<Sidebar />, { user: nurse })
+
+  expect(screen.queryByRole('link', { name: 'Accounts' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: 'Audit log' })).not.toBeInTheDocument()
 })

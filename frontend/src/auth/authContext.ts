@@ -9,6 +9,8 @@ export type AuthState = {
   /** Rejects with an ApiError carrying the server's message. */
   login: (username: string, password: string) => Promise<void>
   logout: () => void
+  /** Replaces the signed-in account's details, e.g. after it changed its password. */
+  updateUser: (user: CurrentUser) => void
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

@@ -10,7 +10,7 @@
   </p>
 </div>
 
-> **🚧 WORK IN PROGRESS:** Every screen in the navigation is built. Attachments, reports, user accounts and the audit log have API routes but no screen yet.
+> **🚧 WORK IN PROGRESS:** Every route of the backend API now has a screen. The system is still under test with the clinic.
 
 ## Tech Stack
 
@@ -71,6 +71,11 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 | Medicine inventory                  | `/inventory`                                                        | Done: stock list, add and edit medicines, stock in, count adjustment               |
 | Medicine release log                | `/inventory/releases`                                               | Done: releases to patients, plus all stock movements                               |
 | Notifications                       | `/notifications`                                                    | Done: list, unread filter, mark as read                                            |
+| Reports                             | `/reports`, `/reports/:id`                                          | Done: statistics for any period, CSV download, saved reports                       |
+| Accounts                            | `/users`                                                            | Done: create, edit, deactivate, reset password (coordinator)                       |
+| Audit log                           | `/audit`                                                            | Done: who viewed or changed what, with filters (coordinator)                       |
+| Change password                     | `/account/password`                                                 | Done: for every account; required after a reset                                    |
+| Attachments                         | on `/patients/:id`                                                  | Done: upload, download, delete                                                     |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -189,6 +194,41 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 
 `NotificationsPage` lists the account's alerts (`GET /notifications`): low stock and appointment decisions. Opening one marks it read for that account (`POST /notifications/{id}/read`) and goes to the inventory or the appointments. Read state is per account; the bell and sidebar counts come from the dashboard request.
 
+## Reports
+
+| Part                    | API                                                 | Component                        |
+| ----------------------- | --------------------------------------------------- | -------------------------------- |
+| Statistics for a period | `GET /reports/summary?start=&end=`                  | `ReportsPage`, `SummaryView`     |
+| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv` | `useCsvDownload`                 |
+| Saved reports           | `GET /reports`, `GET /reports/{id}`                 | `ReportsPage`, `SavedReportPage` |
+| Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
+
+- **The period is in the address** (`/reports?from=2026-08-01&to=2026-12-15`); it starts on the current month.
+- **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
+- **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
+- The figures are shown as tables. Charts are not built.
+
+## Accounts and Passwords
+
+| Part                     | API                                               | Component             |
+| ------------------------ | ------------------------------------------------- | --------------------- |
+| List accounts            | `GET /users`                                      | `UsersPage`           |
+| Create, edit, deactivate | `POST /users`, `PATCH /users/{id}`                | `UserDialog`          |
+| Reset a password         | `POST /users/{id}/reset-password`                 | `ResetPasswordDialog` |
+| Change your own password | `POST /auth/change-password`, then `GET /auth/me` | `ChangePasswordPage`  |
+
+- **Accounts are deactivated, never deleted**, so past entries keep the person's name.
+- **A new or reset account has a temporary password.** At sign-in it is sent to the change-password screen and cannot open anything else until it has chosen its own (`AppShell`).
+- **The server refuses** to demote or deactivate the last active coordinator; the dialog shows its message.
+
+## Audit Log
+
+`AuditLogPage` lists `GET /audit-logs` for the coordinator: when, which account, what action, which record and the detail. Filters (kind of record, exact action, date range) and the page are kept in the address. Entries about a patient, visit or report link to it.
+
+## Attachments
+
+`Attachments` on the patient record lists `GET /patients/{id}/attachments`, uploads with `POST` (multipart), downloads through `GET /attachments/{id}/download` and lets the coordinator delete. The accepted file types and the size limit come from `GET /options` and are checked before uploading (`attachmentRules.ts`); the server checks again.
+
 ## Live Updates
 
 `src/live` keeps one WebSocket open to `/api/v1/ws` while someone is signed in.
@@ -217,11 +257,15 @@ frontend/
 │   ├── lib/                  # Formatting helpers, query client, status labels, record lock hook
 │   ├── live/                 # WebSocket connection and event-to-query mapping
 │   ├── pages/                # One folder or file per screen
+│   │   ├── account/          # Change password
 │   │   ├── appointments/     # Calendar and schedule, booking form, actions by role
+│   │   ├── audit/            # Audit log
 │   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
 │   │   ├── dashboard/        # The Clinic Main Menu and its panels
 │   │   ├── inventory/        # Stock list, medicine and stock dialogs, release log
 │   │   ├── notifications/    # Notification list
+│   │   ├── reports/          # Statistics, saved reports
+│   │   ├── users/            # Accounts
 │   │   ├── patients/         # Patient list, record, register and edit form, archive
 │   │   └── visits/           # Visit log, visit panel, record and consultation forms, medicine release
 │   ├── routes/               # Route guards (signed in, permission)

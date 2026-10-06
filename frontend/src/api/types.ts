@@ -54,3 +54,19 @@ export type Dashboard = Schemas['Dashboard']
 export type DashboardStats = Schemas['DashboardStats']
 
 export type Options = Schemas['Options']
+
+export type User = Schemas['UserOut']
+export type UserCreate = Schemas['UserCreate']
+export type UserUpdate = Schemas['UserUpdate']
+export type Role = Schemas['Role']
+
+export type ReportSummary = Schemas['ReportSummary']
+export type SavedReport = Schemas['ReportOut']
+export type SavedReportDetail = Schemas['ReportDetail']
+export type ReportCreate = Schemas['ReportCreate']
+export type CountItem = Schemas['CountItem']
+
+export type AuditEntry = Schemas['AuditLogOut']
+export type AuditPage = Schemas['Page_AuditLogOut_']
+
+export type Attachment = Schemas['AttachmentOut']

@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { humanize, parseDay } from '@/lib/format'
 import { describePatient } from '@/lib/visitState'
 import { ArchiveControl } from '@/pages/patients/ArchiveControl'
+import { Attachments } from '@/pages/patients/Attachments'
 import { usePatient } from '@/pages/patients/usePatients'
 import { VisitHistory } from '@/pages/patients/VisitHistory'
 
@@ -186,6 +187,7 @@ export function PatientPage() {
       <PatientAlertsBox alerts={patient} />
       <Details patient={patient} />
       {allowed('visits:read') ? <VisitHistory patientId={patient.id} /> : null}
+      {allowed('attachments:read') ? <Attachments patientId={patient.id} /> : null}
     </div>
   )
 }

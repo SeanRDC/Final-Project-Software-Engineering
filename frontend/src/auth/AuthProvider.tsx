@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 import { api, setAccessToken, setUnauthorizedHandler } from '@/api/client'
-import type { Token } from '@/api/types'
+import type { CurrentUser, Token } from '@/api/types'
 import { AuthContext, type AuthState } from '@/auth/authContext'
 import {
   clearSession,
@@ -42,6 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(next)
   }, [])
 
+  const updateUser = useCallback((user: CurrentUser) => {
+    setSession((current) => {
+      if (!current) return current
+      const next = { ...current, user }
+      saveSession(next)
+      return next
+    })
+  }, [])
+
   // An expired or revoked token ends the session wherever the 401 came from.
   useEffect(() => {
     setUnauthorizedHandler(logout)
@@ -49,8 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [logout])
 
   const value = useMemo<AuthState>(
-    () => ({ user: session?.user ?? null, token: session?.token ?? null, login, logout }),
-    [session, login, logout],
+    () => ({
+      user: session?.user ?? null,
+      token: session?.token ?? null,
+      login,
+      logout,
+      updateUser,
+    }),
+    [session, login, logout, updateUser],
   )
 
   return <AuthContext value={value}>{children}</AuthContext>

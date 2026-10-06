@@ -32,6 +32,17 @@ const coordinator: CurrentUser = {
   permissions: [...nurse.permissions, 'patients:archive', 'visits:consult'],
 }
 
+/** GET /options as the server sends it. */
+function options(departments: string[] = []) {
+  return {
+    departments,
+    enums: {},
+    lock_timeout_minutes: 5,
+    max_upload_mb: 5,
+    allowed_upload_types: ['.pdf', '.png', '.jpg'],
+  }
+}
+
 function Address() {
   const location = useLocation()
   return <p data-testid="address">{location.pathname + location.search}</p>
@@ -244,7 +255,7 @@ test('explains a record number that does not exist', async () => {
 // ---------- Registering ----------
 
 test('registers a patient and opens the new record', async () => {
-  const server = fakeServer({ 'GET /options': { departments: ['School of Computing'] } })
+  const server = fakeServer({ 'GET /options': options(['School of Computing']) })
   let sent: Record<string, unknown> = {}
   server.on(
     'POST /patients',
@@ -286,7 +297,7 @@ test('registers a patient and opens the new record', async () => {
 })
 
 test('shows why the server refused a registration and keeps what was typed', async () => {
-  const server = fakeServer({ 'GET /options': { departments: [] } })
+  const server = fakeServer({ 'GET /options': options() })
   server.on('POST /patients', { detail: "A patient with ID number '20261234' already exists" }, 409)
   const user = userEvent.setup()
   renderPatients(nurse, '/patients/new')
@@ -308,7 +319,7 @@ test('shows why the server refused a registration and keeps what was typed', asy
 
 test('corrects a record under the edit lock and sends only what changed', async () => {
   const server = fakeServer({
-    'GET /options': { departments: [] },
+    'GET /options': options(),
     'GET /patients/1': patientRecord(),
     'PUT /locks/patient/1': { locked_by_name: 'Reyes, Ana' },
   })
@@ -343,7 +354,7 @@ test('corrects a record under the edit lock and sends only what changed', async 
 
 test('does not open the form while someone else is editing the record', async () => {
   const server = fakeServer({
-    'GET /options': { departments: [] },
+    'GET /options': options(),
     'GET /patients/1': patientRecord(),
   })
   server.on(

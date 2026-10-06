@@ -1,4 +1,5 @@
-import { ChevronDownIcon, CircleUserRoundIcon, LogOutIcon } from 'lucide-react'
+import { ChevronDownIcon, CircleUserRoundIcon, KeyRoundIcon, LogOutIcon } from 'lucide-react'
+import { Link } from 'react-router'
 
 import { useAuth } from '@/auth/authContext'
 import {
@@ -43,6 +44,12 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link to="/account/password">
+              <KeyRoundIcon />
+              Change password
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={logout}>
             <LogOutIcon />
             Sign out

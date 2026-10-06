@@ -25,6 +25,7 @@ export function renderApp(ui: ReactElement, options: Options = {}): RenderResult
     token: user ? 'test-token' : null,
     login: vi.fn(),
     logout: vi.fn(),
+    updateUser: vi.fn(),
     ...auth,
   }
   // No retries and no caching between tests, so a failing request fails at once.
