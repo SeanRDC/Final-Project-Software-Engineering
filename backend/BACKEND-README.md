@@ -167,7 +167,7 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Authentication | `POST /auth/login`, `GET /auth/me`, `POST /auth/change-password` |
 | Users | `GET /users`, `POST /users`, `PATCH /users/{id}`, `POST /users/{id}/reset-password` |
 | Patients | `GET /patients` (search), `POST /patients`, `GET /patients/{id}`, `PATCH /patients/{id}`, `POST /patients/{id}/archive`, `POST /patients/{id}/restore`, `GET /patients/{id}/visits` |
-| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/cancel` |
+| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/cancel`, `POST /visits/{id}/vitals`, `DELETE /visits/{id}/vitals/{reading_id}` |
 | Medicine release | `POST /visits/{id}/medicines`, `DELETE /visits/{id}/medicines/{entry_id}` |
 | Appointments | `GET /appointments`, `GET /appointments/today`, `GET /appointments/calendar`, `POST /appointments`, `PATCH /appointments/{id}`, `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` |
 | Inventory | `GET /inventory/medicines`, `POST /inventory/medicines`, `PATCH /inventory/medicines/{id}`, `POST /inventory/medicines/{id}/stock-in`, `/adjust`, `GET /inventory/low-stock`, `GET /inventory/movements` (release log with `movement_type=release`) |
@@ -262,6 +262,7 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 | `patients` | Demographics, guardian, allergies, conditions, restrictions |
 | `visits` | One row per clinic visit: log entry, vital signs, nurse record, doctor's consultation |
 | `visit_medicines` | Medicines given during a visit |
+| `visit_vital_readings` | Vital signs taken again while a patient is monitored |
 | `appointments` | Scheduled appointments and the coordinator's decision |
 | `medicines` | Inventory items with quantity and low-stock threshold |
 | `stock_movements` | Every stock change; release rows are the release log |
@@ -339,6 +340,9 @@ These follow the project paper, the interview with the clinic and the dashboard 
 - **A low-stock alert fires once**, when a release takes the quantity to or below the threshold. `GET /inventory/low-stock` always lists every medicine currently low.
 - **Visits are a plain log.** A visit is an entry that is open or completed, with no waiting-line numbers, priority flag or room assignment. The doctor adds notes to the visit directly.
 - **One open visit per patient.** A second check-in while a visit is still open is rejected.
+- **Late entries.** `POST /visits` takes an optional `visit_date` for a visit written on paper and entered later. It may not be in the future, `checked_in_at` keeps the real entry time, and the audit entry records `entered_late_for`.
+- **Monitoring readings.** The first vital signs stay on the visit. Readings taken later, for a patient resting in a ward, are separate timed rows, so the record shows how the patient changed.
+- **The report splits each type of request by students and employees** (`visits_by_type_and_patient_type`), the tally the clinic submits every semester. Reports saved before this was added show it as empty.
 - **Saved reports are snapshots.** `POST /reports` stores the figures at generation time so a submitted report does not change. `GET /reports/summary` always computes live figures.
 - **Times.** Timestamps are stored in UTC. "Today" and report periods follow `TIMEZONE` (default `Asia/Manila`).
 
