@@ -20,6 +20,7 @@ from app.schemas.visit import (
     VisitOut,
     VisitRecordUpdate,
     VisitSummary,
+    VitalReadingCreate,
 )
 from app.services import visits
 
@@ -136,4 +137,21 @@ def undo_dispense(
 ):
     visit = visits.undo_dispense(db, visit_id, visit_medicine_id, actor)
     broadcaster.publish("inventory.updated")
+    return visits.to_out(db, visit)
+
+
+@router.post("/{visit_id}/vitals", response_model=VisitOut,
+             status_code=status.HTTP_201_CREATED,
+             summary="Add a vital-signs reading for a patient kept for monitoring")
+def add_vital_reading(visit_id: int, data: VitalReadingCreate, db: DbSession, actor: Recorder):
+    visit = visits.add_vital_reading(db, visit_id, data, actor)
+    _visits_changed(visit)
+    return visits.to_out(db, visit)
+
+
+@router.delete("/{visit_id}/vitals/{reading_id}", response_model=VisitOut,
+               summary="Remove a wrongly recorded reading (FR-10)")
+def remove_vital_reading(visit_id: int, reading_id: int, db: DbSession, actor: Recorder):
+    visit = visits.remove_vital_reading(db, visit_id, reading_id, actor)
+    _visits_changed(visit)
     return visits.to_out(db, visit)

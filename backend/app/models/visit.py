@@ -1,4 +1,4 @@
-# ORM models for a clinic visit and the medicines given during it.
+# ORM models for a clinic visit, the medicines given during it and its monitoring readings.
 
 from datetime import date, datetime
 
@@ -65,6 +65,10 @@ class Visit(Base):
         back_populates="visit", order_by="VisitMedicine.id", lazy="selectin"
     )
 
+    vital_readings: Mapped[list["VisitVitalReading"]] = relationship(
+        back_populates="visit", order_by="VisitVitalReading.id", lazy="selectin"
+    )
+
     @property
     def doctor_name(self) -> str | None:
         return self.doctor.full_name if self.doctor else None
@@ -96,3 +100,29 @@ class VisitMedicine(Base):
     @property
     def dispensed_by_name(self) -> str | None:
         return self.dispensed_by.full_name if self.dispensed_by else None
+
+
+class VisitVitalReading(Base):
+    """Vital signs taken again while a patient is kept for monitoring."""
+
+    __tablename__ = "visit_vital_readings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    visit_id: Mapped[int] = mapped_column(ForeignKey("visits.id"), index=True)
+    taken_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+    temperature_c: Mapped[float | None] = mapped_column(Float)
+    bp_systolic: Mapped[int | None] = mapped_column(Integer)
+    bp_diastolic: Mapped[int | None] = mapped_column(Integer)
+    pulse_rate: Mapped[int | None] = mapped_column(Integer)
+    respiratory_rate: Mapped[int | None] = mapped_column(Integer)
+    oxygen_saturation: Mapped[int | None] = mapped_column(Integer)
+    note: Mapped[str | None] = mapped_column(String(255))
+    recorded_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+
+    visit: Mapped[Visit] = relationship(back_populates="vital_readings")
+    recorded_by: Mapped[User | None] = relationship(lazy="joined")
+
+    @property
+    def recorded_by_name(self) -> str | None:
+        return self.recorded_by.full_name if self.recorded_by else None

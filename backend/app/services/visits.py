@@ -8,7 +8,15 @@ from sqlalchemy.orm import Session
 from app.core.clock import clinic_today, utcnow
 from app.core.exceptions import AppError, ConflictError, NotFoundError
 from app.core.permissions import Role
-from app.models import Appointment, Medicine, Patient, User, Visit, VisitMedicine
+from app.models import (
+    Appointment,
+    Medicine,
+    Patient,
+    User,
+    Visit,
+    VisitMedicine,
+    VisitVitalReading,
+)
 from app.models.enums import AppointmentStatus, StockMovementType, VisitStatus
 from app.schemas.visit import (
     CancelVisit,
@@ -19,6 +27,7 @@ from app.schemas.visit import (
     LockInfo,
     VisitOut,
     VisitRecordUpdate,
+    VitalReadingCreate,
 )
 from app.services import audit, inventory, locks
 from app.services.common import apply_updates, get_or_404, paginate
@@ -253,5 +262,32 @@ def undo_dispense(db: Session, visit_id: int, visit_medicine_id: int, actor: Use
                  medicine=item.medicine_name, quantity=item.quantity)
     visit.medicines.remove(item)
     db.delete(item)
+    db.commit()
+    return visit
+
+
+def add_vital_reading(
+    db: Session, visit_id: int, data: VitalReadingCreate, actor: User
+) -> Visit:
+    visit = _get(db, visit_id)
+    if visit.status == VisitStatus.CANCELLED:
+        raise ConflictError("Readings cannot be added to a cancelled visit")
+    values = data.model_dump(exclude_none=True)
+    visit.vital_readings.append(VisitVitalReading(**values, recorded_by_id=actor.id))
+    audit.record(db, actor, "visit.vitals_add", "visit", visit.id,
+                 fields=sorted(values.keys() - {"note"}))
+    db.commit()
+    return visit
+
+
+def remove_vital_reading(db: Session, visit_id: int, reading_id: int, actor: User) -> Visit:
+    visit = _get(db, visit_id)
+    reading = db.get(VisitVitalReading, reading_id)
+    if reading is None or reading.visit_id != visit.id:
+        raise NotFoundError("That reading does not belong to this visit")
+    audit.record(db, actor, "visit.vitals_remove", "visit", visit.id,
+                 taken_at=reading.taken_at.isoformat())
+    visit.vital_readings.remove(reading)
+    db.delete(reading)
     db.commit()
     return visit
