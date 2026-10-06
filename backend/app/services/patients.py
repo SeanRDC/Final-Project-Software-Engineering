@@ -3,6 +3,7 @@
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from app.core.departments import HAU_DEPARTMENTS
 from app.core.exceptions import ConflictError
 from app.models import Patient, User, Visit
 from app.models.enums import PatientType, VisitStatus
@@ -52,14 +53,15 @@ def search(
 
 
 def list_departments(db: Session) -> list[str]:
-    return list(
-        db.scalars(
-            select(Patient.department)
-            .where(Patient.department.is_not(None))
-            .distinct()
-            .order_by(Patient.department)
-        )
+    in_use = db.scalars(
+        select(Patient.department)
+        .where(Patient.department.is_not(None))
+        .distinct()
+        .order_by(Patient.department)
     )
+    # The university's schools first, then whatever else is on record (offices of employees).
+    official = {name.lower() for name in HAU_DEPARTMENTS}
+    return [*HAU_DEPARTMENTS, *(name for name in in_use if name.lower() not in official)]
 
 
 def create(db: Session, data: PatientCreate, actor: User) -> Patient:

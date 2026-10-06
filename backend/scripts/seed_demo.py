@@ -7,6 +7,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from sqlalchemy import func, select
 
 from app.core.clock import clinic_today, utcnow
+from app.core.departments import HAU_DEPARTMENTS
 from app.core.permissions import Role
 from app.db.session import SessionLocal
 from app.models import Patient, User, Visit
@@ -34,16 +35,20 @@ USERS = [
     ("doctor", "Dr. Villareal", Role.DOCTOR, "Attending Physician"),
 ]
 
+BASIC_ED = HAU_DEPARTMENTS[-1]
+
 PATIENTS = [
     ("20241014", "Santos", "Maria", "student", "female", 20, "School of Computing",
      None, "Asthma", "No strenuous physical activity"),
-    ("20251011", "Reyes", "Paolo", "student", "male", 19, "School of Business", None, None, None),
-    ("EMP-0109", "Garcia", "Liza", "employee", "female", 42, "Registrar", "Ibuprofen", None, None),
-    ("20231010", "Mendoza", "Carlo", "student", "male", 21, "School of Engineering",
+    ("20251011", "Reyes", "Paolo", "student", "male", 19, "School of Business and Accountancy",
      None, None, None),
-    ("20261015", "Bautista", "Ana", "student", "female", 18, "Basic Education",
+    ("EMP-0109", "Garcia", "Liza", "employee", "female", 42, "Registrar", "Ibuprofen", None, None),
+    ("20231010", "Mendoza", "Carlo", "student", "male", 21,
+     "School of Engineering and Architecture", None, None, None),
+    ("20261015", "Bautista", "Ana", "student", "female", 18, BASIC_ED,
      "Penicillin", "G6PD deficiency", None),
-    ("20241008", "Lim", "Joseph", "student", "male", 20, "School of Nursing", None, None, None),
+    ("20241008", "Lim", "Joseph", "student", "male", 20,
+     "School of Nursing and Allied Medical Sciences", None, None, None),
     ("20221187", "Villanueva", "Rosa", "student", "female", 22, "School of Education",
      None, "Asthma", None),
     ("20240556", "Panergo", "Mark", "student", "male", 20, "School of Computing",

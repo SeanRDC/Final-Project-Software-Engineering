@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 from app.core.clock import utcnow
+from app.core.departments import HAU_DEPARTMENTS
 from app.models import RecordLock
 from tests.conftest import API, check_in
 
@@ -160,7 +161,13 @@ def test_notifications_read_state_is_per_user(nurse, doctor, patient, medicine):
 
 def test_options_lists_departments_and_enums(nurse, patient):
     options = nurse.get("/options").json()
-    assert options["departments"] == ["School of Computing"]
+    # The university's schools, with one already on record not listed twice.
+    assert options["departments"] == list(HAU_DEPARTMENTS)
+
+    nurse.post("/patients", json={
+        "patient_type": "employee", "id_number": "EMP-0042", "last_name": "Garcia",
+        "first_name": "Liza", "department": "Registrar"})
+    assert nurse.get("/options").json()["departments"] == [*HAU_DEPARTMENTS, "Registrar"]
     assert options["enums"]["visit_status"] == ["open", "completed", "cancelled"]
     assert options["enums"]["role"] == ["coordinator", "doctor", "clinic_staff"]
 

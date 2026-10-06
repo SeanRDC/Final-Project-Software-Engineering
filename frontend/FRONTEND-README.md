@@ -157,7 +157,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Search state is in the address** (`/patients?q=santos&type=student&page=2`). The sidebar search box lands on the same list, and the back button returns to the same results.
 - **Records are never deleted.** The coordinator can archive a record, which hides it from search and from check-in, and restore it at any time.
 - **One form** registers a patient and corrects a record. A correction sends only the fields that changed (`patientValues.ts`).
-- **Departments already in use** are offered as suggestions, so one school is not spelled several ways.
+- **The university's schools are offered as suggestions** for the department (`backend/app/core/departments.py`), followed by any other department or office already on record, so one school is not spelled several ways.
 - **Leaving with unsaved changes** makes the browser ask first.
 - **Check in from the record** opens check-in with the patient already chosen (`/check-in?patient=12`), and a visit links back to its patient record.
 - **Reading a record is audited** by the server each time the page loads it.
