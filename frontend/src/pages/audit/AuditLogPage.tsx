@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/table'
 import { formatTimeOfDay, humanize } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { describeDetail } from '@/pages/audit/auditDetail'
 
 const HEAD_CLASS = 'h-9 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase'
 const DAY = /^\d{4}-\d{2}-\d{2}$/
@@ -288,7 +289,7 @@ export function AuditLogPage() {
                           )}
                         </TableCell>
                         <TableCell className="max-w-96 py-2.5 pr-4 text-[13px] break-words whitespace-normal text-muted-foreground">
-                          {entry.detail ?? '—'}
+                          {describeDetail(entry.detail)}
                         </TableCell>
                       </TableRow>
                     )
