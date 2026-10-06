@@ -23,6 +23,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { parseDay, toDayString } from '@/lib/format'
 import { useClinicToday } from '@/lib/useClinicToday'
 import { SummaryView } from '@/pages/reports/SummaryView'
+import { termPresets } from '@/pages/reports/terms'
 import {
   formatPeriod,
   isValidPeriod,
@@ -49,6 +50,7 @@ function presets(today: string): { label: string; period: Period }[] {
       },
     },
     { label: 'This year', period: { start: `${year}-01-01`, end: today } },
+    ...termPresets(today),
   ]
 }
 

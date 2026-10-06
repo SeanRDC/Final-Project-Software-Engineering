@@ -131,6 +131,18 @@ test('changes the period with a preset and keeps it in the address', async () =>
   await waitFor(() => expect(queries.at(-1)).toBe('?start=2026-09-01&end=2026-09-30'))
 })
 
+test('offers the semester and summer term as periods', async () => {
+  const { queries } = clinic()
+  const user = userEvent.setup()
+  renderReports(nurse, '/reports')
+
+  await screen.findByText('Different patients')
+  await user.click(screen.getByRole('button', { name: 'Summer term' }))
+
+  expect(screen.getByTestId('address')).toHaveTextContent('/reports?from=2026-06-01&to=2026-07-31')
+  await waitFor(() => expect(queries.at(-1)).toBe('?start=2026-06-01&end=2026-07-31'))
+})
+
 test('lists saved reports; only the coordinator can save one', async () => {
   clinic()
   renderReports(nurse, '/reports')
