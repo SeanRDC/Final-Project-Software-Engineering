@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2850" height="1960" viewBox="0 0 2850 1960" font-family="Arial, Helvetica, sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">HAU-Sync Level 1 data flow diagram</title>
+<desc id="desc">The seven processes of HAU-Sync, their seven data stores and the data flows between them and the Clinic Staff, Doctor and Clinic Coordinator.</desc>
+<defs>
+<marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M0,0 L16,7 L0,14 Z" fill="#1F2933"/></marker>
+<marker id="open" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M1,1 L15,7 L1,13" fill="none" stroke="#1F2933" stroke-width="2"/></marker>
+<marker id="hollow" markerUnits="userSpaceOnUse" markerWidth="22" markerHeight="20" refX="21" refY="10" orient="auto"><path d="M1,1 L21,10 L1,19 Z" fill="#FFFFFF" stroke="#1F2933" stroke-width="2"/></marker>
+</defs>
+<rect width="2850" height="1960" fill="#FFFFFF"/>
+<text x="1425.0" y="62" font-size="38" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="1425.0" dy="0.0">Level 1 Diagram (Data Flow Diagram)</tspan></text>
+<text x="1425.0" y="102" font-size="22" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="1425.0" dy="0.0">HAU-Sync: Patient Record Management and Appointment System</tspan></text>
+<rect x="40" y="180" width="210" height="1550" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="145.0" y="934.6" font-size="24" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="145.0" dy="0.0">Clinic</tspan><tspan x="145.0" dy="28.8">Staff</tspan></text>
+<text x="145.0" y="994.2" font-size="16" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="145.0" dy="0.0">(Nurse / Student</tspan><tspan x="145.0" dy="20.0">Assistant)</tspan></text>
+<rect x="2600" y="180" width="210" height="1550" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="2705.0" y="934.6" font-size="24" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="2705.0" dy="0.0">Clinic</tspan><tspan x="2705.0" dy="28.8">Coordinator</tspan></text>
+<text x="2705.0" y="994.2" font-size="16" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="2705.0" dy="0.0">(Administrator)</tspan></text>
+<rect x="1180" y="1065" width="300" height="120" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="1330.0" y="1119.0" font-size="24" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="1330.0" dy="0.0">Doctor</tspan></text>
+<text x="1330.0" y="1149.8" font-size="16" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="1330.0" dy="0.0">(Attending Physician)</tspan></text>
+<rect x="560" y="200" width="300" height="140" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="560" y1="240" x2="860" y2="240" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="710.0" y="228" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">1.0</tspan></text>
+<text x="710.0" y="285.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">Manage</tspan><tspan x="710.0" dy="22.5">Patient Records</tspan></text>
+<rect x="560" y="510" width="300" height="140" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="560" y1="550" x2="860" y2="550" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="710.0" y="538" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">2.0</tspan></text>
+<text x="710.0" y="595.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">Manage</tspan><tspan x="710.0" dy="22.5">Appointments</tspan></text>
+<rect x="1180" y="790" width="300" height="150" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="1180" y1="830" x2="1480" y2="830" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="1330.0" y="818" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1330.0" dy="0.0">3.0</tspan></text>
+<text x="1330.0" y="880.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1330.0" dy="0.0">Record Visits and</tspan><tspan x="1330.0" dy="22.5">Consultations</tspan></text>
+<rect x="560" y="1040" width="300" height="140" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="560" y1="1080" x2="860" y2="1080" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="710.0" y="1068" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">4.0</tspan></text>
+<text x="710.0" y="1125.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="710.0" dy="0.0">Manage Medicine</tspan><tspan x="710.0" dy="22.5">Inventory</tspan></text>
+<rect x="2010" y="680" width="300" height="150" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="2010" y1="720" x2="2310" y2="720" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="2160.0" y="708" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="2160.0" dy="0.0">5.0</tspan></text>
+<text x="2160.0" y="770.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="2160.0" dy="0.0">Generate Reports</tspan><tspan x="2160.0" dy="22.5">and Statistics</tspan></text>
+<rect x="1180" y="1330" width="300" height="160" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="1180" y1="1370" x2="1480" y2="1370" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="1330.0" y="1358" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1330.0" dy="0.0">6.0</tspan></text>
+<text x="1330.0" y="1425.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1330.0" dy="0.0">Sign In and</tspan><tspan x="1330.0" dy="22.5">Display Dashboard</tspan></text>
+<rect x="2010" y="1340" width="300" height="140" rx="18" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<line x1="2010" y1="1380" x2="2310" y2="1380" stroke="#9DB8D6" stroke-width="1.5"/>
+<text x="2160.0" y="1368" font-size="19" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="2160.0" dy="0.0">7.0</tspan></text>
+<text x="2160.0" y="1425.05" font-size="18" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="2160.0" dy="0.0">Manage Accounts</tspan><tspan x="2160.0" dy="22.5">and Audit Log</tspan></text>
+<rect x="585" y="400" width="250" height="48" fill="#E8EEF6"/>
+<path d="M835,400 L585,400 L585,448 L835,448 M633,400 L633,448" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="609" y="429.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="609" dy="0.0">D1</tspan></text>
+<text x="734.0" y="429.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="734.0" dy="0.0">Patient Records</tspan></text>
+<rect x="585" y="710" width="250" height="48" fill="#E8EEF6"/>
+<path d="M835,710 L585,710 L585,758 L835,758 M633,710 L633,758" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="609" y="739.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="609" dy="0.0">D2</tspan></text>
+<text x="734.0" y="739.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="734.0" dy="0.0">Appointments</tspan></text>
+<rect x="1620" y="841" width="250" height="48" fill="#E8EEF6"/>
+<path d="M1870,841 L1620,841 L1620,889 L1870,889 M1668,841 L1668,889" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1644" y="870.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="1644" dy="0.0">D3</tspan></text>
+<text x="1769.0" y="870.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="1769.0" dy="0.0">Visit Records</tspan></text>
+<rect x="585" y="1240" width="250" height="48" fill="#E8EEF6"/>
+<path d="M835,1240 L585,1240 L585,1288 L835,1288 M633,1240 L633,1288" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="609" y="1269.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="609" dy="0.0">D4</tspan></text>
+<text x="734.0" y="1269.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="734.0" dy="0.0">Medicine Inventory</tspan></text>
+<rect x="2035" y="890" width="250" height="48" fill="#E8EEF6"/>
+<path d="M2285,890 L2035,890 L2035,938 L2285,938 M2083,890 L2083,938" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="2059" y="919.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="2059" dy="0.0">D5</tspan></text>
+<text x="2184.0" y="919.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="2184.0" dy="0.0">Saved Reports</tspan></text>
+<rect x="1620" y="1396" width="250" height="48" fill="#E8EEF6"/>
+<path d="M1870,1396 L1620,1396 L1620,1444 L1870,1444 M1668,1396 L1668,1444" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1644" y="1425.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="1644" dy="0.0">D6</tspan></text>
+<text x="1769.0" y="1425.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="1769.0" dy="0.0">User Accounts</tspan></text>
+<rect x="2035" y="1540" width="250" height="48" fill="#E8EEF6"/>
+<path d="M2285,1540 L2035,1540 L2035,1588 L2285,1588 M2083,1540 L2083,1588" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="2059" y="1569.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="2059" dy="0.0">D7</tspan></text>
+<text x="2184.0" y="1569.6" font-size="16" font-weight="bold" text-anchor="middle" fill="#1F4670"><tspan x="2184.0" dy="0.0">Audit Log</tspan></text>
+<path d="M250,240 L560,240" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="211.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">Patient details, health background,</tspan><tspan x="405" dy="20.0">attachments, corrections</tspan></text>
+<path d="M560,300 L250,300" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="271.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">Patient record, health alerts,</tspan><tspan x="405" dy="20.0">search results</tspan></text>
+<path d="M250,550 L560,550" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="521.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">Appointment bookings, reschedules,</tspan><tspan x="405" dy="20.0">arrivals and no-shows</tspan></text>
+<path d="M560,610 L250,610" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="601.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">Appointment schedule and status</tspan></text>
+<path d="M250,835 L1180,835" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="270" y="806.0" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="270" dy="0.0">Check-in, complaint, vital signs, assessment,</tspan><tspan x="270" dy="20.0">treatment, medicine released</tspan></text>
+<path d="M1180,895 L250,895" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="270" y="886.0" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="270" dy="0.0">Today's visit log, visit history</tspan></text>
+<path d="M250,1080 L560,1080" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="1051.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">New medicines, stock received,</tspan><tspan x="405" dy="20.0">adjustments</tspan></text>
+<path d="M560,1140 L250,1140" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="405" y="1131.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="405" dy="0.0">Stock levels, release log</tspan></text>
+<path d="M250,1415 L1180,1415" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="270" y="1406.0" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="270" dy="0.0">Username and password</tspan></text>
+<path d="M1180,1465 L250,1465" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="270" y="1456.0" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="270" dy="0.0">Main menu: dashboard, notifications</tspan></text>
+<path d="M1300,1065 L1300,940" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1289" y="988.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1289" dy="0.0">Consultation notes,</tspan><tspan x="1289" dy="20.0">diagnosis,</tspan><tspan x="1289" dy="20.0">medication details</tspan></text>
+<path d="M1400,940 L1400,1065" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1411" y="978.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1411" dy="0.0">Complaint, vital signs,</tspan><tspan x="1411" dy="20.0">nurse assessment,</tspan><tspan x="1411" dy="20.0">health alerts,</tspan><tspan x="1411" dy="20.0">visit history</tspan></text>
+<path d="M1300,1185 L1300,1330" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1289" y="1253.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1289" dy="0.0">Username and</tspan><tspan x="1289" dy="20.0">password</tspan></text>
+<path d="M1400,1330 L1400,1185" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1411" y="1253.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1411" dy="0.0">Main menu: dashboard,</tspan><tspan x="1411" dy="20.0">notifications</tspan></text>
+<path d="M2600,270 L860,270" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1730" y="261.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1730" dy="0.0">Archive or restore a patient record</tspan></text>
+<path d="M2600,580 L1959,580 A9,9 0 0 0 1941,580 L1259,580 A9,9 0 0 0 1241,580 L860,580" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1600" y="571.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1600" dy="0.0">Appointment confirmation or cancellation</tspan></text>
+<path d="M2600,720 L2310,720" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2455" y="691.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2455" dy="0.0">Report period to generate</tspan><tspan x="2455" dy="20.0">(semester or summer)</tspan></text>
+<path d="M2310,790 L2600,790" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2455" y="761.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2455" dy="0.0">Saved reports, statistics,</tspan><tspan x="2455" dy="20.0">CSV export</tspan></text>
+<path d="M2600,1380 L2310,1380" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2455" y="1351.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2455" dy="0.0">New accounts, role changes,</tspan><tspan x="2455" dy="20.0">password resets</tspan></text>
+<path d="M2310,1440 L2600,1440" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2455" y="1431.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2455" dy="0.0">Account list, audit trail</tspan></text>
+<path d="M2600,1640 L1400,1640 L1400,1490" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2000" y="1631.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2000" dy="0.0">Username and password</tspan></text>
+<path d="M1300,1490 L1300,1685 L2600,1685" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2000" y="1676.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2000" dy="0.0">Main menu: dashboard, notifications</tspan></text>
+<path d="M660,340 L660,400" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="649" y="375.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="649" dy="0.0">New or updated record</tspan></text>
+<path d="M760,400 L760,340" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="771" y="375.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="771" dy="0.0">Patient record</tspan></text>
+<path d="M660,650 L660,710" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="649" y="685.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="649" dy="0.0">Booking or change</tspan></text>
+<path d="M760,710 L760,650" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="771" y="685.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="771" dy="0.0">Appointment</tspan></text>
+<path d="M660,1180 L660,1240" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="649" y="1215.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="649" dy="0.0">Stock movement</tspan></text>
+<path d="M760,1240 L760,1180" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="771" y="1215.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="771" dy="0.0">Stock level</tspan></text>
+<path d="M1480,853 L1620,853" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1550" y="844.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1550" dy="0.0">Visit record</tspan></text>
+<path d="M1620,877 L1480,877" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1550" y="899" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1550" dy="0.0">Visit history</tspan></text>
+<path d="M2110,830 L2110,890" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2099" y="865.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2099" dy="0.0">Report snapshot</tspan></text>
+<path d="M2210,890 L2210,830" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2221" y="865.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2221" dy="0.0">Saved figures</tspan></text>
+<path d="M2010,1408 L1870,1408" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1940" y="1399.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1940" dy="0.0">Account changes</tspan></text>
+<path d="M1870,1434 L2010,1434" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1940" y="1456" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1940" dy="0.0">Account list</tspan></text>
+<path d="M2110,1480 L2110,1540" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2099" y="1515.6" font-size="16" font-weight="normal" text-anchor="end" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2099" dy="0.0">Audit entries</tspan></text>
+<path d="M2210,1540 L2210,1480" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="2221" y="1515.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="2221" dy="0.0">Audit trail</tspan></text>
+<path d="M835,414 L1950,414 L1950,700 L2010,700" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1650" y="405.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1650" dy="0.0">Patient type, department</tspan></text>
+<path d="M835,436 L1250,436 L1250,790" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1040" y="458" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1040" dy="0.0">Patient identity, health alerts</tspan></text>
+<path d="M835,734 L1215,734 L1215,790" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1025" y="725.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1025" dy="0.0">Confirmed appointment</tspan></text>
+<path d="M1180,922 L1120,922 L1120,990 L710,990 L710,1040" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="915" y="981.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="915" dy="0.0">Medicine released (item, quantity)</tspan></text>
+<path d="M835,1264 L1100,1264 L1100,1370 L1180,1370" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="968" y="1255.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="968" dy="0.0">Low-stock items</tspan></text>
+<path d="M1800,841 L1800,790 L2010,790" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1905" y="761.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1905" dy="0.0">Visits, outcomes,</tspan><tspan x="1905" dy="20.0">medicines released</tspan></text>
+<path d="M1660,889 L1660,1352 L1480,1352" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1671" y="1255.6" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1671" dy="0.0">Today's visits</tspan></text>
+<path d="M1620,1420 L1480,1420" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1550" y="1411.0" font-size="16" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1550" dy="0.0">Account, role</tspan></text>
+<line x1="300" y1="1790" x2="2550" y2="1790" stroke="#CBD2D9" stroke-width="2"/>
+<rect x="753.6" y="1820" width="70" height="40" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="837.6" y="1847" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="837.6" dy="0.0">External entity</tspan></text>
+<rect x="1041.6" y="1820" width="70" height="40" rx="12" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<text x="1125.6" y="1847" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1125.6" dy="0.0">Process</tspan></text>
+<rect x="1252.8" y="1822" width="80" height="36" fill="#E8EEF6"/>
+<path d="M1332.8,1822 L1252.8,1822 L1252.8,1858 L1332.8,1858 M1278.8,1822 L1278.8,1858" fill="none" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1346.8" y="1847" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1346.8" dy="0.0">Data store</tspan></text>
+<path d="M1502.8,1840 L1582.8,1840" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1596.8" y="1847" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1596.8" dy="0.0">Data flow</tspan></text>
+<path d="M1743.1999999999998,1840 L1768.1999999999998,1840 A9,9 0 0 1 1786.1999999999998,1840 L1823.1999999999998,1840" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round"/>
+<line x1="1777.1999999999998" y1="1820" x2="1777.1999999999998" y2="1860" stroke="#1F2933" stroke-width="2.4"/>
+<text x="1837.1999999999998" y="1847" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1837.1999999999998" dy="0.0">Lines cross without joining</tspan></text>
+<text x="1425.0" y="1900" font-size="18" font-weight="normal" text-anchor="middle" fill="#52606D" font-style="italic"><tspan x="1425.0" dy="0.0">Every process that changes a record also writes an audit entry to D7; only the flow from 7.0 is drawn. The Clinic Coordinator can also do everything Clinic Staff and the Doctor can.</tspan><tspan x="1425.0" dy="26.1">Patients do not use the system: clinic staff enter their details. Each flow to or from an external entity appears with the same wording in the Level 0 diagram.</tspan></text>
+</svg>

@@ -7,6 +7,7 @@ project paper. Click a diagram to open it at full size.
 | Diagram | Files |
 | --- | --- |
 | Level 0 (context diagram) | [`level-0-context-diagram.svg`](level-0-context-diagram.svg), [`.png`](level-0-context-diagram.png) |
+| Level 1 (data flow diagram) | [`level-1-data-flow-diagram.svg`](level-1-data-flow-diagram.svg), [`.png`](level-1-data-flow-diagram.png) |
 
 ## Level 0 Diagram (Context Diagram)
 
@@ -22,3 +23,29 @@ The whole system as one process, with the people who exchange data with it.
 - **The coordinator's flows.** The Clinic Coordinator can also do everything Clinic Staff and
   the Doctor can. Only the flows that belong to the coordinator alone are drawn, so the same
   flow is not repeated three times.
+
+## Level 1 Diagram (Data Flow Diagram)
+
+Process 0 broken into its seven processes and seven data stores.
+
+[![Level 1 data flow diagram of HAU-Sync](level-1-data-flow-diagram.svg)](level-1-data-flow-diagram.svg)
+
+| Process | What it covers | Requirements |
+| --- | --- | --- |
+| 1.0 Manage Patient Records | Register, search, update, archive, attachments | FR-02, FR-03, FR-04, FR-10 |
+| 2.0 Manage Appointments | Book, reschedule, confirm or cancel, arrivals | FR-07 |
+| 3.0 Record Visits and Consultations | Check-in, vital signs, assessment, consultation, medicine release | FR-05, FR-06, FR-08, FR-09 |
+| 4.0 Manage Medicine Inventory | Medicines, stock received, adjustments, release log | FR-11, FR-12 |
+| 5.0 Generate Reports and Statistics | Live statistics, saved semester and summer reports, CSV | FR-13, FR-14 |
+| 6.0 Sign In and Display Dashboard | Sign-in and the Clinic Main Menu with its notifications | FR-01, FR-12, FR-15 |
+| 7.0 Manage Accounts and Audit Log | Accounts, roles, password resets, the audit trail | FR-01 |
+
+- **Balanced with Level 0.** Every flow that touches an external entity carries the same
+  wording in both diagrams: 22 flows in each.
+- **Stock is only changed by 4.0.** A medicine release goes from 3.0 to 4.0, which deducts the
+  stock, the same rule the code follows (`inventory.apply_movement`).
+- **Audit entries.** Every process that changes a record writes an audit entry to D7. Only the
+  flow from 7.0 is drawn, to keep the diagram readable.
+- **Left out on purpose.** The dashboard and the reports also read the appointments in D2, and
+  every role can view the statistics. Those read-only flows are not drawn because they would
+  only add crossing lines.
