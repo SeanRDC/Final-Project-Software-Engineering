@@ -8,6 +8,7 @@ project paper. Click a diagram to open it at full size.
 | --- | --- |
 | Level 0 (context diagram) | [`level-0-context-diagram.svg`](level-0-context-diagram.svg), [`.png`](level-0-context-diagram.png) |
 | Level 1 (data flow diagram) | [`level-1-data-flow-diagram.svg`](level-1-data-flow-diagram.svg), [`.png`](level-1-data-flow-diagram.png) |
+| Use case diagram | [`use-case-diagram.svg`](use-case-diagram.svg), [`.png`](use-case-diagram.png) |
 
 ## Level 0 Diagram (Context Diagram)
 
@@ -49,3 +50,17 @@ Process 0 broken into its seven processes and seven data stores.
 - **Left out on purpose.** The dashboard and the reports also read the appointments in D2, and
   every role can view the statistics. Those read-only flows are not drawn because they would
   only add crossing lines.
+
+## Use Case Diagram
+
+What each kind of account can do, taken from the permission map in
+`backend/app/core/permissions.py`.
+
+[![Use case diagram of HAU-Sync](use-case-diagram.svg)](use-case-diagram.svg)
+
+- **Clinic User** is the general actor: the use cases every signed-in account has.
+- **Clinic Staff** and **Doctor** inherit those and add their own.
+- **Clinic Coordinator** inherits from both, and adds the coordinator-only use cases.
+- **«include»** Releasing medicine always deducts the stock and writes the release log.
+- **«extend»** A check-in can start from a confirmed appointment, and a release raises a
+  low-stock notification when the stock reaches the threshold.
