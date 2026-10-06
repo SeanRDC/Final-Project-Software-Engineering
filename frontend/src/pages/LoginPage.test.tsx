@@ -7,7 +7,13 @@ import { AuthContext, type AuthState } from '@/auth/authContext'
 import { LoginPage } from '@/pages/LoginPage'
 
 function renderLogin(login: AuthState['login']) {
-  const value: AuthState = { user: null, token: null, login, logout: vi.fn() }
+  const value: AuthState = {
+    user: null,
+    token: null,
+    login,
+    logout: vi.fn(),
+    updateUser: vi.fn(),
+  }
   return render(
     <AuthContext value={value}>
       <LoginPage />
