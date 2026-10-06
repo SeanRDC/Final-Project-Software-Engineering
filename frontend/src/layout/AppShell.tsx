@@ -53,7 +53,7 @@ export function AppShell() {
       </a>
 
       <TopBar title={title} onOpenNavigation={() => setIsDrawerOpen(true)}>
-        <ConnectionStatus className="max-md:hidden" />
+        <ConnectionStatus />
         <NotificationBell unread={unread} />
         <UserMenu />
       </TopBar>
