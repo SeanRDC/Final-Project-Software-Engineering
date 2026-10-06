@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1670" viewBox="0 0 2200 1670" font-family="Arial, Helvetica, sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">HAU-Sync use case diagram</title>
+<desc id="desc">The use cases of HAU-Sync and the actors who perform them: Clinic User, Clinic Staff, Doctor and Clinic Coordinator.</desc>
+<defs>
+<marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M0,0 L16,7 L0,14 Z" fill="#1F2933"/></marker>
+<marker id="open" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M1,1 L15,7 L1,13" fill="none" stroke="#1F2933" stroke-width="2"/></marker>
+<marker id="hollow" markerUnits="userSpaceOnUse" markerWidth="22" markerHeight="20" refX="21" refY="10" orient="auto"><path d="M1,1 L21,10 L1,19 Z" fill="#FFFFFF" stroke="#1F2933" stroke-width="2"/></marker>
+</defs>
+<rect width="2200" height="1670" fill="#FFFFFF"/>
+<text x="1100.0" y="54" font-size="38" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="1100.0" dy="0.0">Use Case Diagram</tspan></text>
+<text x="1100.0" y="90" font-size="22" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="1100.0" dy="0.0">HAU-Sync: Patient Record Management and Appointment System</tspan></text>
+<rect x="380" y="150" width="1440" height="1375" fill="#FAFBFC" stroke="#1F2933" stroke-width="2.5"/>
+<text x="1100.0" y="190" font-size="26" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="1100.0" dy="0.0">HAU-Sync</tspan></text>
+<text x="590" y="222" font-size="15" font-weight="bold" text-anchor="middle" fill="#52606D"><tspan x="590" dy="0.0">ALL CLINIC USERS</tspan></text>
+<ellipse cx="590" cy="270" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="275.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Sign in</tspan></text>
+<ellipse cx="590" cy="344" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="349.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Change own password</tspan></text>
+<ellipse cx="590" cy="418" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="423.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">View dashboard and notifications</tspan></text>
+<ellipse cx="590" cy="492" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="497.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Search and view patient records</tspan></text>
+<ellipse cx="590" cy="566" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="571.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Register and update patient records</tspan></text>
+<ellipse cx="590" cy="640" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="645.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Upload and view patient attachments</tspan></text>
+<ellipse cx="590" cy="714" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="719.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">View today's visits and visit history</tspan></text>
+<ellipse cx="590" cy="788" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="793.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Complete a visit</tspan></text>
+<ellipse cx="590" cy="872" rx="185" ry="40" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="867.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">View appointments, medicine stock</tspan><tspan x="590" dy="21.2">and the release log</tspan></text>
+<ellipse cx="590" cy="956" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="961.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">View statistics and saved reports</tspan></text>
+<text x="590" y="1024" font-size="15" font-weight="bold" text-anchor="middle" fill="#52606D"><tspan x="590" dy="0.0">CLINIC STAFF</tspan></text>
+<ellipse cx="590" cy="1072" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1077.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Check in a patient</tspan></text>
+<ellipse cx="590" cy="1156" rx="185" ry="40" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1151.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Record vital signs, assessment</tspan><tspan x="590" dy="21.2">and treatment</tspan></text>
+<ellipse cx="590" cy="1240" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1245.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Release medicine to a patient</tspan></text>
+<ellipse cx="590" cy="1314" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1319.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Cancel a visit</tspan></text>
+<ellipse cx="590" cy="1388" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1393.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Book and reschedule appointments</tspan></text>
+<ellipse cx="590" cy="1462" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="590" y="1467.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="590" dy="0.0">Add medicines and update stock</tspan></text>
+<text x="1610" y="222" font-size="15" font-weight="bold" text-anchor="middle" fill="#52606D"><tspan x="1610" dy="0.0">DOCTOR</tspan></text>
+<ellipse cx="1610" cy="285" rx="185" ry="40" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="280.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Write consultation notes, diagnosis</tspan><tspan x="1610" dy="21.2">and medication details</tspan></text>
+<text x="1610" y="585" font-size="15" font-weight="bold" text-anchor="middle" fill="#52606D"><tspan x="1610" dy="0.0">CLINIC COORDINATOR</tspan></text>
+<ellipse cx="1610" cy="640" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="645.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Confirm or cancel appointments</tspan></text>
+<ellipse cx="1610" cy="736" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="741.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Archive or restore patient records</tspan></text>
+<ellipse cx="1610" cy="832" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="837.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Generate and delete saved reports</tspan></text>
+<ellipse cx="1610" cy="928" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="933.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Delete patient attachments</tspan></text>
+<ellipse cx="1610" cy="1024" rx="185" ry="40" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="1019.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">Manage user accounts</tspan><tspan x="1610" dy="21.2">(create, change role, reset password)</tspan></text>
+<ellipse cx="1610" cy="1120" rx="185" ry="30" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1610" y="1125.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1610" dy="0.0">View the audit log</tspan></text>
+<ellipse cx="1090" cy="1072" rx="185" ry="40" fill="#FFFFFF" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1090" y="1067.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1090" dy="0.0">Check in from a</tspan><tspan x="1090" dy="21.2">confirmed appointment</tspan></text>
+<ellipse cx="1090" cy="1240" rx="185" ry="40" fill="#FFFFFF" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1090" y="1235.325" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1090" dy="0.0">Deduct stock and</tspan><tspan x="1090" dy="21.2">log the release</tspan></text>
+<ellipse cx="1090" cy="1390" rx="185" ry="30" fill="#FFFFFF" stroke="#2D6297" stroke-width="2.5"/>
+<text x="1090" y="1395.95" font-size="17" font-weight="normal" text-anchor="middle" fill="#1F2933"><tspan x="1090" dy="0.0">Raise a low-stock notification</tspan></text>
+<path d="M905,1072 L775,1072" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" stroke-dasharray="9 7" marker-end="url(#open)"/>
+<text x="840.0" y="1063.0" font-size="15" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="840.0" dy="0.0">«extend»</tspan></text>
+<text x="840.0" y="1089" font-size="13" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="840.0" dy="0.0">(has a confirmed</tspan><tspan x="840.0" dy="16.2">appointment)</tspan></text>
+<path d="M775,1240 L905,1240" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" stroke-dasharray="9 7" marker-end="url(#open)"/>
+<text x="840.0" y="1231.0" font-size="15" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="840.0" dy="0.0">«include»</tspan></text>
+<path d="M1090,1360 L1090,1280" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" stroke-dasharray="9 7" marker-end="url(#open)"/>
+<text x="1101" y="1306.5" font-size="15" font-weight="normal" text-anchor="start" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1101" dy="0.0">«extend»</tspan><tspan x="1101" dy="18.8">(stock at or below</tspan><tspan x="1101" dy="18.8">the threshold)</tspan></text>
+<g fill="none" stroke="#1F2933" stroke-width="3" stroke-linecap="round"><circle cx="190" cy="514" r="17" fill="#FFFFFF"/><path d="M190,531 L190,574 M160,548 L220,548 M190,574 L166,610 M190,574 L214,610"/></g>
+<text x="190" y="638" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="190" dy="0.0">Clinic User</tspan></text>
+<text x="190" y="660" font-size="15" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="190" dy="0.0">(any signed-in account)</tspan></text>
+<g fill="none" stroke="#1F2933" stroke-width="3" stroke-linecap="round"><circle cx="190" cy="1184" r="17" fill="#FFFFFF"/><path d="M190,1201 L190,1244 M160,1218 L220,1218 M190,1244 L166,1280 M190,1244 L214,1280"/></g>
+<text x="190" y="1308" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="190" dy="0.0">Clinic Staff</tspan></text>
+<text x="190" y="1330" font-size="15" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="190" dy="0.0">(Nurse / Student Assistant)</tspan></text>
+<g fill="none" stroke="#1F2933" stroke-width="3" stroke-linecap="round"><circle cx="2010" cy="239" r="17" fill="#FFFFFF"/><path d="M2010,256 L2010,299 M1980,273 L2040,273 M2010,299 L1986,335 M2010,299 L2034,335"/></g>
+<text x="2010" y="363" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="2010" dy="0.0">Doctor</tspan></text>
+<text x="2010" y="385" font-size="15" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="2010" dy="0.0">(Attending Physician)</tspan></text>
+<g fill="none" stroke="#1F2933" stroke-width="3" stroke-linecap="round"><circle cx="2010" cy="824" r="17" fill="#FFFFFF"/><path d="M2010,841 L2010,884 M1980,858 L2040,858 M2010,884 L1986,920 M2010,884 L2034,920"/></g>
+<text x="2010" y="948" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="2010" dy="0.0">Clinic Coordinator</tspan></text>
+<text x="2010" y="970" font-size="15" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="2010" dy="0.0">(Administrator)</tspan></text>
+<line x1="230" y1="550" x2="405" y2="270" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="344" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="418" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="492" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="566" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="640" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="714" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="788" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="872" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="550" x2="405" y2="956" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1072" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1156" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1240" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1314" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1388" stroke="#1F2933" stroke-width="2"/>
+<line x1="230" y1="1220" x2="405" y2="1462" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="275" x2="1795" y2="285" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="640" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="736" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="832" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="928" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="1024" stroke="#1F2933" stroke-width="2"/>
+<line x1="1970" y1="860" x2="1795" y2="1120" stroke="#1F2933" stroke-width="2"/>
+<path d="M190,1155 L190,672" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" marker-end="url(#hollow)"/>
+<path d="M2010,210 L2010,122 L190,122 L190,485" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" marker-end="url(#hollow)"/>
+<path d="M2010,795 L2010,397" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" marker-end="url(#hollow)"/>
+<path d="M2010,982 L2010,1570 L190,1570 L190,1342" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" marker-end="url(#hollow)"/>
+<path d="M880,330 L1274,330 L1300,356 L1300,800 L880,800 Z M1274,330 L1274,356 L1300,356" fill="#FFF9E6" stroke="#D9962F" stroke-width="2"/>
+<text x="904" y="372" font-size="19" font-weight="bold" text-anchor="start" fill="#1F2933"><tspan x="904" dy="0.0">Notes</tspan></text>
+<circle cx="910" cy="408" r="4" fill="#1F2933"/>
+<text x="926" y="414" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">Every use case except Sign in needs</tspan><tspan x="926" dy="20.0">a signed-in account.</tspan></text>
+<circle cx="910" cy="464" r="4" fill="#1F2933"/>
+<text x="926" y="470" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">A hollow arrow points from an actor to</tspan><tspan x="926" dy="20.0">the actor it inherits use cases from.</tspan></text>
+<circle cx="910" cy="520" r="4" fill="#1F2933"/>
+<text x="926" y="526" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">Clinic Staff and Doctor can do everything</tspan><tspan x="926" dy="20.0">a Clinic User can.</tspan></text>
+<circle cx="910" cy="576" r="4" fill="#1F2933"/>
+<text x="926" y="582" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">The Clinic Coordinator can do everything</tspan><tspan x="926" dy="20.0">Clinic Staff and the Doctor can, plus</tspan><tspan x="926" dy="20.0">the coordinator-only use cases.</tspan></text>
+<circle cx="910" cy="652" r="4" fill="#1F2933"/>
+<text x="926" y="658" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">Nurses and student assistants share</tspan><tspan x="926" dy="20.0">the Clinic Staff role.</tspan></text>
+<circle cx="910" cy="708" r="4" fill="#1F2933"/>
+<text x="926" y="714" font-size="16" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="926" dy="0.0">Patients do not use the system:</tspan><tspan x="926" dy="20.0">clinic staff enter their details.</tspan></text>
+<ellipse cx="460" cy="1622" rx="40" ry="17" fill="#E3EEF9" stroke="#2D6297" stroke-width="2.5"/>
+<text x="514" y="1628" font-size="18" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="514" dy="0.0">Use case</tspan></text>
+<ellipse cx="670" cy="1622" rx="40" ry="17" fill="#FFFFFF" stroke="#2D6297" stroke-width="2.5"/>
+<text x="724" y="1628" font-size="18" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="724" dy="0.0">Included or extending use case</tspan></text>
+<line x1="1040" y1="1622" x2="1110" y2="1622" stroke="#1F2933" stroke-width="2"/>
+<text x="1124" y="1628" font-size="18" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1124" dy="0.0">Association</tspan></text>
+<path d="M1270,1622 L1350,1622" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" marker-end="url(#hollow)"/>
+<text x="1364" y="1628" font-size="18" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1364" dy="0.0">Generalisation</tspan></text>
+<path d="M1540,1622 L1620,1622" fill="none" stroke="#1F2933" stroke-width="2" stroke-linejoin="round" stroke-dasharray="9 7" marker-end="url(#open)"/>
+<text x="1634" y="1628" font-size="18" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1634" dy="0.0">Include / extend</tspan></text>
+</svg>
