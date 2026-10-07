@@ -348,7 +348,7 @@ Point `DATABASE_URL` at the PostgreSQL database and run `alembic upgrade head` t
 These follow the project paper, the interview with the clinic and the dashboard design. Where those sources disagreed, the choice is noted here.
 
 - **Three roles.** The paper names a receptionist in some sections and nurses and student assistants in others. The system uses `coordinator`, `doctor` and `clinic_staff`, with nurses and student assistants sharing `clinic_staff`.
-- **No patient accounts.** Patients appear in the Level 0 diagram as a source of information, but the clinic asked for a clinic-only system. Staff enter everything.
+- **No patient accounts.** The clinic asked for a clinic-only system, so patients are not an external entity in the Level 0 diagram. Staff enter everything.
 - **Appointments need the coordinator's approval.** Staff bookings start as `pending`. Only the coordinator confirms or cancels. A staff reschedule of a confirmed appointment returns it to `pending`. Only a confirmed appointment can be checked in; a patient whose appointment is still pending can be checked in as a walk-in.
 - **Records are not deleted.** The clinic described the patient record as its legal basis, and FR-02 lists create, view, update and maintain. Patients are archived and visits are cancelled instead. Only attachments and saved reports can be deleted, by the coordinator.
 - **Stock changes go through movements.** A medicine's quantity is never edited directly. Stock-in, release and adjustment each write a `stock_movements` row, so the release log and the quantity always agree.

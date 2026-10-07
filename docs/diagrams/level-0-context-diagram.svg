@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1560" viewBox="0 0 2100 1560" font-family="Arial, Helvetica, sans-serif" role="img" aria-labelledby="title desc">
+<title id="title">HAU-Sync Level 0 context diagram</title>
+<desc id="desc">The HAU-Sync system as one process with its three external entities: Clinic Staff, Doctor and Clinic Coordinator, and every data flow between them.</desc>
+<defs>
+<marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M0,0 L16,7 L0,14 Z" fill="#1F2933"/></marker>
+<marker id="open" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="14" refX="15" refY="7" orient="auto"><path d="M1,1 L15,7 L1,13" fill="none" stroke="#1F2933" stroke-width="2"/></marker>
+<marker id="hollow" markerUnits="userSpaceOnUse" markerWidth="22" markerHeight="20" refX="21" refY="10" orient="auto"><path d="M1,1 L21,10 L1,19 Z" fill="#FFFFFF" stroke="#1F2933" stroke-width="2"/></marker>
+</defs>
+<rect width="2100" height="1560" fill="#FFFFFF"/>
+<text x="1050.0" y="62" font-size="38" font-weight="bold" text-anchor="middle" fill="#1F2933"><tspan x="1050.0" dy="0.0">Level 0 Diagram (Context Diagram)</tspan></text>
+<text x="1050.0" y="102" font-size="22" font-weight="normal" text-anchor="middle" fill="#52606D"><tspan x="1050.0" dy="0.0">HAU-Sync: Patient Record Management and Appointment System</tspan></text>
+<rect x="40" y="170" width="300" height="1160" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="190.0" y="743.0" font-size="28" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="190.0" dy="0.0">Clinic Staff</tspan></text>
+<text x="190.0" y="778.6" font-size="18" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="190.0" dy="0.0">(Nurse / Student Assistant)</tspan></text>
+<rect x="1760" y="170" width="300" height="400" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="1910.0" y="363.0" font-size="28" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="1910.0" dy="0.0">Doctor</tspan></text>
+<text x="1910.0" y="398.6" font-size="18" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="1910.0" dy="0.0">(Attending Physician)</tspan></text>
+<rect x="1760" y="640" width="300" height="690" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="1910.0" y="961.1999999999999" font-size="28" font-weight="bold" text-anchor="middle" fill="#5B3A0A"><tspan x="1910.0" dy="0.0">Clinic</tspan><tspan x="1910.0" dy="33.6">Coordinator</tspan></text>
+<text x="1910.0" y="1030.3999999999999" font-size="18" font-weight="normal" text-anchor="middle" fill="#5B3A0A"><tspan x="1910.0" dy="0.0">(Administrator)</tspan></text>
+<rect x="810" y="170" width="480" height="1160" rx="46" fill="#2D6297" stroke="#1F4670" stroke-width="4"/>
+<line x1="810" y1="260" x2="1290" y2="260" stroke="#9DB8D6" stroke-width="2"/>
+<text x="1050.0" y="232" font-size="40" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">0</tspan></text>
+<text x="1050.0" y="470" font-size="58" font-weight="bold" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">HAU-Sync</tspan></text>
+<text x="1050.0" y="530" font-size="30" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">Patient Record</tspan><tspan x="1050.0" dy="36.0">Management and</tspan><tspan x="1050.0" dy="36.0">Appointment System</tspan></text>
+<line x1="880" y1="660" x2="1220" y2="660" stroke="#9DB8D6" stroke-width="2"/>
+<text x="1050.0" y="712" font-size="21" font-weight="bold" text-anchor="middle" fill="#BFD5EC"><tspan x="1050.0" dy="0.0">MAIN FUNCTIONS</tspan></text>
+<text x="1050.0" y="770" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">1.0  Manage Patient Records</tspan></text>
+<text x="1050.0" y="832" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">2.0  Manage Appointments</tspan></text>
+<text x="1050.0" y="894" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">3.0  Record Visits and Consultations</tspan></text>
+<text x="1050.0" y="956" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">4.0  Manage Medicine Inventory</tspan></text>
+<text x="1050.0" y="1018" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">5.0  Generate Reports and Statistics</tspan></text>
+<text x="1050.0" y="1080" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">6.0  Sign In and Display Dashboard</tspan></text>
+<text x="1050.0" y="1142" font-size="23" font-weight="normal" text-anchor="middle" fill="#FFFFFF"><tspan x="1050.0" dy="0.0">7.0  Manage Accounts and Audit Log</tspan></text>
+<path d="M340,250 L810,250" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="241.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Username and password</tspan></text>
+<path d="M340,364 L810,364" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="328.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Patient details, health background,</tspan><tspan x="575.0" dy="26.2">attachments, corrections</tspan></text>
+<path d="M340,478 L810,478" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="442.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Appointment bookings, reschedules,</tspan><tspan x="575.0" dy="26.2">arrivals and no-shows</tspan></text>
+<path d="M340,592 L810,592" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="556.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Check-in, complaint, vital signs, assessment,</tspan><tspan x="575.0" dy="26.2">treatment, medicine released</tspan></text>
+<path d="M340,706 L810,706" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="697.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">New medicines, stock received, adjustments</tspan></text>
+<path d="M810,820 L340,820" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="811.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Main menu: dashboard, notifications</tspan></text>
+<path d="M810,934 L340,934" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="925.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Patient record, health alerts, search results</tspan></text>
+<path d="M810,1048 L340,1048" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="1039.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Appointment schedule and status</tspan></text>
+<path d="M810,1162 L340,1162" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="1153.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Today's visit log, visit history</tspan></text>
+<path d="M810,1276 L340,1276" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="575.0" y="1267.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="575.0" dy="0.0">Stock levels, release log</tspan></text>
+<path d="M1760,250 L1290,250" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="241.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Username and password</tspan></text>
+<path d="M1760,340 L1290,340" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="304.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Consultation notes, diagnosis,</tspan><tspan x="1525.0" dy="26.2">medication details</tspan></text>
+<path d="M1290,430 L1760,430" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="421.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Main menu: dashboard, notifications</tspan></text>
+<path d="M1290,520 L1760,520" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="484.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Complaint, vital signs, nurse assessment,</tspan><tspan x="1525.0" dy="26.2">health alerts, visit history</tspan></text>
+<path d="M1760,705 L1290,705" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="696.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Username and password</tspan></text>
+<path d="M1760,789 L1290,789" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="780.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Archive or restore a patient record</tspan></text>
+<path d="M1760,873 L1290,873" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="864.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Appointment confirmation or cancellation</tspan></text>
+<path d="M1760,957 L1290,957" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="921.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Report period to generate</tspan><tspan x="1525.0" dy="26.2">(semester or summer)</tspan></text>
+<path d="M1760,1041 L1290,1041" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="1005.75" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">New accounts, role changes,</tspan><tspan x="1525.0" dy="26.2">password resets</tspan></text>
+<path d="M1290,1125 L1760,1125" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="1116.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Main menu: dashboard, notifications</tspan></text>
+<path d="M1290,1209 L1760,1209" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="1200.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Saved reports, statistics, CSV export</tspan></text>
+<path d="M1290,1293 L1760,1293" fill="none" stroke="#1F2933" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1525.0" y="1284.0" font-size="21" font-weight="normal" text-anchor="middle" fill="#1F2933" paint-order="stroke" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"><tspan x="1525.0" dy="0.0">Account list, audit trail</tspan></text>
+<line x1="240" y1="1380" x2="1860" y2="1380" stroke="#CBD2D9" stroke-width="2"/>
+<rect x="647.8" y="1410" width="70" height="40" fill="#FCF0D3" stroke="#D9962F" stroke-width="3"/>
+<text x="731.8" y="1437" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="731.8" dy="0.0">External entity</tspan></text>
+<rect x="935.8" y="1410" width="70" height="40" rx="12" fill="#2D6297" stroke="#1F4670" stroke-width="3"/>
+<text x="1019.8" y="1437" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1019.8" dy="0.0">Process (the system)</tspan></text>
+<path d="M1271.8,1430 L1351.8,1430" fill="none" stroke="#1F2933" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1365.8" y="1437" font-size="19" font-weight="normal" text-anchor="start" fill="#1F2933"><tspan x="1365.8" dy="0.0">Data flow</tspan></text>
+<text x="1050.0" y="1492" font-size="18" font-weight="normal" text-anchor="middle" fill="#52606D" font-style="italic"><tspan x="1050.0" dy="0.0">Patients (students and employees) are the subject of the records but do not use the system: clinic staff enter their details.</tspan><tspan x="1050.0" dy="26.1">The Clinic Coordinator can also do everything Clinic Staff and the Doctor can; only the coordinator's own flows are drawn.</tspan></text>
+</svg>
