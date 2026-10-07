@@ -391,7 +391,7 @@ Final-Project-Software-Engineering/
 ├── docs/                        # Project documentation
 │   ├── interview/               # Questions, transcriptions and photos
 │   ├── requirements/            # Functional and non-functional requirements
-│   ├── diagrams/                # Level 0 and Level 1 diagrams, site context diagram
+│   ├── diagrams/                # Level 0, Level 1, use case and site context diagrams
 │   ├── site-context/            # Site justification and analysis
 │   ├── letters/                 # Clinic support letter
 │   └── presentation/            # Pitch presentation for the clinic
