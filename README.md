@@ -394,7 +394,7 @@ Final-Project-Software-Engineering/
 │   ├── diagrams/                # Level 0, Level 1, use case and site context diagrams
 │   ├── site-context/            # Site justification and analysis
 │   ├── letters/                 # Clinic support letter
-│   └── presentation/            # Pitch presentation for the clinic
+│   └── presentation/            # Clinic pitch, video presentation and its script
 ├── start-clinic.ps1             # Starts the whole system on one address
 ├── start-clinic.bat             # Double-click version of the same
 └── README.md

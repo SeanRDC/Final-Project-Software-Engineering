@@ -11,7 +11,7 @@ This directory contains the compiled documentation for the Holy Angel University
 | [`diagrams/`](diagrams/) | Level 0 context diagram, Level 1 data flow diagram, use case diagram and site context diagram |
 | [`site-context/`](site-context/) | Site justification, system analysis and design potential |
 | [`letters/`](letters/) | Clinic support letter |
-| [`presentation/`](presentation/) | Pitch presentation for the University Clinic |
+| [`presentation/`](presentation/) | Pitch presentation for the University Clinic, and the video presentation with its script |
 
 # Software Engineering Final Project Checklist
 
