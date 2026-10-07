@@ -44,7 +44,7 @@ The clinic sits in a corridor at the middle of the university, which makes it hi
 <h3 id="site-context-diagram">Site Context Diagram</h3>
 
 <p align="center">
-  <img src="/docs/assets/site-context-diagram.jpeg" alt="Site context diagram of the HAU Clinic, PGN Building, Ground Floor" width="800">
+  <img src="../diagrams/site-context-diagram.jpeg" alt="Site context diagram of the HAU Clinic, PGN Building, Ground Floor" width="800">
   <br>
   <em>Figure 1. Site context diagram of the HAU Clinic, PGN Building, Ground Floor.</em>
 </p>

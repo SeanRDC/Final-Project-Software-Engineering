@@ -2,6 +2,17 @@
 
 This directory contains the compiled documentation for the Holy Angel University Clinic Records Management System. All official letters, database schemas, architectural diagrams, and project reference materials are uploaded and maintained here.
 
+## Contents
+
+| Folder | What is in it |
+| --- | --- |
+| [`interview/`](interview/) | Interview questions, raw transcriptions and photos from the clinic visit |
+| [`requirements/`](requirements/) | Functional and non-functional requirements |
+| [`diagrams/`](diagrams/) | Level 0 context diagram, Level 1 data flow diagram, use case diagram and site context diagram |
+| [`site-context/`](site-context/) | Site justification, system analysis and design potential |
+| [`letters/`](letters/) | Clinic support letter |
+| [`presentation/`](presentation/) | Pitch presentation for the University Clinic |
+
 # Software Engineering Final Project Checklist
 
 This checklist is based on the **Project Evaluation Rubric (70 points)**.  

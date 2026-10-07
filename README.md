@@ -388,7 +388,13 @@ Final-Project-Software-Engineering/
 │   │   └── pages/               # One folder per screen
 │   ├── package.json
 │   └── FRONTEND-README.md       # Frontend reference
-├── docs/                        # Interview, requirements, diagrams, support letter
+├── docs/                        # Project documentation
+│   ├── interview/               # Questions, transcriptions and photos
+│   ├── requirements/            # Functional and non-functional requirements
+│   ├── diagrams/                # Level 0, Level 1, use case and site context diagrams
+│   ├── site-context/            # Site justification and analysis
+│   ├── letters/                 # Clinic support letter
+│   └── presentation/            # Pitch presentation for the clinic
 ├── start-clinic.ps1             # Starts the whole system on one address
 ├── start-clinic.bat             # Double-click version of the same
 └── README.md
