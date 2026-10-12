@@ -281,6 +281,7 @@ test('registers a patient and opens the new record', async () => {
   expect(form.getByLabelText('Education level')).toHaveValue('college')
   await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
   await user.type(form.getByLabelText('Allergies'), 'Peanuts')
+  await user.type(form.getByLabelText('Medical history'), 'Hospitalized for dengue in 2023')
   await user.click(form.getByLabelText('The signed data privacy consent form is on file'))
   await user.click(form.getByRole('button', { name: 'Register patient' }))
 
@@ -293,6 +294,7 @@ test('registers a patient and opens the new record', async () => {
     first_name: 'Juan',
     sex: 'male',
     allergies: 'Peanuts',
+    medical_history: 'Hospitalized for dengue in 2023',
     consent_on_file: true,
     middle_name: null,
   })

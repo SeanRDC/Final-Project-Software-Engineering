@@ -274,6 +274,13 @@ export function PatientForm({
             {area('medical_conditions', 'Medical conditions', 'e.g. asthma, diabetes…')}
             {area('medication_restrictions', 'Medication restrictions')}
             {area('activity_restrictions', 'Activity restrictions')}
+            <div className="sm:col-span-2">
+              {area(
+                'medical_history',
+                'Medical history',
+                'Previous hospitalizations, operations, serious illnesses…',
+              )}
+            </div>
             <div className="sm:col-span-2">{area('notes', 'Other notes')}</div>
           </div>
         </FieldSet>
