@@ -53,6 +53,13 @@ class Visit(Base):
 
     checked_in_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     completed_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+
+    # An admitted patient who rested in the clinic and then left: when, and where to.
+    released_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    release_disposition: Mapped[VisitDisposition | None] = mapped_column(
+        enum_type(VisitDisposition)
+    )
+    released_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     cancelled_reason: Mapped[str | None] = mapped_column(String(255))
 
     created_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
@@ -61,6 +68,7 @@ class Visit(Base):
 
     patient: Mapped[Patient] = relationship(lazy="joined")
     doctor: Mapped[User | None] = relationship(foreign_keys=[doctor_id], lazy="joined")
+    released_by: Mapped[User | None] = relationship(foreign_keys=[released_by_id], lazy="joined")
     medicines: Mapped[list["VisitMedicine"]] = relationship(
         back_populates="visit", order_by="VisitMedicine.id", lazy="selectin"
     )
@@ -72,6 +80,10 @@ class Visit(Base):
     @property
     def doctor_name(self) -> str | None:
         return self.doctor.full_name if self.doctor else None
+
+    @property
+    def released_by_name(self) -> str | None:
+        return self.released_by.full_name if self.released_by else None
 
     @property
     def patient_alerts(self) -> Patient:
