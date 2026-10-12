@@ -44,6 +44,7 @@ const summary: ReportSummary = {
   ],
   visits_by_month: [{ label: '2026-10', count: 12 }],
   visits_by_disposition: [{ label: 'sent_home', count: 3 }],
+  admission_releases: [],
   top_complaints: [{ label: 'Headache', count: 4 }],
   referrals: 1,
   guardian_notifications: 2,

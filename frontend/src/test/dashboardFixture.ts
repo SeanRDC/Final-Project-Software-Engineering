@@ -13,6 +13,7 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
   return {
     id: 1,
     patient_type: 'student',
+    education_level: 'college',
     id_number: '20221187',
     last_name: 'Santos',
     first_name: 'Maria',

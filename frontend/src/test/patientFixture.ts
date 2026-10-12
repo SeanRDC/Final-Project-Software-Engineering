@@ -19,6 +19,7 @@ export function patientRecord(overrides: Partial<Patient> = {}): Patient {
     guardian_relationship: 'Mother',
     guardian_contact: '0918 555 0199',
     blood_type: 'O+',
+    medical_history: null,
     notes: null,
     consent_on_file: true,
     created_at: '2026-08-10T02:00:00+00:00',

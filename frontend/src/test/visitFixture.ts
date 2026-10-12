@@ -10,6 +10,8 @@ export function visitRecord(overrides: Partial<Visit> = {}): Visit {
     treatment: 'Nebulised with salbutamol',
     diagnosis: null,
     disposition: null,
+    released_at: null,
+    release_disposition: null,
     medicines: [
       {
         id: 1,
@@ -37,6 +39,7 @@ export function visitRecord(overrides: Partial<Visit> = {}): Visit {
     consultation_notes: null,
     medication_details: null,
     cancelled_reason: null,
+    released_by_name: null,
     updated_at: '2026-10-04T01:58:00+00:00',
     patient_alerts: {
       allergies: 'Penicillin',
