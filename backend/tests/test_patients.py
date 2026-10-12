@@ -62,6 +62,16 @@ def test_update_corrects_and_clears_fields(nurse, patient):
     assert body["department"] == "School of Computing"
 
 
+def test_medical_history_is_recorded_and_can_be_cleared(nurse, patient):
+    history = "Hospitalized for dengue in 2023. Appendectomy in 2021."
+    saved = nurse.patch(f"/patients/{patient['id']}", json={"medical_history": history})
+    assert saved.json()["medical_history"] == history
+    assert nurse.get(f"/patients/{patient['id']}").json()["medical_history"] == history
+
+    cleared = nurse.patch(f"/patients/{patient['id']}", json={"medical_history": " "})
+    assert cleared.json()["medical_history"] is None
+
+
 def test_doctor_can_update_medical_history_but_not_archive(doctor, patient):
     assert doctor.patch(f"/patients/{patient['id']}",
                         json={"medical_conditions": "G6PD deficiency"}).status_code == 200

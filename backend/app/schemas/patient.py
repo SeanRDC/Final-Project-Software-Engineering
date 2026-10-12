@@ -26,6 +26,7 @@ class PatientBase(BaseModel):
     medical_conditions: OptionalText = None
     medication_restrictions: OptionalText = None
     activity_restrictions: OptionalText = None
+    medical_history: OptionalText = None
     notes: OptionalText = None
 
 
@@ -77,6 +78,7 @@ class PatientOut(PatientSummary, PatientAlerts):
     guardian_relationship: str | None
     guardian_contact: str | None
     blood_type: str | None
+    medical_history: str | None
     notes: str | None
     consent_on_file: bool
     created_at: datetime
