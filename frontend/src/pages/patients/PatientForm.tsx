@@ -285,16 +285,24 @@ export function PatientForm({
           </div>
         </FieldSet>
 
-        <Field orientation="horizontal">
-          <Checkbox
-            id="consent_on_file"
-            checked={values.consent_on_file}
-            onCheckedChange={(state) => change({ consent_on_file: state === true })}
-          />
-          <FieldLabel htmlFor="consent_on_file" className="font-normal">
-            The signed data privacy consent form is on file
-          </FieldLabel>
-        </Field>
+        <div className="flex flex-col gap-3">
+          <p id="privacy-notice" className="text-sm text-muted-foreground italic">
+            This record is collected and kept in compliance with Republic Act No. 10173, the Data
+            Privacy Act of 2012. It is used only for the patient’s care at the University Clinic and
+            is seen only by authorized clinic personnel.
+          </p>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="consent_on_file"
+              aria-describedby="privacy-notice"
+              checked={values.consent_on_file}
+              onCheckedChange={(state) => change({ consent_on_file: state === true })}
+            />
+            <FieldLabel htmlFor="consent_on_file" className="font-normal">
+              The signed data privacy consent form is on file
+            </FieldLabel>
+          </Field>
+        </div>
 
         {error ? (
           <Alert variant="destructive">

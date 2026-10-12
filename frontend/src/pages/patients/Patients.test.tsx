@@ -338,6 +338,16 @@ test('the form carries the code of the form for the kind of patient', async () =
   expect(box.getByText('FM-SSA-MOS-8011')).toBeInTheDocument()
 })
 
+test('states the data privacy law the record is kept under, beside the consent', async () => {
+  fakeServer({ 'GET /options': options() })
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  expect(
+    form.getByLabelText('The signed data privacy consent form is on file'),
+  ).toHaveAccessibleDescription(/Republic Act No\. 10173, the Data Privacy Act of 2012/)
+})
+
 test('settles the education level from the department, and asks it of students only', async () => {
   fakeServer({ 'GET /options': options(['Basic Education Department (Junior High School)']) })
   const user = userEvent.setup()
