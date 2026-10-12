@@ -31,6 +31,9 @@ def _seed_activity(nurse, doctor, coordinator, patient, medicine):
 
 def test_report_summary_statistics(nurse, doctor, coordinator, patient, medicine):
     _seed_activity(nurse, doctor, coordinator, patient, medicine)
+    rested = nurse.get("/visits", params={"status": "open"}).json()["items"][0]
+    nurse.post(f"/visits/{rested['id']}/complete", json={"disposition": "admitted"})
+    nurse.post(f"/visits/{rested['id']}/release", json={"disposition": "returned"})
     today = str(clinic_today())
     summary = nurse.get("/reports/summary", params={"start": today, "end": today}).json()
 
@@ -46,7 +49,8 @@ def test_report_summary_statistics(nurse, doctor, coordinator, patient, medicine
         {"label": "medicine_request", "students": 1, "employees": 0}]
     assert counts("visits_by_department") == {"School of Computing": 2, "Registrar": 1}
     assert counts("top_complaints") == {"headache": 2, "dizziness": 1}
-    assert counts("visits_by_disposition") == {"returned": 1, "referred": 1}
+    assert counts("visits_by_disposition") == {"returned": 1, "referred": 1, "admitted": 1}
+    assert counts("admission_releases") == {"returned": 1}
     assert summary["referrals"] == 1
     assert summary["guardian_notifications"] == 1
     assert summary["medicines_released"] == [{

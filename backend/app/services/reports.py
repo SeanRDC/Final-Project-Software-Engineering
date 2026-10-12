@@ -46,6 +46,7 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
             Visit.visit_date,
             Visit.visit_type,
             Visit.disposition,
+            Visit.release_disposition,
             Visit.complaint,
             Visit.referred,
             Visit.guardian_notified,
@@ -64,6 +65,7 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
     by_month, by_disposition, complaints, per_patient = (
         Counter(), Counter(), Counter(), Counter()
     )
+    admission_releases = Counter()
     type_by_patient_type: dict[str, Counter] = {}
     patients: dict[int, tuple] = {}
     referrals = guardian_notifications = 0
@@ -77,6 +79,8 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
         by_month[row.visit_date.strftime("%Y-%m")] += 1
         if row.disposition is not None:
             by_disposition[_label(row.disposition)] += 1
+        if row.release_disposition is not None:
+            admission_releases[_label(row.release_disposition)] += 1
         complaints[" ".join(row.complaint.lower().split())] += 1
         referrals += bool(row.referred)
         guardian_notifications += bool(row.guardian_notified)
@@ -117,6 +121,7 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
         visits_by_department=_items(by_department),
         visits_by_month=[CountItem(label=m, count=by_month[m]) for m in sorted(by_month)],
         visits_by_disposition=_items(by_disposition),
+        admission_releases=_items(admission_releases),
         top_complaints=_items(complaints, TOP_N),
         referrals=referrals,
         guardian_notifications=guardian_notifications,
@@ -201,6 +206,7 @@ def to_csv(summary: ReportSummary, title: str = "Clinic summary report") -> str:
         ("Visits by department", summary.visits_by_department),
         ("Visits by month", summary.visits_by_month),
         ("Visits by outcome", summary.visits_by_disposition),
+        ("After admission", summary.admission_releases),
         ("Top complaints", summary.top_complaints),
         ("Appointments by status", summary.appointments_by_status),
     ]
