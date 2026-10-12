@@ -196,6 +196,24 @@ test('shows the record with its alerts and visit history', async () => {
   expect(screen.queryByRole('button', { name: 'Archive' })).not.toBeInTheDocument()
 })
 
+test('the record carries its form code, education level and medical history', async () => {
+  fakeServer({
+    'GET /patients/1': patientRecord({
+      education_level: 'basic_education',
+      medical_history: 'Hospitalized for dengue in 2023',
+    }),
+    'GET /patients/1/visits': page([]),
+    'GET /patients/1/attachments': [],
+  })
+  renderPatients(nurse, '/patients/1')
+
+  const box = within(await screen.findByRole('group', { name: 'Form code' }))
+  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+  expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
+  expect(screen.getByText('Basic education')).toBeInTheDocument()
+  expect(screen.getByText('Hospitalized for dengue in 2023')).toBeInTheDocument()
+})
+
 test('the doctor can read and edit a record but not check in', async () => {
   fakeServer({ 'GET /patients/1': patientRecord(), 'GET /patients/1/visits': page([]) })
   renderPatients(doctor, '/patients/1')
