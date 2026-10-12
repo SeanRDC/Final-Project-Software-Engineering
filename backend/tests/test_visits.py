@@ -101,6 +101,57 @@ def test_nurse_can_complete_a_visit_without_a_doctor(nurse, patient):
     assert done.json()["doctor_name"] is None
 
 
+def _admit(nurse, patient):
+    visit = check_in(nurse, patient["id"], complaint="Dizziness")
+    done = nurse.post(f"/visits/{visit['id']}/complete", json={"disposition": "admitted"})
+    assert done.json()["released_at"] is None
+    return visit
+
+
+def test_an_admitted_patient_is_released_back_to_class(nurse, coordinator, patient):
+    visit = _admit(nurse, patient)
+    released = nurse.post(f"/visits/{visit['id']}/release", json={"disposition": "returned"})
+    assert released.status_code == 200
+    body = released.json()
+    assert body["disposition"] == "admitted"
+    assert body["release_disposition"] == "returned"
+    assert body["released_at"] is not None
+    assert body["released_by_name"] is not None
+
+    history = nurse.get("/visits", params={"patient_id": patient["id"]}).json()["items"]
+    assert history[0]["release_disposition"] == "returned"
+    entry = coordinator.get(
+        "/audit-logs", params={"action": "visit.release_from_admission"}).json()["items"][-1]
+    assert "returned" in str(entry)
+
+
+def test_release_from_admission_rules(nurse, doctor, patient):
+    open_visit = check_in(nurse, patient["id"])
+    nurse.patch(f"/visits/{open_visit['id']}", json={"disposition": "admitted"})
+    release = f"/visits/{open_visit['id']}/release"
+    assert nurse.post(release, json={"disposition": "returned"}).status_code == 409
+
+    nurse.post(f"/visits/{open_visit['id']}/complete")
+    assert doctor.post(release, json={"disposition": "returned"}).status_code == 403
+    assert nurse.post(release, json={"disposition": "admitted"}).status_code == 422
+    assert nurse.post(release, json={"disposition": "sent_home"}).status_code == 200
+    assert nurse.post(release, json={"disposition": "returned"}).status_code == 409
+
+    sent_home = check_in(nurse, _second_patient(nurse)["id"])
+    nurse.post(f"/visits/{sent_home['id']}/complete", json={"disposition": "sent_home"})
+    assert nurse.post(f"/visits/{sent_home['id']}/release",
+                      json={"disposition": "returned"}).status_code == 409
+
+
+def test_correcting_the_outcome_away_from_admitted_drops_the_release(nurse, patient):
+    visit = _admit(nurse, patient)
+    nurse.post(f"/visits/{visit['id']}/release", json={"disposition": "returned"})
+    fixed = nurse.patch(f"/visits/{visit['id']}", json={"disposition": "sent_home"}).json()
+    assert fixed["disposition"] == "sent_home"
+    assert fixed["released_at"] is None
+    assert fixed["release_disposition"] is None
+
+
 def test_closed_visits_cannot_be_completed_or_cancelled_again(nurse, patient):
     visit = check_in(nurse, patient["id"])
     nurse.post(f"/visits/{visit['id']}/complete")
