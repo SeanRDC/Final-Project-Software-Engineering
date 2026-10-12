@@ -20,6 +20,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // The forms are typed into key by key, which takes longer than the default 5 s on a busy machine.
+    testTimeout: 15_000,
   },
   resolve: {
     alias: {
