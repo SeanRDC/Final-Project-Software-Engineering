@@ -22,6 +22,7 @@ from app.schemas.visit import (
     CompleteVisit,
     ConsultationUpdate,
     DispenseMedicine,
+    ReleaseFromAdmission,
     VisitRecordUpdate,
 )
 from app.services import appointments, inventory, patients, users, visits
@@ -183,6 +184,16 @@ def main() -> int:
             end_time=time(9, 30), reason="Follow-up: asthma"), coordinator)
         follow_up = appointments.check_in(db, asthma.id, AppointmentCheckIn(), nurse)
         visits.complete(db, follow_up.id, CompleteVisit(), nurse)
+
+        # Admitted to rest, then back to work an hour later.
+        rested = arrive("Miranda", "Elevated blood pressure", 100)
+        visits.complete(db, rested.id, CompleteVisit(disposition=VisitDisposition.ADMITTED), nurse)
+        rested.completed_at = utcnow() - timedelta(minutes=90)
+        db.commit()
+        visits.release_from_admission(
+            db, rested.id, ReleaseFromAdmission(disposition=VisitDisposition.RETURNED), nurse)
+        rested.released_at = utcnow() - timedelta(minutes=25)
+        db.commit()
 
         appointments.create(db, AppointmentCreate(
             patient_id=people["Panergo"].id, scheduled_date=today, start_time=time(10, 30),

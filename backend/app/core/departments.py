@@ -14,3 +14,6 @@ HAU_DEPARTMENTS: tuple[str, ...] = (
     "Graduate School",
     "Basic Education Department (Junior High School and Senior High School)",
 )
+
+# A student of a department that starts with this is in basic education, the rest in college.
+BASIC_EDUCATION_PREFIX = "basic education"

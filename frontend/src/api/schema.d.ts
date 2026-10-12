@@ -299,6 +299,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/visits/{visit_id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record that an admitted patient left the clinic, and where they went */
+        post: operations["release_from_admission_api_v1_visits__visit_id__release_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/visits/{visit_id}/cancel": {
         parameters: {
             query?: never;
@@ -1176,6 +1193,11 @@ export interface components {
             /** Instructions */
             instructions?: string | null;
         };
+        /**
+         * EducationLevel
+         * @enum {string}
+         */
+        EducationLevel: "basic_education" | "college";
         /** FrequentVisitor */
         FrequentVisitor: {
             /** Patient Id */
@@ -1452,6 +1474,7 @@ export interface components {
         };
         /** PatientCreate */
         PatientCreate: {
+            education_level?: components["schemas"]["EducationLevel"] | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Birth Date */
@@ -1483,6 +1506,8 @@ export interface components {
             medication_restrictions?: string | null;
             /** Activity Restrictions */
             activity_restrictions?: string | null;
+            /** Medical History */
+            medical_history?: string | null;
             /** Notes */
             notes?: string | null;
             patient_type: components["schemas"]["PatientType"];
@@ -1511,6 +1536,7 @@ export interface components {
             /** Id */
             id: number;
             patient_type: components["schemas"]["PatientType"];
+            education_level: components["schemas"]["EducationLevel"] | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1546,6 +1572,8 @@ export interface components {
             guardian_contact: string | null;
             /** Blood Type */
             blood_type: string | null;
+            /** Medical History */
+            medical_history: string | null;
             /** Notes */
             notes: string | null;
             /** Consent On File */
@@ -1578,6 +1606,7 @@ export interface components {
             /** Id */
             id: number;
             patient_type: components["schemas"]["PatientType"];
+            education_level: components["schemas"]["EducationLevel"] | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1613,6 +1642,8 @@ export interface components {
             guardian_contact: string | null;
             /** Blood Type */
             blood_type: string | null;
+            /** Medical History */
+            medical_history: string | null;
             /** Notes */
             notes: string | null;
             /** Consent On File */
@@ -1633,6 +1664,7 @@ export interface components {
             /** Id */
             id: number;
             patient_type: components["schemas"]["PatientType"];
+            education_level: components["schemas"]["EducationLevel"] | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1658,6 +1690,7 @@ export interface components {
         PatientType: "student" | "employee";
         /** PatientUpdate */
         PatientUpdate: {
+            education_level?: components["schemas"]["EducationLevel"] | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Birth Date */
@@ -1689,6 +1722,8 @@ export interface components {
             medication_restrictions?: string | null;
             /** Activity Restrictions */
             activity_restrictions?: string | null;
+            /** Medical History */
+            medical_history?: string | null;
             /** Notes */
             notes?: string | null;
             patient_type?: components["schemas"]["PatientType"] | null;
@@ -1700,6 +1735,13 @@ export interface components {
             first_name?: string | null;
             /** Consent On File */
             consent_on_file?: boolean | null;
+        };
+        /**
+         * ReleaseFromAdmission
+         * @description Where an admitted patient went after resting in the clinic.
+         */
+        ReleaseFromAdmission: {
+            disposition: components["schemas"]["VisitDisposition"];
         };
         /** ReportCreate */
         ReportCreate: {
@@ -1796,6 +1838,11 @@ export interface components {
             visits_by_month: components["schemas"]["CountItem"][];
             /** Visits By Disposition */
             visits_by_disposition: components["schemas"]["CountItem"][];
+            /**
+             * Admission Releases
+             * @default []
+             */
+            admission_releases: components["schemas"]["CountItem"][];
             /** Top Complaints */
             top_complaints: components["schemas"]["CountItem"][];
             /** Referrals */
@@ -1984,6 +2031,9 @@ export interface components {
             /** Diagnosis */
             diagnosis: string | null;
             disposition: components["schemas"]["VisitDisposition"] | null;
+            /** Released At */
+            released_at: string | null;
+            release_disposition: components["schemas"]["VisitDisposition"] | null;
             /** Medicines */
             medicines: components["schemas"]["VisitMedicineOut"][];
         };
@@ -2039,6 +2089,9 @@ export interface components {
             /** Diagnosis */
             diagnosis: string | null;
             disposition: components["schemas"]["VisitDisposition"] | null;
+            /** Released At */
+            released_at: string | null;
+            release_disposition: components["schemas"]["VisitDisposition"] | null;
             /** Medicines */
             medicines: components["schemas"]["VisitMedicineOut"][];
             /** Appointment Id */
@@ -2073,6 +2126,8 @@ export interface components {
             medication_details: string | null;
             /** Cancelled Reason */
             cancelled_reason: string | null;
+            /** Released By Name */
+            released_by_name: string | null;
             /**
              * Updated At
              * Format: date-time
@@ -2930,6 +2985,41 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/json": components["schemas"]["CompleteVisit"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    release_from_admission_api_v1_visits__visit_id__release_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReleaseFromAdmission"];
             };
         };
         responses: {

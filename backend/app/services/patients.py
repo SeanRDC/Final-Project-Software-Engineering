@@ -3,10 +3,10 @@
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from app.core.departments import HAU_DEPARTMENTS
+from app.core.departments import BASIC_EDUCATION_PREFIX, HAU_DEPARTMENTS
 from app.core.exceptions import ConflictError
 from app.models import Patient, User, Visit
-from app.models.enums import PatientType, VisitStatus
+from app.models.enums import EducationLevel, PatientType, VisitStatus
 from app.schemas.patient import PatientCreate, PatientDetail, PatientOut, PatientUpdate
 from app.services import audit, locks
 from app.services.common import apply_updates, get_or_404, like_pattern, paginate
@@ -20,6 +20,17 @@ def _ensure_unique_id_number(db: Session, id_number: str, exclude_id: int | None
         query = query.where(Patient.id != exclude_id)
     if db.scalar(query) is not None:
         raise ConflictError(f"A patient with ID number '{id_number}' already exists")
+
+
+def _settle_education_level(patient: Patient) -> None:
+    """Only students have a level. One left blank is read off the department."""
+    if patient.patient_type != PatientType.STUDENT:
+        patient.education_level = None
+    elif patient.education_level is None:
+        in_basic_education = (patient.department or "").lower().startswith(BASIC_EDUCATION_PREFIX)
+        patient.education_level = (
+            EducationLevel.BASIC_EDUCATION if in_basic_education else EducationLevel.COLLEGE
+        )
 
 
 def search(
@@ -75,6 +86,7 @@ def create(db: Session, data: PatientCreate, actor: User) -> Patient:
         created_by_id=actor.id,
     )
     patient = Patient(**values)
+    _settle_education_level(patient)
     db.add(patient)
     db.flush()
     audit.record(db, actor, "patient.create", "patient", patient.id, id_number=id_number)
@@ -107,7 +119,11 @@ def update(db: Session, patient_id: int, data: PatientUpdate, actor: User) -> Pa
             changes[name] = changes[name].strip()
     if changes.get("id_number"):
         _ensure_unique_id_number(db, changes["id_number"], exclude_id=patient_id)
+    level_before = patient.education_level
     changed = apply_updates(patient, changes, required=REQUIRED_FIELDS)
+    _settle_education_level(patient)
+    if patient.education_level != level_before and "education_level" not in changed:
+        changed.append("education_level")
     if changed:
         audit.record(db, actor, "patient.update", "patient", patient.id, fields=changed)
     db.commit()

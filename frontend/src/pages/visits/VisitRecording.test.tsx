@@ -268,6 +268,57 @@ test('undoes a mistaken release after confirmation', async () => {
   await waitFor(() => expect(screen.queryByText('Salbutamol 2 mg')).not.toBeInTheDocument())
 })
 
+test('releases an admitted patient back to class and records when', async () => {
+  const admitted = visitRecord({
+    status: 'completed',
+    disposition: 'admitted',
+    completed_at: '2026-10-04T02:10:00+00:00',
+  })
+  const { server } = clinicServer(admitted)
+  let sent: unknown
+  server.on('POST /visits/14/release', ({ init }: { init: RequestInit }) => {
+    sent = JSON.parse(String(init.body))
+    const released = {
+      ...admitted,
+      release_disposition: 'returned',
+      released_at: '2026-10-04T03:15:00+00:00',
+      released_by_name: 'Reyes, Ana',
+    }
+    server.on('GET /visits/14', released)
+    return released
+  })
+  const user = userEvent.setup()
+  renderPanel(nurse)
+
+  expect(await screen.findByText('Admitted')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Release from admission' }))
+  const dialog = within(await screen.findByRole('alertdialog', { name: 'Release from admission?' }))
+  expect(dialog.getByLabelText('After admission')).toHaveValue('returned')
+  expect(dialog.queryByRole('option', { name: 'Admitted' })).not.toBeInTheDocument()
+  await user.click(dialog.getByRole('button', { name: 'Release' }))
+
+  expect(await screen.findByText('Santos, Maria released from admission')).toBeInTheDocument()
+  expect(sent).toEqual({ disposition: 'returned' })
+  expect(await screen.findByText('Admitted, then returned to class or work')).toBeInTheDocument()
+  expect(
+    screen.getByText(/after 1 h 5 min in the clinic · recorded by Reyes, Ana/),
+  ).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Release from admission' })).not.toBeInTheDocument()
+})
+
+test('only an admission that has not ended can be released, and not by the doctor', async () => {
+  clinicServer(visitRecord({ status: 'completed', disposition: 'sent_home' }))
+  const { unmount } = renderPanel(nurse)
+  expect(await screen.findByRole('button', { name: 'Correct record' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Release from admission' })).not.toBeInTheDocument()
+  unmount()
+
+  clinicServer(visitRecord({ status: 'completed', disposition: 'admitted' }))
+  renderPanel(doctor)
+  expect(await screen.findByRole('button', { name: 'Consultation' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Release from admission' })).not.toBeInTheDocument()
+})
+
 test('completes the visit with its outcome, after which it can only be corrected', async () => {
   const { sent } = clinicServer()
   const user = userEvent.setup()

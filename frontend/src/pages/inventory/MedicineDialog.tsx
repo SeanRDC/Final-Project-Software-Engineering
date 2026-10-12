@@ -152,7 +152,7 @@ function MedicineForm({ medicine, onClose }: FormProps) {
       <FieldGroup>
         <div className="grid gap-4 sm:grid-cols-2">
           {field('name', 'Name', { placeholder: 'e.g. Paracetamol…', required: true })}
-          {field('strength', 'Strength', { placeholder: 'e.g. 500 mg…' })}
+          {field('strength', 'Dosage', { placeholder: 'e.g. 500 mg…' })}
           {field('form', 'Form', { placeholder: 'e.g. tablet, syrup…' })}
           {field('unit', 'Counted in', { placeholder: 'e.g. tablet, bottle…', required: true })}
           {field('low_stock_threshold', 'Low-stock threshold', { inputMode: 'numeric' })}
@@ -220,7 +220,7 @@ export function MedicineDialog({ open, medicine, onClose }: MedicineDialogProps)
           <DialogDescription>
             {medicine
               ? 'Change the details or the low-stock threshold.'
-              : 'A medicine is listed once per strength, e.g. Paracetamol 500 mg.'}
+              : 'A medicine is listed once per dosage, e.g. Paracetamol 500 mg.'}
           </DialogDescription>
         </DialogHeader>
         {/* Remounted per medicine so the fields start from that medicine's values. */}

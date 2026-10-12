@@ -22,6 +22,7 @@ import { describePatient, visitState } from '@/lib/visitState'
 import { CancelVisitDialog } from '@/pages/visits/CancelVisitDialog'
 import { CompleteVisitDialog } from '@/pages/visits/CompleteVisitDialog'
 import { EditVisit, type EditMode } from '@/pages/visits/EditVisit'
+import { ReleaseFromAdmissionDialog } from '@/pages/visits/ReleaseFromAdmissionDialog'
 import { useVisit } from '@/pages/visits/useVisits'
 import { VisitRecord } from '@/pages/visits/VisitRecord'
 
@@ -60,6 +61,9 @@ export function VisitPanel() {
   // A completed visit can still be corrected; a cancelled one is closed for good.
   const isEditable = visit !== undefined && visit.status !== 'cancelled'
   const isOpen = visit?.status === 'open'
+  // Admitted to rest, and still in the clinic as far as the record says.
+  const isAdmitted =
+    visit?.status === 'completed' && visit.disposition === 'admitted' && !visit.released_at
 
   return (
     <Sheet open onOpenChange={(open) => !open && close()}>
@@ -156,6 +160,7 @@ export function VisitPanel() {
                 </Button>
               ) : null}
               {isOpen ? <CompleteVisitDialog visit={visit} /> : null}
+              {isAdmitted && canRecord ? <ReleaseFromAdmissionDialog visit={visit} /> : null}
             </div>
           </SheetFooter>
         ) : null}

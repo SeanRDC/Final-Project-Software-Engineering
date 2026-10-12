@@ -1,6 +1,6 @@
 // How each appointment state is worded and coloured, wherever it is shown.
 
-import type { AppointmentStatus, VisitDisposition, VisitType } from '@/api/types'
+import type { AppointmentStatus, VisitDisposition, VisitListItem, VisitType } from '@/api/types'
 import type { StatusTone } from '@/components/StatusPill'
 
 type StatusDisplay = {
@@ -39,4 +39,18 @@ export const DISPOSITIONS: { value: VisitDisposition; label: string }[] = [
 
 export function dispositionLabel(value: VisitDisposition): string {
   return DISPOSITIONS.find((option) => option.value === value)?.label ?? value
+}
+
+/** Where an admitted patient can go once they have rested. */
+export const RELEASE_DISPOSITIONS = DISPOSITIONS.filter((option) => option.value !== 'admitted')
+
+type Outcome = Pick<VisitListItem, 'disposition' | 'release_disposition'>
+
+/** The outcome in one phrase, with where an admitted patient went afterwards. */
+export function outcomeLabel(visit: Outcome): string | null {
+  if (!visit.disposition) return null
+  const outcome = dispositionLabel(visit.disposition)
+  if (!visit.release_disposition) return outcome
+  const next = dispositionLabel(visit.release_disposition)
+  return `${outcome}, then ${next.charAt(0).toLowerCase()}${next.slice(1)}`
 }

@@ -105,6 +105,13 @@ export function useCompleteVisit(visitId: number) {
   )
 }
 
+/** Records that an admitted patient left the clinic, and where they went. */
+export function useReleaseFromAdmission(visitId: number) {
+  return useVisitMutation(visitId, (disposition: VisitDisposition) =>
+    api<Visit>(`/visits/${visitId}/release`, { method: 'POST', json: { disposition } }),
+  )
+}
+
 /** Releases medicine to the patient; the server deducts it from stock. */
 export function useDispense(visitId: number) {
   return useVisitMutation(

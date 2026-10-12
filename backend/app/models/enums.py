@@ -19,6 +19,11 @@ class PatientType(StrEnum):
     EMPLOYEE = "employee"
 
 
+class EducationLevel(StrEnum):
+    BASIC_EDUCATION = "basic_education"
+    COLLEGE = "college"
+
+
 class Sex(StrEnum):
     MALE = "male"
     FEMALE = "female"

@@ -89,6 +89,8 @@ class ReportSummary(BaseModel):
     visits_by_department: list[CountItem]
     visits_by_month: list[CountItem]
     visits_by_disposition: list[CountItem]
+    # Where admitted patients went after resting. Empty in reports saved before it was recorded.
+    admission_releases: list[CountItem] = []
     top_complaints: list[CountItem]
     referrals: int
     guardian_notifications: int

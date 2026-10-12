@@ -162,6 +162,15 @@ test('shows the record with its alerts and visit history', async () => {
           diagnosis: 'Mild asthma attack',
           disposition: 'sent_home',
         }),
+        // Written on paper on the 2nd and entered on the 4th: its time of entry is not shown.
+        visitRecord({
+          id: 15,
+          visit_date: '2026-10-02',
+          status: 'completed',
+          disposition: 'admitted',
+          release_disposition: 'returned',
+          released_at: '2026-10-02T03:15:00+00:00',
+        }),
       ]),
       page_size: 10,
     },
@@ -184,6 +193,8 @@ test('shows the record with its alerts and visit history', async () => {
   )
   expect(history.getByText('Mild asthma attack')).toBeInTheDocument()
   expect(history.getByText('Sent home')).toBeInTheDocument()
+  expect(history.getByText('Admitted, then returned to class or work')).toBeInTheDocument()
+  expect(history.getAllByText(/^\d{1,2}:54 [AP]M$/)).toHaveLength(1)
 
   expect(screen.getByRole('link', { name: 'Check in' })).toHaveAttribute(
     'href',
@@ -194,6 +205,24 @@ test('shows the record with its alerts and visit history', async () => {
     '/patients/1/edit',
   )
   expect(screen.queryByRole('button', { name: 'Archive' })).not.toBeInTheDocument()
+})
+
+test('the record carries its form code, education level and medical history', async () => {
+  fakeServer({
+    'GET /patients/1': patientRecord({
+      education_level: 'basic_education',
+      medical_history: 'Hospitalized for dengue in 2023',
+    }),
+    'GET /patients/1/visits': page([]),
+    'GET /patients/1/attachments': [],
+  })
+  renderPatients(nurse, '/patients/1')
+
+  const box = within(await screen.findByRole('group', { name: 'Form code' }))
+  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+  expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
+  expect(screen.getByText('Basic education')).toBeInTheDocument()
+  expect(screen.getByText('Hospitalized for dengue in 2023')).toBeInTheDocument()
 })
 
 test('the doctor can read and edit a record but not check in', async () => {
@@ -285,6 +314,7 @@ test('registers a patient and opens the new record', async () => {
   expect(await screen.findByText('Dela Cruz, Juan registered')).toBeInTheDocument()
   expect(sent).toMatchObject({
     patient_type: 'student',
+    education_level: 'college',
     id_number: '20261234',
     last_name: 'Dela Cruz',
     first_name: 'Juan',
@@ -294,6 +324,35 @@ test('registers a patient and opens the new record', async () => {
     middle_name: null,
   })
   expect(screen.getByTestId('address')).toHaveTextContent('/patients/12')
+})
+
+test('registers a basic education student with a medical history', async () => {
+  const server = fakeServer({ 'GET /options': options() })
+  let sent: Record<string, unknown> = {}
+  server.on(
+    'POST /patients',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body)) as Record<string, unknown>
+      return patientRecord({ id: 13, full_name: 'Cruz, Lia' })
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.type(form.getByLabelText('Student number'), '2026031')
+  await user.type(form.getByLabelText('Last name'), 'Cruz')
+  await user.type(form.getByLabelText('First name'), 'Lia')
+  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
+  await user.type(form.getByLabelText('Medical history'), 'Dengue, 2023')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+
+  expect(await screen.findByText('Cruz, Lia registered')).toBeInTheDocument()
+  expect(sent).toMatchObject({
+    education_level: 'basic_education',
+    medical_history: 'Dengue, 2023',
+  })
 })
 
 test('shows why the server refused a registration and keeps what was typed', async () => {
@@ -313,6 +372,47 @@ test('shows why the server refused a registration and keeps what was typed', asy
     "A patient with ID number '20261234' already exists",
   )
   expect(form.getByLabelText('Last name')).toHaveValue('Dela Cruz')
+})
+
+test('the form carries the code of the form for the kind of patient', async () => {
+  fakeServer({ 'GET /options': options() })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  const box = within(form.getByRole('group', { name: 'Form code' }))
+  expect(box.getByText('FM-SSA-MOS-8013')).toBeInTheDocument()
+  expect(box.getByText('Revision: 0')).toBeInTheDocument()
+  expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
+
+  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
+  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
+  expect(box.getByText('FM-SSA-MOS-8011')).toBeInTheDocument()
+})
+
+test('states the data privacy law the record is kept under, beside the consent', async () => {
+  fakeServer({ 'GET /options': options() })
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  expect(
+    form.getByLabelText('The signed data privacy consent form is on file'),
+  ).toHaveAccessibleDescription(/Republic Act No\. 10173, the Data Privacy Act of 2012/)
+})
+
+test('settles the education level from the department, and asks it of students only', async () => {
+  fakeServer({ 'GET /options': options(['Basic Education Department (Junior High School)']) })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.type(form.getByLabelText('School or department'), 'Basic Education')
+  expect(form.getByLabelText('Education level')).toHaveValue('basic_education')
+
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
+  expect(form.queryByLabelText('Education level')).not.toBeInTheDocument()
 })
 
 // ---------- Correcting ----------

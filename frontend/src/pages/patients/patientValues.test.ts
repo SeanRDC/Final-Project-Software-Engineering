@@ -55,6 +55,7 @@ test('the registration request trims text and sends blanks as null', () => {
 
   expect(request).toMatchObject({
     patient_type: 'student',
+    education_level: 'college',
     id_number: '20261234',
     last_name: 'Dela Cruz',
     first_name: 'Juan',
@@ -64,6 +65,20 @@ test('the registration request trims text and sends blanks as null', () => {
     middle_name: null,
     consent_on_file: false,
   })
+})
+
+test('only a student is sent with an education level', () => {
+  const pupil = { ...filled(), education_level: 'basic_education' as const }
+
+  expect(createRequest(pupil).education_level).toBe('basic_education')
+  expect(createRequest({ ...pupil, patient_type: 'employee' }).education_level).toBeNull()
+})
+
+test('a correction of the medical history is sent trimmed', () => {
+  const patient = patientRecord()
+  const values = { ...patientValues(patient), medical_history: ' Dengue, 2023 ' }
+
+  expect(patientChanges(patient, values)).toEqual({ medical_history: 'Dengue, 2023' })
 })
 
 test('an untouched record has nothing to send', () => {

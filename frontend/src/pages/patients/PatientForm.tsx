@@ -2,7 +2,8 @@ import { CircleAlertIcon } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 
 import { ApiError } from '@/api/client'
-import type { PatientType, Sex } from '@/api/types'
+import type { EducationLevel, PatientType, Sex } from '@/api/types'
+import { FormCodeBox } from '@/components/FormCodeBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -65,6 +66,10 @@ export function PatientForm({
 
   function change(patch: Partial<PatientValues>) {
     const next = { ...values, ...patch }
+    // Choosing the Basic Education Department settles the level with it.
+    if (patch.department?.trim().toLowerCase().startsWith('basic education')) {
+      next.education_level = 'basic_education'
+    }
     setValues(next)
     onDirtyChange?.(JSON.stringify(next) !== JSON.stringify(initialValues))
     // Once a field has been flagged, clear the flag as soon as it is corrected.
@@ -138,6 +143,12 @@ export function PatientForm({
   return (
     <form onSubmit={handleSubmit} noValidate aria-label="Patient record">
       <FieldGroup className="gap-8">
+        {/* Where the paper form carries it: the top right corner. */}
+        <FormCodeBox
+          patientType={values.patient_type}
+          educationLevel={isStudent ? values.education_level : null}
+          className="self-end"
+        />
         <FieldSet>
           <FieldLegend>Identity</FieldLegend>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -183,6 +194,22 @@ export function PatientForm({
         <FieldSet>
           <FieldLegend>{isStudent ? 'School details' : 'Work details'}</FieldLegend>
           <div className="grid gap-4 sm:grid-cols-2">
+            {isStudent ? (
+              <Field>
+                <FieldLabel htmlFor="education_level">Education level</FieldLabel>
+                <NativeSelect
+                  id="education_level"
+                  name="education_level"
+                  value={values.education_level}
+                  onChange={(event) =>
+                    change({ education_level: event.target.value as EducationLevel })
+                  }
+                >
+                  <NativeSelectOption value="basic_education">Basic education</NativeSelectOption>
+                  <NativeSelectOption value="college">College</NativeSelectOption>
+                </NativeSelect>
+              </Field>
+            ) : null}
             {text('department', isStudent ? 'School or department' : 'Department or office', {
               list: 'department-options',
             })}
@@ -247,20 +274,35 @@ export function PatientForm({
             {area('medical_conditions', 'Medical conditions', 'e.g. asthma, diabetes…')}
             {area('medication_restrictions', 'Medication restrictions')}
             {area('activity_restrictions', 'Activity restrictions')}
+            <div className="sm:col-span-2">
+              {area(
+                'medical_history',
+                'Medical history',
+                'Previous hospitalizations, operations, serious illnesses…',
+              )}
+            </div>
             <div className="sm:col-span-2">{area('notes', 'Other notes')}</div>
           </div>
         </FieldSet>
 
-        <Field orientation="horizontal">
-          <Checkbox
-            id="consent_on_file"
-            checked={values.consent_on_file}
-            onCheckedChange={(state) => change({ consent_on_file: state === true })}
-          />
-          <FieldLabel htmlFor="consent_on_file" className="font-normal">
-            The signed data privacy consent form is on file
-          </FieldLabel>
-        </Field>
+        <div className="flex flex-col gap-3">
+          <p id="privacy-notice" className="text-sm text-muted-foreground italic">
+            This record is collected and kept in compliance with Republic Act No. 10173, the Data
+            Privacy Act of 2012. It is used only for the patient’s care at the University Clinic and
+            is seen only by authorized clinic personnel.
+          </p>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="consent_on_file"
+              aria-describedby="privacy-notice"
+              checked={values.consent_on_file}
+              onCheckedChange={(state) => change({ consent_on_file: state === true })}
+            />
+            <FieldLabel htmlFor="consent_on_file" className="font-normal">
+              The signed data privacy consent form is on file
+            </FieldLabel>
+          </Field>
+        </div>
 
         {error ? (
           <Alert variant="destructive">

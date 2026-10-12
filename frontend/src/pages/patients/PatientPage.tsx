@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router'
 import { ApiError } from '@/api/client'
 import type { Patient } from '@/api/types'
 import { useCan } from '@/auth/permissions'
+import { FormCodeBox } from '@/components/FormCodeBox'
 import { PatientAlertsBox } from '@/components/PatientAlertsBox'
 import { SectionCard } from '@/components/SectionCard'
 import { StatusPill } from '@/components/StatusPill'
@@ -54,6 +55,13 @@ function Details({ patient }: { patient: Patient }) {
         <dl className="grid grid-cols-2 gap-x-4 gap-y-4 p-4">
           <Detail label="Birth date">{formatDay(patient.birth_date)}</Detail>
           <Detail label="Sex">{patient.sex ? humanize(patient.sex) : null}</Detail>
+          {isStudent ? (
+            <div className="col-span-2">
+              <Detail label="Education level">
+                {patient.education_level ? humanize(patient.education_level) : null}
+              </Detail>
+            </div>
+          ) : null}
           <Detail label={isStudent ? 'School or department' : 'Department or office'}>
             {patient.department}
           </Detail>
@@ -83,6 +91,9 @@ function Details({ patient }: { patient: Patient }) {
             <Detail label="Privacy consent">
               {patient.consent_on_file ? 'Signed form on file' : 'Not on file'}
             </Detail>
+            <div className="col-span-2">
+              <Detail label="Medical history">{patient.medical_history}</Detail>
+            </div>
             <div className="col-span-2">
               <Detail label="Other notes">{patient.notes}</Detail>
             </div>
@@ -155,32 +166,38 @@ export function PatientPage() {
           </p>
           <p className="mt-0.5 text-sm text-muted-foreground">{visitSummary}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {allowed('patients:archive') ? <ArchiveControl patient={patient} /> : null}
-          {allowed('patients:write') ? (
-            <Button asChild variant="outline">
-              <Link to={`/patients/${patient.id}/edit`}>
-                <PencilIcon data-icon="inline-start" />
-                Edit record
-              </Link>
-            </Button>
-          ) : null}
-          {allowed('appointments:write') && !patient.is_archived ? (
-            <Button asChild variant="outline">
-              <Link to={`/appointments/new?patient=${patient.id}`}>
-                <CalendarPlusIcon data-icon="inline-start" />
-                Book appointment
-              </Link>
-            </Button>
-          ) : null}
-          {allowed('visits:record') && !patient.is_archived ? (
-            <Button asChild>
-              <Link to={`/check-in?patient=${patient.id}`}>
-                <ClipboardPlusIcon data-icon="inline-start" />
-                Check in
-              </Link>
-            </Button>
-          ) : null}
+        <div className="flex flex-col items-end gap-3">
+          <FormCodeBox
+            patientType={patient.patient_type}
+            educationLevel={patient.education_level}
+          />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {allowed('patients:archive') ? <ArchiveControl patient={patient} /> : null}
+            {allowed('patients:write') ? (
+              <Button asChild variant="outline">
+                <Link to={`/patients/${patient.id}/edit`}>
+                  <PencilIcon data-icon="inline-start" />
+                  Edit record
+                </Link>
+              </Button>
+            ) : null}
+            {allowed('appointments:write') && !patient.is_archived ? (
+              <Button asChild variant="outline">
+                <Link to={`/appointments/new?patient=${patient.id}`}>
+                  <CalendarPlusIcon data-icon="inline-start" />
+                  Book appointment
+                </Link>
+              </Button>
+            ) : null}
+            {allowed('visits:record') && !patient.is_archived ? (
+              <Button asChild>
+                <Link to={`/check-in?patient=${patient.id}`}>
+                  <ClipboardPlusIcon data-icon="inline-start" />
+                  Check in
+                </Link>
+              </Button>
+            ) : null}
+          </div>
         </div>
       </header>
 

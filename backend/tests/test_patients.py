@@ -62,6 +62,16 @@ def test_update_corrects_and_clears_fields(nurse, patient):
     assert body["department"] == "School of Computing"
 
 
+def test_medical_history_is_recorded_and_can_be_cleared(nurse, patient):
+    history = "Hospitalized for dengue in 2023. Appendectomy in 2021."
+    saved = nurse.patch(f"/patients/{patient['id']}", json={"medical_history": history})
+    assert saved.json()["medical_history"] == history
+    assert nurse.get(f"/patients/{patient['id']}").json()["medical_history"] == history
+
+    cleared = nurse.patch(f"/patients/{patient['id']}", json={"medical_history": " "})
+    assert cleared.json()["medical_history"] is None
+
+
 def test_doctor_can_update_medical_history_but_not_archive(doctor, patient):
     assert doctor.patch(f"/patients/{patient['id']}",
                         json={"medical_conditions": "G6PD deficiency"}).status_code == 200
@@ -81,3 +91,28 @@ def test_archive_hides_patient_from_search(coordinator, nurse, patient):
 
 def test_missing_patient_is_404(nurse):
     assert nurse.get("/patients/999").status_code == 404
+
+
+def test_education_level_of_a_student_is_kept_or_read_off_the_department(nurse, patient):
+    assert patient["education_level"] == "college"
+    pupil = _register(nurse, "20260031", "Cruz", "Lia",
+                      "Basic Education Department (Junior High School and Senior High School)")
+    assert pupil["education_level"] == "basic_education"
+
+    chosen = nurse.post("/patients", json={
+        "patient_type": "student", "id_number": "20260032", "last_name": "Lim",
+        "first_name": "Ana", "education_level": "basic_education"})
+    assert chosen.json()["education_level"] == "basic_education"
+    assert "basic_education" in nurse.get("/options").json()["enums"]["education_level"]
+
+
+def test_an_employee_has_no_education_level(nurse, coordinator, patient):
+    staff = nurse.post("/patients", json={
+        "patient_type": "employee", "id_number": "EMP-0101", "last_name": "Ramos",
+        "first_name": "Jose", "education_level": "college"})
+    assert staff.json()["education_level"] is None
+
+    hired = nurse.patch(f"/patients/{patient['id']}", json={"patient_type": "employee"})
+    assert hired.json()["education_level"] is None
+    entry = coordinator.get("/audit-logs", params={"action": "patient.update"}).json()["items"][-1]
+    assert "education_level" in str(entry)

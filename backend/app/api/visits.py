@@ -16,6 +16,7 @@ from app.schemas.visit import (
     CompleteVisit,
     ConsultationUpdate,
     DispenseMedicine,
+    ReleaseFromAdmission,
     VisitListItem,
     VisitOut,
     VisitRecordUpdate,
@@ -101,6 +102,16 @@ def complete(
     visit = visits.complete(db, visit_id, data or CompleteVisit(), actor)
     _visits_changed(visit)
     broadcaster.publish("appointments.updated")
+    return visits.to_out(db, visit)
+
+
+@router.post("/{visit_id}/release", response_model=VisitOut,
+             summary="Record that an admitted patient left the clinic, and where they went")
+def release_from_admission(
+    visit_id: int, data: ReleaseFromAdmission, db: DbSession, actor: Recorder
+):
+    visit = visits.release_from_admission(db, visit_id, data, actor)
+    _visits_changed(visit)
     return visits.to_out(db, visit)
 
 

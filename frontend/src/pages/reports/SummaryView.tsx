@@ -140,6 +140,13 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
           readable
         />
         <CountTable
+          title="After admission"
+          what="Where the patient went"
+          items={summary.admission_releases}
+          readable
+          empty="No admitted patient was released in this period."
+        />
+        <CountTable
           title="Visits by department"
           what="Department"
           items={summary.visits_by_department}

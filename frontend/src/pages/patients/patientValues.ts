@@ -1,7 +1,14 @@
 // The logic behind the patient form, used both to register a patient and to correct a
 // record: starting values, what makes a field invalid, and what is sent to the server.
 
-import type { PatientCreate, PatientRecord, PatientType, PatientUpdate, Sex } from '@/api/types'
+import type {
+  EducationLevel,
+  PatientCreate,
+  PatientRecord,
+  PatientType,
+  PatientUpdate,
+  Sex,
+} from '@/api/types'
 import { toDayString } from '@/lib/format'
 
 /** The optional text fields, with the longest value the API accepts (0 = no limit). */
@@ -20,6 +27,7 @@ const TEXT_FIELDS = {
   medical_conditions: 0,
   medication_restrictions: 0,
   activity_restrictions: 0,
+  medical_history: 0,
   notes: 0,
 } as const
 
@@ -28,6 +36,8 @@ const TEXT_FIELD_NAMES = Object.keys(TEXT_FIELDS) as TextField[]
 
 export type PatientValues = Record<TextField, string> & {
   patient_type: PatientType
+  /** Kept while the type is employee, so switching back to student restores it. */
+  education_level: EducationLevel
   id_number: string
   last_name: string
   first_name: string
@@ -49,6 +59,7 @@ export function emptyPatient(): PatientValues {
   return {
     ...blanks,
     patient_type: 'student',
+    education_level: 'college',
     id_number: '',
     last_name: '',
     first_name: '',
@@ -65,6 +76,7 @@ export function patientValues(patient: PatientRecord): PatientValues {
   return {
     ...texts,
     patient_type: patient.patient_type,
+    education_level: patient.education_level ?? 'college',
     id_number: patient.id_number,
     last_name: patient.last_name,
     first_name: patient.first_name,
@@ -118,6 +130,8 @@ function normalise(values: PatientValues): Normalised {
   return {
     ...texts,
     patient_type: values.patient_type,
+    // Only a student has a level.
+    education_level: values.patient_type === 'student' ? values.education_level : null,
     id_number: values.id_number.trim(),
     last_name: values.last_name.trim(),
     first_name: values.first_name.trim(),

@@ -207,6 +207,7 @@ test('marks a confirmed appointment as a no-show and reports a refusal', async (
 // ---------- Booking ----------
 
 test('books an appointment for a chosen patient on the day in the address', async () => {
+  // A day far ahead: the form refuses a date in the address that has already passed.
   const server = clinic()
   server.on('GET /patients', { items: [patient()], total: 1, page: 1, page_size: 8 })
   let sent: unknown
@@ -216,7 +217,7 @@ test('books an appointment for a chosen patient on the day in the address', asyn
       sent = JSON.parse(String(init.body))
       return appointment({
         id: 20,
-        scheduled_date: '2026-10-12',
+        scheduled_date: '2031-10-13',
         status: 'pending',
         patient: patient(),
       })
@@ -224,10 +225,10 @@ test('books an appointment for a chosen patient on the day in the address', asyn
     201,
   )
   const user = userEvent.setup()
-  renderAppointments(nurse, '/appointments/new?date=2026-10-12')
+  renderAppointments(nurse, '/appointments/new?date=2031-10-13')
 
   const form = within(await screen.findByRole('form', { name: 'Appointment' }))
-  await waitFor(() => expect(form.getByLabelText('Date')).toHaveValue('2026-10-12'))
+  await waitFor(() => expect(form.getByLabelText('Date')).toHaveValue('2031-10-13'))
 
   await user.click(form.getByRole('button', { name: 'Book appointment' }))
   expect(form.getByText('Choose the patient.')).toBeInTheDocument()
@@ -243,14 +244,14 @@ test('books an appointment for a chosen patient on the day in the address', asyn
   expect(await screen.findByText('Appointment booked for Santos, Maria')).toBeInTheDocument()
   expect(sent).toEqual({
     patient_id: 1,
-    scheduled_date: '2026-10-12',
+    scheduled_date: '2031-10-13',
     start_time: '14:00',
     end_time: '14:30',
     reason: 'BP monitoring',
     notes: null,
   })
   await waitFor(() =>
-    expect(screen.getByTestId('address')).toHaveTextContent('/appointments?date=2026-10-12'),
+    expect(screen.getByTestId('address')).toHaveTextContent('/appointments?date=2031-10-13'),
   )
 })
 
