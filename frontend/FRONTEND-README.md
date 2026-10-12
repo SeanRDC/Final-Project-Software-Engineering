@@ -134,9 +134,11 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 | Consultation notes, diagnosis, medication details             | `visits:consult`        | `PATCH /visits/{id}/consultation`          | `ConsultationForm`                        |
 | Release medicine, undo a release                              | `medicines:dispense`    | `POST` and `DELETE /visits/{id}/medicines` | `ReleaseMedicineForm`, `MedicinesSection` |
 | Complete the visit                                            | either of the first two | `POST /visits/{id}/complete`               | `CompleteVisitDialog`                     |
+| Release an admitted patient                                   | `visits:record`         | `POST /visits/{id}/release`                | `ReleaseFromAdmissionDialog`              |
 
 - **Edit lock.** Opening a form takes the lock on the visit (`useRecordLock`, `PUT /locks/visit/{id}`), renews it every minute and releases it when the form closes. If someone else holds it, the form does not open and the panel says who is editing. The hook also works for patient records.
 - **Only changes are sent.** `visitForm.ts` compares the form with the saved visit and sends the fields that differ, so the audit log lists what was really changed.
+- **Release from admission.** A completed visit whose outcome is "Admitted" offers **Release from admission** until it is used. It records the time and where the patient went, and the outcome then reads "Admitted, then returned to class or work" (`outcomeLabel` in `lib/status.ts`) on the visit and in the patient's history.
 - **Validation mirrors the API.** Vital sign limits are the ones in `backend/app/schemas/visit.py`; half a blood pressure reading is refused.
 - **Stock.** A medicine with nothing on hand cannot be chosen and a quantity above the stock is refused before it is sent. The server makes the final check when it deducts the stock.
 - **After completion** a visit can still be corrected, as the clinic requires. A cancelled visit offers no actions.
@@ -158,6 +160,10 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Records are never deleted.** The coordinator can archive a record, which hides it from search and from check-in, and restore it at any time.
 - **One form** registers a patient and corrects a record. A correction sends only the fields that changed (`patientValues.ts`).
 - **The university's schools are offered as suggestions** for the department (`backend/app/core/departments.py`), followed by any other department or office already on record, so one school is not spelled several ways.
+- **The form code box** (`FormCodeBox`) sits at the top right of the patient form and of the record, as on the clinic's paper forms: the ISO code, the revision and the effectivity date. The code follows the kind of patient (`lib/formCodes.ts`): `FM-SSA-MOS-8011` for an employee, `FM-SSA-MOS-8012` for a basic education student, `FM-SSA-MOS-8013` for a college student. It changes on the form as the patient type or education level is changed.
+- **Education level** is asked of students only and follows the department when the Basic Education Department is chosen.
+- **The data privacy notice** above the consent tick cites Republic Act No. 10173, the Data Privacy Act of 2012.
+- **The visit history** shows the check-in time under each date, except for a visit entered on a later day, whose time of entry would mislead.
 - **Leaving with unsaved changes** makes the browser ask first.
 - **Check in from the record** opens check-in with the patient already chosen (`/check-in?patient=12`), and a visit links back to its patient record.
 - **Reading a record is audited** by the server each time the page loads it.
@@ -194,6 +200,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **An adjustment needs a reason** and shows the difference from the records before it is saved.
 - **Flags:** low stock, out of stock, expired, and expiring within sixty days.
 - **The release log** starts on releases to patients, each linked to its visit, and can show deliveries and adjustments too.
+- **Dosage** is what the clinic calls the strength of a medicine ("500 mg"). The API field is still `strength`.
 - **The doctor** can view both screens but change nothing.
 
 ## Notifications
@@ -214,6 +221,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
 - **Requests by students and employees** is its own table, the tally the clinic submits each term.
+- **After admission** counts where admitted patients went once they had rested.
 - **Charts.** Visits by month is a column chart (`VisitsByMonthChart`), drawn when the period covers two months or more; months without visits are filled in as zero. Each breakdown table has a bar under every name, measured against the table's largest count. Both are plain HTML and CSS in one colour (`--chart-1`), so no chart library is loaded, and every figure stays in a table for screen readers.
 
 ## Accounts and Passwords
@@ -260,7 +268,7 @@ frontend/
 ├── src/
 │   ├── api/                  # Fetch client, generated schema and type aliases
 │   ├── auth/                 # Session storage, auth provider, permission helper
-│   ├── components/           # Shared components (SectionCard, StatusPill, Pager, calendar)
+│   ├── components/           # Shared components (SectionCard, StatusPill, Pager, FormCodeBox, calendar)
 │   │   └── ui/               # shadcn/ui primitives, added with `npx shadcn add`
 │   ├── layout/               # App shell, top bar, sidebar, page and navigation lists
 │   ├── lib/                  # Formatting helpers, query client, status labels, record lock hook
