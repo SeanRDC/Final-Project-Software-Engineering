@@ -142,6 +142,7 @@ def options(db: DbSession, _: CurrentUser):
         enums={
             "role": [r.value for r in Role],
             "patient_type": [e.value for e in enums.PatientType],
+            "education_level": [e.value for e in enums.EducationLevel],
             "sex": [e.value for e in enums.Sex],
             "visit_status": [e.value for e in enums.VisitStatus],
             "visit_type": [e.value for e in enums.VisitType],
