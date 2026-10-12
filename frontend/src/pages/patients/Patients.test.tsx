@@ -307,27 +307,52 @@ test('registers a patient and opens the new record', async () => {
   await user.type(form.getByLabelText('Last name'), 'Dela Cruz')
   await user.type(form.getByLabelText('First name'), 'Juan')
   await user.selectOptions(form.getByLabelText('Sex'), 'Male')
-  expect(form.getByLabelText('Education level')).toHaveValue('college')
-  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
   await user.type(form.getByLabelText('Allergies'), 'Peanuts')
-  await user.type(form.getByLabelText('Medical history'), 'Hospitalized for dengue in 2023')
   await user.click(form.getByLabelText('The signed data privacy consent form is on file'))
   await user.click(form.getByRole('button', { name: 'Register patient' }))
 
   expect(await screen.findByText('Dela Cruz, Juan registered')).toBeInTheDocument()
   expect(sent).toMatchObject({
     patient_type: 'student',
-    education_level: 'basic_education',
+    education_level: 'college',
     id_number: '20261234',
     last_name: 'Dela Cruz',
     first_name: 'Juan',
     sex: 'male',
     allergies: 'Peanuts',
-    medical_history: 'Hospitalized for dengue in 2023',
     consent_on_file: true,
     middle_name: null,
   })
   expect(screen.getByTestId('address')).toHaveTextContent('/patients/12')
+})
+
+test('registers a basic education student with a medical history', async () => {
+  const server = fakeServer({ 'GET /options': options() })
+  let sent: Record<string, unknown> = {}
+  server.on(
+    'POST /patients',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body)) as Record<string, unknown>
+      return patientRecord({ id: 13, full_name: 'Cruz, Lia' })
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.type(form.getByLabelText('Student number'), '2026031')
+  await user.type(form.getByLabelText('Last name'), 'Cruz')
+  await user.type(form.getByLabelText('First name'), 'Lia')
+  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
+  await user.type(form.getByLabelText('Medical history'), 'Dengue, 2023')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+
+  expect(await screen.findByText('Cruz, Lia registered')).toBeInTheDocument()
+  expect(sent).toMatchObject({
+    education_level: 'basic_education',
+    medical_history: 'Dengue, 2023',
+  })
 })
 
 test('shows why the server refused a registration and keeps what was typed', async () => {
@@ -383,7 +408,7 @@ test('settles the education level from the department, and asks it of students o
   renderPatients(nurse, '/patients/new')
 
   const form = within(screen.getByRole('form', { name: 'Patient record' }))
-  await user.type(form.getByLabelText('School or department'), 'Basic Education Department')
+  await user.type(form.getByLabelText('School or department'), 'Basic Education')
   expect(form.getByLabelText('Education level')).toHaveValue('basic_education')
 
   await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
