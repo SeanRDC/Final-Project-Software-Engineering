@@ -278,6 +278,8 @@ test('registers a patient and opens the new record', async () => {
   await user.type(form.getByLabelText('Last name'), 'Dela Cruz')
   await user.type(form.getByLabelText('First name'), 'Juan')
   await user.selectOptions(form.getByLabelText('Sex'), 'Male')
+  expect(form.getByLabelText('Education level')).toHaveValue('college')
+  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
   await user.type(form.getByLabelText('Allergies'), 'Peanuts')
   await user.click(form.getByLabelText('The signed data privacy consent form is on file'))
   await user.click(form.getByRole('button', { name: 'Register patient' }))
@@ -285,6 +287,7 @@ test('registers a patient and opens the new record', async () => {
   expect(await screen.findByText('Dela Cruz, Juan registered')).toBeInTheDocument()
   expect(sent).toMatchObject({
     patient_type: 'student',
+    education_level: 'basic_education',
     id_number: '20261234',
     last_name: 'Dela Cruz',
     first_name: 'Juan',
@@ -313,6 +316,19 @@ test('shows why the server refused a registration and keeps what was typed', asy
     "A patient with ID number '20261234' already exists",
   )
   expect(form.getByLabelText('Last name')).toHaveValue('Dela Cruz')
+})
+
+test('settles the education level from the department, and asks it of students only', async () => {
+  fakeServer({ 'GET /options': options(['Basic Education Department (Junior High School)']) })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.type(form.getByLabelText('School or department'), 'Basic Education Department')
+  expect(form.getByLabelText('Education level')).toHaveValue('basic_education')
+
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
+  expect(form.queryByLabelText('Education level')).not.toBeInTheDocument()
 })
 
 // ---------- Correcting ----------

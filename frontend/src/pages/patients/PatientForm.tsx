@@ -2,7 +2,7 @@ import { CircleAlertIcon } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 
 import { ApiError } from '@/api/client'
-import type { PatientType, Sex } from '@/api/types'
+import type { EducationLevel, PatientType, Sex } from '@/api/types'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -65,6 +65,10 @@ export function PatientForm({
 
   function change(patch: Partial<PatientValues>) {
     const next = { ...values, ...patch }
+    // Choosing the Basic Education Department settles the level with it.
+    if (patch.department?.trim().toLowerCase().startsWith('basic education')) {
+      next.education_level = 'basic_education'
+    }
     setValues(next)
     onDirtyChange?.(JSON.stringify(next) !== JSON.stringify(initialValues))
     // Once a field has been flagged, clear the flag as soon as it is corrected.
@@ -183,6 +187,22 @@ export function PatientForm({
         <FieldSet>
           <FieldLegend>{isStudent ? 'School details' : 'Work details'}</FieldLegend>
           <div className="grid gap-4 sm:grid-cols-2">
+            {isStudent ? (
+              <Field>
+                <FieldLabel htmlFor="education_level">Education level</FieldLabel>
+                <NativeSelect
+                  id="education_level"
+                  name="education_level"
+                  value={values.education_level}
+                  onChange={(event) =>
+                    change({ education_level: event.target.value as EducationLevel })
+                  }
+                >
+                  <NativeSelectOption value="basic_education">Basic education</NativeSelectOption>
+                  <NativeSelectOption value="college">College</NativeSelectOption>
+                </NativeSelect>
+              </Field>
+            ) : null}
             {text('department', isStudent ? 'School or department' : 'Department or office', {
               list: 'department-options',
             })}
