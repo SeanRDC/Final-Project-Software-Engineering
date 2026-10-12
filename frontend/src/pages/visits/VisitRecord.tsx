@@ -4,7 +4,8 @@ import type { ReactNode } from 'react'
 import type { Visit } from '@/api/types'
 import { PatientAlertsBox } from '@/components/PatientAlertsBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { dispositionLabel } from '@/lib/status'
+import { formatDuration, formatTimeOfDay, minutesBetween } from '@/lib/format'
+import { outcomeLabel } from '@/lib/status'
 import { MedicinesSection } from '@/pages/visits/MedicinesSection'
 import { MonitoringSection } from '@/pages/visits/MonitoringSection'
 
@@ -31,6 +32,16 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
 }
 
 const NOT_RECORDED = <p className="text-sm text-muted-foreground">Not recorded yet.</p>
+
+/** "2:15 PM, after 1 h 5 min in the clinic · recorded by Reyes, Ana". */
+function describeRelease(visit: Visit): string | null {
+  if (!visit.released_at) return null
+  const rested = visit.completed_at
+    ? `, after ${formatDuration(minutesBetween(visit.completed_at, visit.released_at))} in the clinic`
+    : ''
+  const by = visit.released_by_name ? ` · recorded by ${visit.released_by_name}` : ''
+  return `${formatTimeOfDay(visit.released_at)}${rested}${by}`
+}
 
 function vitalSigns(visit: Visit): [string, string][] {
   const signs: [string, string | null][] = [
@@ -124,9 +135,8 @@ export function VisitRecord({
             <Detail label="Referred">
               {visit.referred ? (visit.referral_details ?? 'Yes') : null}
             </Detail>
-            <Detail label="Outcome">
-              {visit.disposition ? dispositionLabel(visit.disposition) : null}
-            </Detail>
+            <Detail label="Outcome">{outcomeLabel(visit)}</Detail>
+            <Detail label="Released from admission">{describeRelease(visit)}</Detail>
           </dl>
         ) : (
           NOT_RECORDED
