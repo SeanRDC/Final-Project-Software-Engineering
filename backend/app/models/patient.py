@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.clock import clinic_today, utcnow
 from app.db.base import Base, UTCDateTime
-from app.models.enums import PatientType, Sex, enum_type
+from app.models.enums import EducationLevel, PatientType, Sex, enum_type
 
 
 class Patient(Base):
@@ -15,6 +15,8 @@ class Patient(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     patient_type: Mapped[PatientType] = mapped_column(enum_type(PatientType), index=True)
+    # Students only. It decides which of the clinic's ISO forms the record is filed under.
+    education_level: Mapped[EducationLevel | None] = mapped_column(enum_type(EducationLevel))
     id_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     last_name: Mapped[str] = mapped_column(String(80), index=True)
     first_name: Mapped[str] = mapped_column(String(80))
