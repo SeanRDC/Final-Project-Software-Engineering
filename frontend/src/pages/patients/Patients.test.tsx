@@ -318,6 +318,24 @@ test('shows why the server refused a registration and keeps what was typed', asy
   expect(form.getByLabelText('Last name')).toHaveValue('Dela Cruz')
 })
 
+test('the form carries the code of the form for the kind of patient', async () => {
+  fakeServer({ 'GET /options': options() })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  const box = within(form.getByRole('group', { name: 'Form code' }))
+  expect(box.getByText('FM-SSA-MOS-8013')).toBeInTheDocument()
+  expect(box.getByText('Revision: 0')).toBeInTheDocument()
+  expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
+
+  await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
+  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
+  expect(box.getByText('FM-SSA-MOS-8011')).toBeInTheDocument()
+})
+
 test('settles the education level from the department, and asks it of students only', async () => {
   fakeServer({ 'GET /options': options(['Basic Education Department (Junior High School)']) })
   const user = userEvent.setup()

@@ -3,6 +3,7 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 
 import { ApiError } from '@/api/client'
 import type { EducationLevel, PatientType, Sex } from '@/api/types'
+import { FormCodeBox } from '@/components/FormCodeBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -142,6 +143,12 @@ export function PatientForm({
   return (
     <form onSubmit={handleSubmit} noValidate aria-label="Patient record">
       <FieldGroup className="gap-8">
+        {/* Where the paper form carries it: the top right corner. */}
+        <FormCodeBox
+          patientType={values.patient_type}
+          educationLevel={isStudent ? values.education_level : null}
+          className="self-end"
+        />
         <FieldSet>
           <FieldLegend>Identity</FieldLegend>
           <div className="grid gap-4 sm:grid-cols-2">
