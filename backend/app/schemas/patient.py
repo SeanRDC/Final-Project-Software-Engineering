@@ -4,11 +4,12 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
-from app.models.enums import PatientType, Sex
+from app.models.enums import EducationLevel, PatientType, Sex
 from app.schemas.common import OptionalText, ORMModel
 
 
 class PatientBase(BaseModel):
+    education_level: EducationLevel | None = None
     middle_name: OptionalText = Field(default=None, max_length=80)
     birth_date: date | None = None
     sex: Sex | None = None
@@ -47,6 +48,7 @@ class PatientUpdate(PatientBase):
 class PatientSummary(ORMModel):
     id: int
     patient_type: PatientType
+    education_level: EducationLevel | None
     id_number: str
     last_name: str
     first_name: str

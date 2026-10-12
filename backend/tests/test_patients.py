@@ -81,3 +81,28 @@ def test_archive_hides_patient_from_search(coordinator, nurse, patient):
 
 def test_missing_patient_is_404(nurse):
     assert nurse.get("/patients/999").status_code == 404
+
+
+def test_education_level_of_a_student_is_kept_or_read_off_the_department(nurse, patient):
+    assert patient["education_level"] == "college"
+    pupil = _register(nurse, "20260031", "Cruz", "Lia",
+                      "Basic Education Department (Junior High School and Senior High School)")
+    assert pupil["education_level"] == "basic_education"
+
+    chosen = nurse.post("/patients", json={
+        "patient_type": "student", "id_number": "20260032", "last_name": "Lim",
+        "first_name": "Ana", "education_level": "basic_education"})
+    assert chosen.json()["education_level"] == "basic_education"
+    assert "basic_education" in nurse.get("/options").json()["enums"]["education_level"]
+
+
+def test_an_employee_has_no_education_level(nurse, coordinator, patient):
+    staff = nurse.post("/patients", json={
+        "patient_type": "employee", "id_number": "EMP-0101", "last_name": "Ramos",
+        "first_name": "Jose", "education_level": "college"})
+    assert staff.json()["education_level"] is None
+
+    hired = nurse.patch(f"/patients/{patient['id']}", json={"patient_type": "employee"})
+    assert hired.json()["education_level"] is None
+    entry = coordinator.get("/audit-logs", params={"action": "patient.update"}).json()["items"][-1]
+    assert "education_level" in str(entry)
