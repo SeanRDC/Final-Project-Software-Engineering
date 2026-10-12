@@ -147,6 +147,7 @@ Nurses and student assistants work at the same station, so they share one role w
 | Check in patients, record vitals and assessment, cancel a visit | ✅ | ✅ | |
 | Write consultation notes, diagnosis and medication details | ✅ | | ✅ |
 | Complete a visit | ✅ | ✅ | ✅ |
+| Release an admitted patient from admission | ✅ | ✅ | |
 | Release medicine to a patient | ✅ | ✅ | |
 | Add stock, adjust stock, edit medicines | ✅ | ✅ | view only |
 | Book, reschedule and check in appointments | ✅ | ✅ | view only |
@@ -169,6 +170,8 @@ A visit is a single record that is `open`, `completed` or `cancelled`.
 3. **Consult, if needed.** The doctor opens the same visit, sees everything the nurse recorded without anything being handed over, and adds consultation notes, diagnosis and medication details. The doctor who writes the notes is recorded on the visit.
 4. **Complete.** The nurse or the doctor completes the visit and it becomes part of the patient's permanent history. Most visits skip step 3.
 
+A patient who is admitted to rest and later leaves is not checked in again. `POST /visits/{id}/release` records on the same visit when they left and where they went (back to class or work, sent home, or referred), so the record reads "Admitted, then returned to class or work".
+
 `GET /visits/today` returns the day's log: open visits in order of arrival, then completed ones. A completed visit can still be corrected. A visit is never deleted, only cancelled, and it cannot be cancelled once medicine was released for it. A patient can have only one open visit at a time.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -182,7 +185,7 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Authentication | `POST /auth/login`, `GET /auth/me`, `POST /auth/change-password` |
 | Users | `GET /users`, `POST /users`, `PATCH /users/{id}`, `POST /users/{id}/reset-password` |
 | Patients | `GET /patients` (search), `POST /patients`, `GET /patients/{id}`, `PATCH /patients/{id}`, `POST /patients/{id}/archive`, `POST /patients/{id}/restore`, `GET /patients/{id}/visits` |
-| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/cancel`, `POST /visits/{id}/vitals`, `DELETE /visits/{id}/vitals/{reading_id}` |
+| Visits | `POST /visits` (check in), `GET /visits`, `GET /visits/today`, `GET /visits/{id}`, `PATCH /visits/{id}`, `PATCH /visits/{id}/consultation`, `POST /visits/{id}/complete`, `POST /visits/{id}/release`, `POST /visits/{id}/cancel`, `POST /visits/{id}/vitals`, `DELETE /visits/{id}/vitals/{reading_id}` |
 | Medicine release | `POST /visits/{id}/medicines`, `DELETE /visits/{id}/medicines/{entry_id}` |
 | Appointments | `GET /appointments`, `GET /appointments/today`, `GET /appointments/calendar`, `POST /appointments`, `PATCH /appointments/{id}`, `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` |
 | Inventory | `GET /inventory/medicines`, `POST /inventory/medicines`, `PATCH /inventory/medicines/{id}`, `POST /inventory/medicines/{id}/stock-in`, `/adjust`, `GET /inventory/low-stock`, `GET /inventory/movements` (release log with `movement_type=release`) |
@@ -274,8 +277,8 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 | Table | Purpose |
 | --- | --- |
 | `users` | Clinic accounts and roles |
-| `patients` | Demographics, guardian, allergies, conditions, restrictions |
-| `visits` | One row per clinic visit: log entry, vital signs, nurse record, doctor's consultation |
+| `patients` | Demographics, education level, guardian, allergies, conditions, restrictions, medical history |
+| `visits` | One row per clinic visit: log entry, vital signs, nurse record, doctor's consultation, release from admission |
 | `visit_medicines` | Medicines given during a visit |
 | `visit_vital_readings` | Vital signs taken again while a patient is monitored |
 | `appointments` | Scheduled appointments and the coordinator's decision |
@@ -357,6 +360,9 @@ These follow the project paper, the interview with the clinic and the dashboard 
 - **One open visit per patient.** A second check-in while a visit is still open is rejected.
 - **Late entries.** `POST /visits` takes an optional `visit_date` for a visit written on paper and entered later. It may not be in the future, `checked_in_at` keeps the real entry time, and the audit entry records `entered_late_for`.
 - **Monitoring readings.** The first vital signs stay on the visit. Readings taken later, for a patient resting in a ward, are separate timed rows, so the record shows how the patient changed.
+- **Release from admission.** An admission is an outcome of a completed visit. Only a completed, admitted visit can be released, once, and not into another admission. Correcting the outcome away from "admitted" drops the release. The report counts where admitted patients went (`admission_releases`); reports saved before this was added show it as empty.
+- **Education level and form codes.** A student is in `basic_education` or `college`; an employee has no level. A level left out is read off the department (the Basic Education Department, otherwise college), and migration `0003` filled it in the same way for students already on record. The level decides which of the clinic's ISO form codes the screens print on the record: `FM-SSA-MOS-8011` for employees, `FM-SSA-MOS-8012` for basic education and `FM-SSA-MOS-8013` for college.
+- **Dosage.** The clinic calls the strength of a medicine its dosage, and the screens label it so. The column and the API field are still named `strength`.
 - **The report splits each type of request by students and employees** (`visits_by_type_and_patient_type`), the tally the clinic submits every semester. Reports saved before this was added show it as empty.
 - **Saved reports are snapshots.** `POST /reports` stores the figures at generation time so a submitted report does not change. `GET /reports/summary` always computes live figures.
 - **Times.** Timestamps are stored in UTC. "Today" and report periods follow `TIMEZONE` (default `Asia/Manila`).
