@@ -66,9 +66,9 @@ The requirements come from the project paper and the interview with the Clinic C
 | --- | --- |
 | **Dashboard** | See today's visits, appointments, low-stock medicines and notifications on one screen, updated live |
 | **Check-in** | Log a walk-in in a few taps, with one-tap common complaints; enter a visit written on paper for an earlier date |
-| **Visits** | Record the complaint, vital signs, assessment, treatment, referral and outcome; the doctor adds consultation notes to the same record |
+| **Visits** | Record the complaint, vital signs, assessment, treatment, referral and outcome; the doctor adds consultation notes to the same record; an admitted patient is released when they leave |
 | **Monitoring** | Add repeat vital-sign readings for a patient resting in the clinic |
-| **Patients** | Register, search by ID number, name or department, see allergies and restrictions first, keep attachments such as lab results |
+| **Patients** | Register, search by ID number, name or department, see allergies and restrictions first, keep the medical history and attachments such as lab results; each record carries the ISO form code for a basic education student, a college student or an employee |
 | **Appointments** | Book and reschedule; the coordinator confirms or cancels |
 | **Inventory** | Track medicine stock, release medicine during a visit, get a low-stock warning, read the release log |
 | **Reports** | Statistics for any period with charts, semester and summer-term presets, CSV download, saved reports |
@@ -292,7 +292,7 @@ Walk through the system the way the clinic would. Each step says who to sign in 
 5. Open **Today's visits**. The visit should already be there, with the nurse's record.
 6. Choose **Consultation**, add notes and a diagnosis, and save. In the nurse's tab the visit should change without reloading.
 7. While the doctor's form is open, try **Record** in the nurse's tab. It should say the doctor is editing.
-8. Complete the visit with an outcome.
+8. Complete the visit with the outcome **Admitted**. In the nurse's tab, open the visit again and choose **Release from admission**; the outcome should read "Admitted, then returned to class or work".
 
 **Appointments** (`nurse`, then `coordinator`)
 
