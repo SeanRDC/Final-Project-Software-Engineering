@@ -140,7 +140,7 @@ test('adds a medicine with its opening stock', async () => {
   expect(form.getByText('Enter the medicine’s name.')).toBeInTheDocument()
 
   await user.type(form.getByLabelText('Name'), 'Cetirizine')
-  await user.type(form.getByLabelText('Strength'), '10 mg')
+  await user.type(form.getByLabelText('Dosage'), '10 mg')
   await user.clear(form.getByLabelText('Opening stock'))
   await user.type(form.getByLabelText('Opening stock'), '90')
   await user.click(form.getByRole('button', { name: 'Add medicine' }))
