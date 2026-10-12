@@ -44,7 +44,7 @@ const summary: ReportSummary = {
   ],
   visits_by_month: [{ label: '2026-10', count: 12 }],
   visits_by_disposition: [{ label: 'sent_home', count: 3 }],
-  admission_releases: [],
+  admission_releases: [{ label: 'returned', count: 2 }],
   top_complaints: [{ label: 'Headache', count: 4 }],
   referrals: 1,
   guardian_notifications: 2,
@@ -117,6 +117,11 @@ test('shows this month’s statistics by default, with readable labels', async (
   expect(byType.getByRole('row', { name: 'Medicine request 4' })).toBeInTheDocument()
   expect(
     within(screen.getByRole('region', { name: 'Visits by outcome' })).getByText('Sent home'),
+  ).toBeInTheDocument()
+  expect(
+    within(screen.getByRole('region', { name: 'After admission' })).getByRole('row', {
+      name: 'Returned 2',
+    }),
   ).toBeInTheDocument()
   expect(
     within(screen.getByRole('region', { name: 'Medicine released' })).getByText('24'),
