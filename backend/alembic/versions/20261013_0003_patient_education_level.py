@@ -28,5 +28,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    with op.batch_alter_table('patients', schema=None) as batch_op:
-        batch_op.drop_column('education_level')
+    # Not in a batch: that would rebuild patients, which SQLite refuses while visits point at it.
+    op.drop_column('patients', 'education_level')
