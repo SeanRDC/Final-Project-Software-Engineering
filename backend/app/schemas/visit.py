@@ -55,6 +55,18 @@ class CompleteVisit(BaseModel):
     disposition: VisitDisposition | None = None
 
 
+class ReleaseFromAdmission(BaseModel):
+    """Where an admitted patient went after resting in the clinic."""
+
+    disposition: VisitDisposition
+
+    @model_validator(mode="after")
+    def _has_left(self) -> Self:
+        if self.disposition == VisitDisposition.ADMITTED:
+            raise ValueError("Choose where the patient went after the admission")
+        return self
+
+
 class CancelVisit(BaseModel):
     reason: OptionalText = Field(default=None, max_length=255)
 
@@ -123,6 +135,8 @@ class VisitListItem(VisitSummary):
     treatment: str | None
     diagnosis: str | None
     disposition: VisitDisposition | None
+    released_at: datetime | None
+    release_disposition: VisitDisposition | None
     medicines: list[VisitMedicineOut]
 
 
@@ -152,6 +166,7 @@ class VisitOut(VisitListItem):
     consultation_notes: str | None
     medication_details: str | None
     cancelled_reason: str | None
+    released_by_name: str | None
     updated_at: datetime
     patient_alerts: PatientAlerts
     vital_readings: list[VitalReadingOut]

@@ -17,7 +17,12 @@ from app.models import (
     VisitMedicine,
     VisitVitalReading,
 )
-from app.models.enums import AppointmentStatus, StockMovementType, VisitStatus
+from app.models.enums import (
+    AppointmentStatus,
+    StockMovementType,
+    VisitDisposition,
+    VisitStatus,
+)
 from app.schemas.visit import (
     CancelVisit,
     CheckIn,
@@ -25,6 +30,7 @@ from app.schemas.visit import (
     ConsultationUpdate,
     DispenseMedicine,
     LockInfo,
+    ReleaseFromAdmission,
     VisitOut,
     VisitRecordUpdate,
     VitalReadingCreate,
@@ -43,6 +49,12 @@ def _get(db: Session, visit_id: int) -> Visit:
 def _require_open(visit: Visit, action: str) -> None:
     if visit.status != VisitStatus.OPEN:
         raise ConflictError(f"Cannot {action} a visit that is already {visit.status.value}")
+
+
+def _forget_release_unless_admitted(visit: Visit) -> None:
+    """A release only makes sense while the recorded outcome is an admission."""
+    if visit.disposition != VisitDisposition.ADMITTED:
+        visit.released_at = visit.release_disposition = visit.released_by = None
 
 
 def to_out(db: Session, visit: Visit) -> VisitOut:
@@ -150,6 +162,7 @@ def update_record(db: Session, visit_id: int, data: VisitRecordUpdate, actor: Us
     locks.ensure_editable(db, "visit", visit_id, actor)
     changed = apply_updates(visit, data.model_dump(exclude_unset=True), required=RECORD_REQUIRED)
     if changed:
+        _forget_release_unless_admitted(visit)
         visit.updated_by_id = actor.id
         audit.record(db, actor, "visit.update", "visit", visit.id, fields=changed)
     db.commit()
@@ -165,6 +178,7 @@ def update_consultation(
     locks.ensure_editable(db, "visit", visit_id, actor)
     changed = apply_updates(visit, data.model_dump(exclude_unset=True), required={"referred"})
     if changed:
+        _forget_release_unless_admitted(visit)
         if actor.role == Role.DOCTOR.value:
             visit.doctor = actor
         visit.updated_by_id = actor.id
@@ -189,6 +203,29 @@ def complete(db: Session, visit_id: int, data: CompleteVisit, actor: User) -> Vi
         if appointment is not None:
             appointment.status = AppointmentStatus.COMPLETED
     audit.record(db, actor, "visit.complete", "visit", visit.id)
+    db.commit()
+    return visit
+
+
+def release_from_admission(
+    db: Session, visit_id: int, data: ReleaseFromAdmission, actor: User
+) -> Visit:
+    visit = _get(db, visit_id)
+    if visit.status == VisitStatus.CANCELLED:
+        raise ConflictError("A cancelled visit has no admission to release")
+    if visit.disposition != VisitDisposition.ADMITTED:
+        raise ConflictError("Only a patient who was admitted can be released from admission")
+    if visit.status == VisitStatus.OPEN:
+        raise ConflictError("Complete the visit first, then release the patient from admission")
+    if visit.released_at is not None:
+        raise ConflictError("This patient was already released from admission")
+    locks.ensure_editable(db, "visit", visit_id, actor)
+    visit.released_at = utcnow()
+    visit.release_disposition = data.disposition
+    visit.released_by = actor
+    visit.updated_by_id = actor.id
+    audit.record(db, actor, "visit.release_from_admission", "visit", visit.id,
+                 patient_id=visit.patient_id, disposition=data.disposition.value)
     db.commit()
     return visit
 
