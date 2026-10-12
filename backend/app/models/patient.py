@@ -38,6 +38,7 @@ class Patient(Base):
     medical_conditions: Mapped[str | None] = mapped_column(Text)
     medication_restrictions: Mapped[str | None] = mapped_column(Text)
     activity_restrictions: Mapped[str | None] = mapped_column(Text)
+    medical_history: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
     consent_on_file: Mapped[bool] = mapped_column(Boolean, default=False)
 
