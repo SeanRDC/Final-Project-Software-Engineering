@@ -162,6 +162,15 @@ test('shows the record with its alerts and visit history', async () => {
           diagnosis: 'Mild asthma attack',
           disposition: 'sent_home',
         }),
+        // Written on paper on the 2nd and entered on the 4th: its time of entry is not shown.
+        visitRecord({
+          id: 15,
+          visit_date: '2026-10-02',
+          status: 'completed',
+          disposition: 'admitted',
+          release_disposition: 'returned',
+          released_at: '2026-10-02T03:15:00+00:00',
+        }),
       ]),
       page_size: 10,
     },
@@ -184,6 +193,8 @@ test('shows the record with its alerts and visit history', async () => {
   )
   expect(history.getByText('Mild asthma attack')).toBeInTheDocument()
   expect(history.getByText('Sent home')).toBeInTheDocument()
+  expect(history.getByText('Admitted, then returned to class or work')).toBeInTheDocument()
+  expect(history.getAllByText(/^\d{1,2}:54 [AP]M$/)).toHaveLength(1)
 
   expect(screen.getByRole('link', { name: 'Check in' })).toHaveAttribute(
     'href',

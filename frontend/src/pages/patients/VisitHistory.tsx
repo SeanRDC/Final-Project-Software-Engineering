@@ -14,8 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { humanize, parseDay } from '@/lib/format'
-import { dispositionLabel } from '@/lib/status'
+import { formatTimeOfDay, humanize, parseDay, toDayString } from '@/lib/format'
+import { outcomeLabel } from '@/lib/status'
 import { useNow } from '@/lib/useNow'
 import { cn } from '@/lib/utils'
 import { visitState } from '@/lib/visitState'
@@ -29,6 +29,12 @@ function formatDay(day: string): string {
     month: 'short',
     year: 'numeric',
   })
+}
+
+/** The time the patient was checked in, unless the visit was entered on a later day. */
+function checkInTime(visit: { visit_date: string; checked_in_at: string }): string | null {
+  const enteredOnTheDay = toDayString(new Date(visit.checked_in_at)) === visit.visit_date
+  return enteredOnTheDay ? formatTimeOfDay(visit.checked_in_at) : null
 }
 
 /** A patient's visits, newest first. Each date opens that visit. */
@@ -62,7 +68,7 @@ export function VisitHistory({ patientId }: { patientId: number }) {
           <Table>
             <TableHeader className="bg-muted/60">
               <TableRow className="hover:bg-transparent">
-                <TableHead className={cn(HEAD_CLASS, 'pl-4')}>Date</TableHead>
+                <TableHead className={cn(HEAD_CLASS, 'pl-4')}>Date and time</TableHead>
                 <TableHead className={HEAD_CLASS}>Type</TableHead>
                 <TableHead className={HEAD_CLASS}>Complaint</TableHead>
                 <TableHead className={HEAD_CLASS}>Assessment or diagnosis</TableHead>
@@ -73,6 +79,7 @@ export function VisitHistory({ patientId }: { patientId: number }) {
             <TableBody>
               {data.items.map((visit) => {
                 const state = visitState(visit, now)
+                const time = checkInTime(visit)
                 return (
                   <TableRow key={visit.id} className="relative">
                     <TableCell className="py-3 pl-4 whitespace-nowrap">
@@ -82,6 +89,11 @@ export function VisitHistory({ patientId }: { patientId: number }) {
                       >
                         {formatDay(visit.visit_date)}
                       </Link>
+                      {time ? (
+                        <span className="block text-[13px] text-muted-foreground tabular-nums">
+                          {time}
+                        </span>
+                      ) : null}
                     </TableCell>
                     <TableCell className="py-3 text-sm text-muted-foreground">
                       {humanize(visit.visit_type)}
@@ -95,11 +107,7 @@ export function VisitHistory({ patientId }: { patientId: number }) {
                       )}
                     </TableCell>
                     <TableCell className="py-3 text-sm">
-                      {visit.disposition ? (
-                        dispositionLabel(visit.disposition)
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                      {outcomeLabel(visit) ?? <span className="text-muted-foreground">—</span>}
                     </TableCell>
                     <TableCell className="py-3 pr-4">
                       <StatusPill tone={state.tone}>{state.label}</StatusPill>
