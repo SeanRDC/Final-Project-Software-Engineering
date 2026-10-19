@@ -642,6 +642,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/medkits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every kit, with the loan it is out on */
+        get: operations["list_kits_api_v1_medkits_get"];
+        put?: never;
+        /** Create Kit */
+        post: operations["create_kit_api_v1_medkits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkits/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What a kit normally carries (the boxed items of FM-SSA-MDS-8033) */
+        get: operations["get_template_api_v1_medkits_template_get"];
+        /** Replace the standard contents, in the order given */
+        put: operations["set_template_api_v1_medkits_template_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkits/{kit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename or retire a kit, or put a replaced lost kit back */
+        patch: operations["update_kit_api_v1_medkits__kit_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/medkit-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kit requests, newest first */
+        get: operations["list_requests_api_v1_medkit_requests_get"];
+        put?: never;
+        /** File a request for a medical kit (FM-SSA-MDS-8032) */
+        post: operations["create_request_api_v1_medkit_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkit-requests/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Request */
+        get: operations["get_request_api_v1_medkit_requests__request_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkit-requests/{request_id}/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hand over a kit; its contents leave the medicine stock */
+        post: operations["issue_api_v1_medkit_requests__request_id__issue_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkit-requests/{request_id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take a kit back; what came back returns to stock */
+        post: operations["return_kit_api_v1_medkit_requests__request_id__return_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkit-requests/{request_id}/lost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record a kit that did not come back */
+        post: operations["mark_lost_api_v1_medkit_requests__request_id__lost_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medkit-requests/{request_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw a request that was not issued */
+        post: operations["cancel_api_v1_medkit_requests__request_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/summary": {
         parameters: {
             query?: never;
@@ -668,6 +824,23 @@ export interface paths {
         };
         /** The same statistics as a CSV file */
         get: operations["summary_csv_api_v1_reports_summary_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/summary.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The same statistics as a formatted Excel workbook */
+        get: operations["summary_xlsx_api_v1_reports_summary_xlsx_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -721,6 +894,23 @@ export interface paths {
         };
         /** Download a saved report as CSV */
         get: operations["report_csv_api_v1_reports__report_id__csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{report_id}/xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download a saved report as a formatted Excel workbook */
+        get: operations["report_xlsx_file_api_v1_reports__report_id__xlsx_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1236,6 +1426,13 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** IssueLine */
+        IssueLine: {
+            /** Medicine Id */
+            medicine_id: number;
+            /** Quantity */
+            quantity: number;
+        };
         /** LockInfo */
         LockInfo: {
             /** Resource Type */
@@ -1344,6 +1541,217 @@ export interface components {
             /** Is Active */
             is_active?: boolean | null;
         };
+        /** MedkitBrief */
+        MedkitBrief: {
+            /** Id */
+            id: number;
+            /** Kit Number */
+            kit_number: number;
+            /** Label */
+            label: string | null;
+        };
+        /** MedkitClose */
+        MedkitClose: {
+            /** Notes */
+            notes?: string | null;
+        };
+        /** MedkitCreate */
+        MedkitCreate: {
+            /** Kit Number */
+            kit_number: number;
+            /** Label */
+            label?: string | null;
+        };
+        /** MedkitIssue */
+        MedkitIssue: {
+            /** Medkit Id */
+            medkit_id: number;
+            /** Items */
+            items: components["schemas"]["IssueLine"][];
+        };
+        /**
+         * MedkitLoan
+         * @description The request a kit is currently out on.
+         */
+        MedkitLoan: {
+            /** Id */
+            id: number;
+            /** Organization */
+            organization: string;
+            /** Activity */
+            activity: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Person Responsible */
+            person_responsible: string;
+            /** Issued At */
+            issued_at: string | null;
+            /** Is Overdue */
+            is_overdue: boolean;
+        };
+        /** MedkitOut */
+        MedkitOut: {
+            /** Id */
+            id: number;
+            /** Kit Number */
+            kit_number: number;
+            /** Label */
+            label: string | null;
+            status: components["schemas"]["MedkitStatus"];
+            /** Is Active */
+            is_active: boolean;
+            current_request?: components["schemas"]["MedkitLoan"] | null;
+        };
+        /** MedkitRequestCreate */
+        MedkitRequestCreate: {
+            /** Organization */
+            organization: string;
+            /** Activity */
+            activity: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Venue */
+            venue?: string | null;
+            /** Person Responsible */
+            person_responsible: string;
+            /** Contact Number */
+            contact_number?: string | null;
+            /** Requested By */
+            requested_by: string;
+            /**
+             * Request Date
+             * Format: date
+             */
+            request_date: string;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** MedkitRequestItemOut */
+        MedkitRequestItemOut: {
+            /** Id */
+            id: number;
+            /** Medicine Id */
+            medicine_id: number;
+            /** Medicine Name */
+            medicine_name: string;
+            /** Unit */
+            unit: string;
+            /** Quantity Issued */
+            quantity_issued: number;
+            /** Quantity Returned */
+            quantity_returned: number | null;
+            /** Quantity Used */
+            quantity_used: number | null;
+        };
+        /** MedkitRequestOut */
+        MedkitRequestOut: {
+            /** Id */
+            id: number;
+            /** Organization */
+            organization: string;
+            /** Activity */
+            activity: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Venue */
+            venue: string | null;
+            /** Person Responsible */
+            person_responsible: string;
+            status: components["schemas"]["MedkitRequestStatus"];
+            /** Is Overdue */
+            is_overdue: boolean;
+            medkit: components["schemas"]["MedkitBrief"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Issued At */
+            issued_at: string | null;
+            /** Contact Number */
+            contact_number: string | null;
+            /** Requested By */
+            requested_by: string;
+            /**
+             * Request Date
+             * Format: date
+             */
+            request_date: string;
+            /** Notes */
+            notes: string | null;
+            /** Issued By Name */
+            issued_by_name: string | null;
+            /** Closed At */
+            closed_at: string | null;
+            /** Closed By Name */
+            closed_by_name: string | null;
+            /** Items */
+            items: components["schemas"]["MedkitRequestItemOut"][];
+        };
+        /**
+         * MedkitRequestStatus
+         * @enum {string}
+         */
+        MedkitRequestStatus: "requested" | "issued" | "returned" | "lost" | "cancelled";
+        /** MedkitRequestSummary */
+        MedkitRequestSummary: {
+            /** Id */
+            id: number;
+            /** Organization */
+            organization: string;
+            /** Activity */
+            activity: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Venue */
+            venue: string | null;
+            /** Person Responsible */
+            person_responsible: string;
+            status: components["schemas"]["MedkitRequestStatus"];
+            /** Is Overdue */
+            is_overdue: boolean;
+            medkit: components["schemas"]["MedkitBrief"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Issued At */
+            issued_at: string | null;
+        };
+        /** MedkitReturn */
+        MedkitReturn: {
+            /** Items */
+            items: components["schemas"]["ReturnLine"][];
+            /** Notes */
+            notes?: string | null;
+        };
+        /**
+         * MedkitStatus
+         * @enum {string}
+         */
+        MedkitStatus: "available" | "out" | "lost";
+        /** MedkitUpdate */
+        MedkitUpdate: {
+            /** Label */
+            label?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Status */
+            status?: "available" | null;
+        };
         /** Message */
         Message: {
             /** Message */
@@ -1384,7 +1792,7 @@ export interface components {
          * NotificationType
          * @enum {string}
          */
-        NotificationType: "low_stock" | "appointment_pending" | "appointment_decided";
+        NotificationType: "low_stock" | "appointment_pending" | "appointment_decided" | "medkit_overdue";
         /** Options */
         Options: {
             /** Departments */
@@ -1415,6 +1823,17 @@ export interface components {
         Page_AuditLogOut_: {
             /** Items */
             items: components["schemas"]["AuditLogOut"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** Page[MedkitRequestSummary] */
+        Page_MedkitRequestSummary_: {
+            /** Items */
+            items: components["schemas"]["MedkitRequestSummary"][];
             /** Total */
             total: number;
             /** Page */
@@ -1884,6 +2303,13 @@ export interface components {
             /** Frequent Visitors */
             frequent_visitors: components["schemas"]["FrequentVisitor"][];
         };
+        /** ReturnLine */
+        ReturnLine: {
+            /** Item Id */
+            item_id: number;
+            /** Quantity Returned */
+            quantity_returned: number;
+        };
         /**
          * Role
          * @enum {string}
@@ -1927,6 +2353,10 @@ export interface components {
             patient_name: string | null;
             /** Patient Id Number */
             patient_id_number: string | null;
+            /** Medkit Request Id */
+            medkit_request_id: number | null;
+            /** Medkit Label */
+            medkit_label: string | null;
             /** Reason */
             reason: string | null;
             /** Performed By Name */
@@ -1942,6 +2372,26 @@ export interface components {
          * @enum {string}
          */
         StockMovementType: "stock_in" | "release" | "adjustment";
+        /** TemplateItemIn */
+        TemplateItemIn: {
+            /** Medicine Id */
+            medicine_id: number;
+            /** Default Quantity */
+            default_quantity: number;
+        };
+        /** TemplateItemOut */
+        TemplateItemOut: {
+            /** Medicine Id */
+            medicine_id: number;
+            /** Medicine Name */
+            medicine_name: string;
+            /** Unit */
+            unit: string;
+            /** Default Quantity */
+            default_quantity: number;
+            /** Quantity On Hand */
+            quantity_on_hand: number;
+        };
         /** Token */
         Token: {
             /** Access Token */
@@ -3803,6 +4253,381 @@ export interface operations {
             };
         };
     };
+    list_kits_api_v1_medkits_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitOut"][];
+                };
+            };
+        };
+    };
+    create_kit_api_v1_medkits_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_template_api_v1_medkits_template_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateItemOut"][];
+                };
+            };
+        };
+    };
+    set_template_api_v1_medkits_template_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateItemIn"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateItemOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_kit_api_v1_medkits__kit_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kit_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_requests_api_v1_medkit_requests_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["MedkitRequestStatus"] | null;
+                overdue_only?: boolean;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_MedkitRequestSummary_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_request_api_v1_medkit_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitRequestCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_request_api_v1_medkit_requests__request_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    issue_api_v1_medkit_requests__request_id__issue_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitIssue"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    return_kit_api_v1_medkit_requests__request_id__return_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitReturn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_lost_api_v1_medkit_requests__request_id__lost_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedkitClose"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_v1_medkit_requests__request_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedkitRequestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     summary_api_v1_reports_summary_get: {
         parameters: {
             query: {
@@ -3836,6 +4661,38 @@ export interface operations {
         };
     };
     summary_csv_api_v1_reports_summary_csv_get: {
+        parameters: {
+            query: {
+                start: string;
+                end: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summary_xlsx_api_v1_reports_summary_xlsx_get: {
         parameters: {
             query: {
                 start: string;
@@ -3981,6 +4838,37 @@ export interface operations {
         };
     };
     report_csv_api_v1_reports__report_id__csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                report_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_xlsx_file_api_v1_reports__report_id__xlsx_get: {
         parameters: {
             query?: never;
             header?: never;

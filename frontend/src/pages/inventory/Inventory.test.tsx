@@ -249,6 +249,8 @@ const release: StockMovement = {
   visit_id: 14,
   patient_name: 'Santos, Maria',
   patient_id_number: '20221187',
+  medkit_request_id: null,
+  medkit_label: null,
   reason: 'Released to Santos, Maria',
   performed_by_name: 'Reyes, Ana',
   created_at: '2026-10-04T02:01:00+00:00',
@@ -281,6 +283,29 @@ test('lists releases with the patient and a link to the visit', async () => {
   expect(log.getByRole('link', { name: 'Santos, Maria' })).toHaveAttribute('href', '/visits/14')
   expect(log.getByText('Showing 1–1 of 1 releases')).toBeInTheDocument()
   expect(queries[0]).toBe('?movement_type=release&page=1&page_size=25')
+})
+
+test('a release into a medical kit names the kit and links to its loan', async () => {
+  const kitRelease: StockMovement = {
+    ...release,
+    id: 42,
+    visit_id: null,
+    patient_name: null,
+    patient_id_number: null,
+    medkit_request_id: 5,
+    medkit_label: 'Medical kit #3 – Intramurals 2026',
+    reason: 'Medical kit #3 – Intramurals 2026',
+  }
+  fakeServer({
+    'GET /inventory/movements': { items: [kitRelease], total: 1, page: 1, page_size: 25 },
+  })
+  renderInventory(nurse, '/inventory/releases')
+
+  const log = within(await screen.findByRole('region', { name: 'Stock movements' }))
+  expect(log.getByRole('link', { name: 'Medical kit #3 – Intramurals 2026' })).toHaveAttribute(
+    'href',
+    '/medkit/requests/5',
+  )
 })
 
 test('switches to every kind of movement and filters by date', async () => {
