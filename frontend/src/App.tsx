@@ -30,6 +30,7 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
+import { MedkitPrintPage } from '@/pages/medkit/MedkitPrintPage'
 import { MedkitRequestPage } from '@/pages/medkit/MedkitRequestPage'
 import { MedkitRequestsPage } from '@/pages/medkit/MedkitRequestsPage'
 import { NewMedkitRequestPage } from '@/pages/medkit/NewMedkitRequestPage'
@@ -59,6 +60,11 @@ function App() {
     <Routes>
       <Route path="/login" element={<LoginRoute />} />
       <Route element={<RequireAuth />}>
+        {/* A paper form: printed on its own, without the sidebar and top bar. */}
+        <Route
+          path="/print/medkit/:requestId"
+          element={guarded(MEDKIT_REQUESTS.permission, <MedkitPrintPage />)}
+        />
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
           <Route path={CHECK_IN.path} element={guarded(CHECK_IN.permission, <CheckInPage />)} />
