@@ -53,3 +53,8 @@ test('describes a patient by age and type', () => {
   expect(describePatient({ age: 20, patient_type: 'student' })).toBe('20 yrs · Student')
   expect(describePatient({ age: null, patient_type: 'employee' })).toBe('Employee')
 })
+
+test('an Others patient is described as Others', () => {
+  expect(describePatient({ age: 38, patient_type: 'other' })).toBe('38 yrs · Others')
+  expect(describePatient({ age: null, patient_type: 'employee' })).toBe('Employee')
+})

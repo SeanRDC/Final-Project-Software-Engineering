@@ -102,3 +102,31 @@ test('a correction sends only the fields that changed', () => {
     medication_restrictions: 'No NSAIDs',
   })
 })
+
+const visitor = () => ({
+  ...emptyPatient(),
+  patient_type: 'other' as const,
+  last_name: 'Lopez',
+  first_name: 'Rita',
+  other_description: ' Visitor – parent ',
+})
+
+test('an Others patient needs a description but no ID number', () => {
+  expect(validatePatient({ ...visitor(), other_description: '' }, TODAY)).toEqual({
+    other_description: 'Say who the person is, e.g. visitor or contractor.',
+  })
+  expect(validatePatient(visitor(), TODAY)).toEqual({})
+})
+
+test('an Others patient without an ID number is sent without one', () => {
+  const request = createRequest(visitor())
+  expect(request.id_number).toBeNull()
+  expect(request.other_description).toBe('Visitor – parent')
+  expect(request.education_level).toBeNull()
+})
+
+test('the description is only sent for Others patients', () => {
+  expect(
+    createRequest({ ...filled(), other_description: 'Left over' }).other_description,
+  ).toBeNull()
+})

@@ -3,11 +3,12 @@
 from datetime import date, datetime
 
 from sqlalchemy import Boolean, Date, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.clock import clinic_today, utcnow
 from app.db.base import Base, UTCDateTime
 from app.models.enums import EducationLevel, PatientType, Sex, enum_type
+from app.models.user import User
 
 
 class Patient(Base):
@@ -17,6 +18,8 @@ class Patient(Base):
     patient_type: Mapped[PatientType] = mapped_column(enum_type(PatientType), index=True)
     # Students only. It decides which of the clinic's ISO forms the record is filed under.
     education_level: Mapped[EducationLevel | None] = mapped_column(enum_type(EducationLevel))
+    # Others only: who the person is, e.g. "Visitor – parent of a Grade 3 student".
+    other_description: Mapped[str | None] = mapped_column(String(120))
     id_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     last_name: Mapped[str] = mapped_column(String(80), index=True)
     first_name: Mapped[str] = mapped_column(String(80))
@@ -43,9 +46,17 @@ class Patient(Base):
     consent_on_file: Mapped[bool] = mapped_column(Boolean, default=False)
 
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    archived_at: Mapped[datetime | None] = mapped_column(UTCDateTime)
+    archived_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     created_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, onupdate=utcnow)
+
+    archived_by: Mapped[User | None] = relationship(foreign_keys=[archived_by_id], lazy="joined")
+
+    @property
+    def archived_by_name(self) -> str | None:
+        return self.archived_by.full_name if self.archived_by else None
 
     @property
     def full_name(self) -> str:

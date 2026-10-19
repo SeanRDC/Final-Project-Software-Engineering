@@ -62,22 +62,24 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                              | Address                                                             | Status                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Sign in                             | `/login`                                                            | Done                                                                               |
-| Clinic Main Menu (dashboard)        | `/`                                                                 | Done                                                                               |
-| Check-in / Walk-in                  | `/check-in`                                                         | Done                                                                               |
-| Today's visits and the visit record | `/visits`, `/visits/:id`                                            | Done: log, record, consultation, medicine release, complete, cancel                |
-| Patients                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit` | Done: list, register, record with visit history, correct, archive and restore      |
-| Appointments                        | `/appointments`, `/appointments/new`, `/appointments/:id/edit`      | Done: calendar, day schedule, book, reschedule, confirm, cancel, no-show, check-in |
-| Medicine inventory                  | `/inventory`                                                        | Done: stock list, add and edit medicines, stock in, count adjustment               |
-| Medicine release log                | `/inventory/releases`                                               | Done: releases to patients, plus all stock movements                               |
-| Notifications                       | `/notifications`                                                    | Done: list, unread filter, mark as read                                            |
-| Reports                             | `/reports`, `/reports/:id`                                          | Done: statistics for any period, CSV download, saved reports                       |
-| Accounts                            | `/users`                                                            | Done: create, edit, deactivate, reset password (coordinator)                       |
-| Audit log                           | `/audit`                                                            | Done: who viewed or changed what, with filters (coordinator)                       |
-| Change password                     | `/account/password`                                                 | Done: for every account; required after a reset                                    |
-| Attachments                         | on `/patients/:id`                                                  | Done: upload, download, delete                                                     |
+| Screen                              | Address                                                                                                   | Status                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Sign in                             | `/login`                                                                                                  | Done                                                                                       |
+| Clinic Main Menu (dashboard)        | `/`                                                                                                       | Done                                                                                       |
+| Check-in / Walk-in                  | `/check-in`                                                                                               | Done                                                                                       |
+| Today's visits and the visit record | `/visits`, `/visits/:id`                                                                                  | Done: log, record, consultation, medicine release, complete, cancel                        |
+| Patients                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit`                                       | Done: list, register, record with visit history, correct, archive and restore              |
+| Archived patients                   | `/patients/archive`                                                                                       | Done: archived records with who archived them and when; restore (coordinator)              |
+| Appointments                        | `/appointments`, `/appointments/new`, `/appointments/:id/edit`                                            | Done: calendar, day schedule, book, reschedule, confirm, cancel, no-show, check-in         |
+| Medicine inventory                  | `/inventory`                                                                                              | Done: stock list, add and edit medicines, stock in, count adjustment                       |
+| Medicine release log                | `/inventory/releases`                                                                                     | Done: releases to patients, plus all stock movements                                       |
+| Medical kit                         | `/medkit`, `/medkit/new`, `/medkit/requests/:id`, `/medkit/kits`, `/medkit/contents`, `/print/medkit/:id` | Done: requests, issue from stock, take back, lost, kits, standard contents, printable form |
+| Notifications                       | `/notifications`                                                                                          | Done: list, unread filter, mark as read                                                    |
+| Reports                             | `/reports`, `/reports/:id`                                                                                | Done: statistics for any period, Excel and CSV download, saved reports                     |
+| Accounts                            | `/users`                                                                                                  | Done: create, edit, deactivate, reset password (coordinator)                               |
+| Audit log                           | `/audit`                                                                                                  | Done: who viewed or changed what, with filters (coordinator)                               |
+| Change password                     | `/account/password`                                                                                       | Done: for every account; required after a reset                                            |
+| Attachments                         | on `/patients/:id`                                                                                        | Done: upload, download, delete                                                             |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -140,6 +142,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Only changes are sent.** `visitForm.ts` compares the form with the saved visit and sends the fields that differ, so the audit log lists what was really changed.
 - **Release from admission.** A completed visit whose outcome is "Admitted" offers **Release from admission** until it is used. It records the time and where the patient went, and the outcome then reads "Admitted, then returned to class or work" (`outcomeLabel` in `lib/status.ts`) on the visit and in the patient's history.
 - **Validation mirrors the API.** Vital sign limits are the ones in `backend/app/schemas/visit.py`; half a blood pressure reading is refused.
+- **Blood pressure is one box** (`BloodPressureInput`, rules in `lib/bloodPressure.ts`), in the visit record and in monitoring readings. A space or a slash separates the numbers, so typing `120 80` shows `120/80`; it is sent as `bp_systolic` and `bp_diastolic`. An unfinished reading (`120/`), a number out of range or a systolic not above the diastolic shows a message under the box and nothing is saved.
 - **Stock.** A medicine with nothing on hand cannot be chosen and a quantity above the stock is refused before it is sent. The server makes the final check when it deducts the stock.
 - **After completion** a visit can still be corrected, as the clinic requires. A cancelled visit offers no actions.
 - **Monitoring.** `MonitoringSection` lists the vital signs taken again while a patient rests (`POST` and `DELETE /visits/{id}/vitals`), oldest first, with who took them. It needs `visits:record`; the doctor reads them.
@@ -160,7 +163,10 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Records are never deleted.** The coordinator can archive a record, which hides it from search and from check-in, and restore it at any time.
 - **One form** registers a patient and corrects a record. A correction sends only the fields that changed (`patientValues.ts`).
 - **The university's schools are offered as suggestions** for the department (`backend/app/core/departments.py`), followed by any other department or office already on record, so one school is not spelled several ways.
-- **The form code box** (`FormCodeBox`) sits at the top right of the patient form and of the record, as on the clinic's paper forms: the ISO code, the revision and the effectivity date. The code follows the kind of patient (`lib/formCodes.ts`): `FM-SSA-MOS-8011` for an employee, `FM-SSA-MOS-8012` for a basic education student, `FM-SSA-MOS-8013` for a college student. It changes on the form as the patient type or education level is changed.
+- **The form code box** (`FormCodeBox`) sits at the top right of the patient form and of the record, as on the clinic's paper forms: the ISO code, the revision and the effectivity date. The code follows the kind of patient (`lib/formCodes.ts`): `FM-SSA-MDS-8011` for an employee, `FM-SSA-MDS-8012` for a basic education student, `FM-SSA-MDS-8013` for a college student. It changes on the form as the patient type or education level is changed. An Others patient (visitor, guest, contractor, parent) shows `FM-SSA-MDS-XXXX`, a placeholder until the clinic issues the real code.
+- **The Archive page** (`ArchivePage`, under Patients in the sidebar) lists `GET /patients?archived_only=true`: name, ID number, type, when and by whom each record was archived, with a search box. Every role that reads patients sees it; the coordinator (`patients:archive`) also gets a Restore button that asks for confirmation first.
+- **Names get their capital letters as they are typed** (`lib/capitalize.ts`): in the last, first, middle and guardian name boxes, each word is capitalised when space is pressed and again when the box is left, so `juan dela cruz` becomes `Juan Dela Cruz`. Only first letters change (also after a hyphen or apostrophe), so `McDonald` stays as typed, and the caret stays where it was.
+- **Others patients** are registered with a "Who they are" description instead of school or work details. Their ID number is optional; left blank, the server numbers them `OTH-000123`. They are labelled "Others" in the list, its filter and the visit cards.
 - **Education level** is asked of students only and follows the department when the Basic Education Department is chosen.
 - **The data privacy notice** above the consent tick cites Republic Act No. 10173, the Data Privacy Act of 2012.
 - **The visit history** shows the check-in time under each date, except for a visit entered on a later day, whose time of entry would mislead.
@@ -202,6 +208,29 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **The release log** starts on releases to patients, each linked to its visit, and can show deliveries and adjustments too.
 - **Dosage** is what the clinic calls the strength of a medicine ("500 mg"). The API field is still `strength`.
 - **The doctor** can view both screens but change nothing.
+- **Kit releases** show the kit and activity (e.g. "Medical kit #3 – Intramurals 2026") linked to the loan, where a visit release shows the patient.
+
+## Medical Kit
+
+The clinic lends numbered kits to organizations for their activities. Kits draw on the same medicine stock as visits (see "How a Medical Kit Works" in the backend README).
+
+| Part                              | API                                                         | Component                        |
+| --------------------------------- | ----------------------------------------------------------- | -------------------------------- |
+| Kit requests, filtered by state   | `GET /medkit-requests?status=&overdue_only=&page=`          | `MedkitRequestsPage`             |
+| Request form (FM-SSA-MDS-8032)    | `POST /medkit-requests`                                     | `NewMedkitRequestPage`           |
+| One loan, with its actions        | `GET /medkit-requests/{id}`                                 | `MedkitRequestPage`              |
+| Issue a kit                       | `POST /medkit-requests/{id}/issue`, `GET /medkits/template` | `IssueKitDialog`, `kitLines.ts`  |
+| Take a kit back (checklist)       | `POST /medkit-requests/{id}/return`                         | `ReturnKitDialog`, `kitLines.ts` |
+| Mark lost, cancel                 | `POST /medkit-requests/{id}/lost`, `/cancel`                | `MedkitRequestPage`              |
+| Dispensary form (FM-SSA-MDS-8033) | `GET /medkit-requests/{id}`                                 | `MedkitPrintPage`                |
+| Kits and where they are           | `GET /medkits`, `POST /medkits`, `PATCH /medkits/{id}`      | `KitsPage`                       |
+| Standard kit contents             | `GET`, `PUT /medkits/template`                              | `KitContentsPage`                |
+
+- **Issuing** starts from the standard contents with their usual quantities. Staff untick what is not going, change quantities and add any other inventory item. A quantity above what is on hand is refused before sending; the server issues everything or nothing.
+- **Taking back** is the checklist of the kit: what came back of each item (Returned complete fills them all in), with the used amount shown as it is typed. What came back returns to stock.
+- **Overdue** kits (still out after the activity) are marked in the list, on the loan and on the Kits page, and the clinic gets one notification each.
+- **The printable form** opens in its own tab at `/print/medkit/:id`, outside the app shell, with print styles that leave only the form.
+- **Who does what:** clinic staff and the coordinator request, issue, take back and close loans; the coordinator alone adds or retires kits, puts a replaced lost kit back and edits the standard contents; the doctor only looks.
 
 ## Notifications
 
@@ -209,18 +238,19 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 
 ## Reports
 
-| Part                    | API                                                 | Component                        |
-| ----------------------- | --------------------------------------------------- | -------------------------------- |
-| Statistics for a period | `GET /reports/summary?start=&end=`                  | `ReportsPage`, `SummaryView`     |
-| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv` | `useCsvDownload`                 |
-| Saved reports           | `GET /reports`, `GET /reports/{id}`                 | `ReportsPage`, `SavedReportPage` |
-| Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
+| Part                    | API                                                   | Component                            |
+| ----------------------- | ----------------------------------------------------- | ------------------------------------ |
+| Statistics for a period | `GET /reports/summary?start=&end=`                    | `ReportsPage`, `SummaryView`         |
+| Excel download          | `GET /reports/summary.xlsx`, `GET /reports/{id}/xlsx` | `DownloadButtons`, `useFileDownload` |
+| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv`   | `DownloadButtons`, `useFileDownload` |
+| Saved reports           | `GET /reports`, `GET /reports/{id}`                   | `ReportsPage`, `SavedReportPage`     |
+| Save and delete         | `POST /reports`, `DELETE /reports/{id}`               | coordinator only                     |
 
 - **The period is in the address** (`/reports?from=2026-08-01&to=2026-12-15`); it starts on the current month.
 - **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
-- **Requests by students and employees** is its own table, the tally the clinic submits each term.
+- **Requests by type of patient** (students, employees and others) is its own table, the tally the clinic submits each term.
 - **After admission** counts where admitted patients went once they had rested.
 - **Charts.** Visits by month is a column chart (`VisitsByMonthChart`), drawn when the period covers two months or more; months without visits are filled in as zero. Each breakdown table has a bar under every name, measured against the table's largest count. Both are plain HTML and CSS in one colour (`--chart-1`), so no chart library is loaded, and every figure stays in a table for screen readers.
 
@@ -239,7 +269,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 
 ## Audit Log
 
-`AuditLogPage` lists `GET /audit-logs` for the coordinator: when, which account, what action, which record and the detail. Filters (kind of record, exact action, date range) and the page are kept in the address. Entries about a patient, visit or report link to it.
+`AuditLogPage` lists `GET /audit-logs` for the coordinator: when, who (the person's name, with their job title and role beneath, e.g. "Nurse · Clinic staff"), what action, which record and the detail. Filters (kind of record, exact action, date range) and the page are kept in the address. Entries about a patient, visit or report link to it.
 
 ## Attachments
 

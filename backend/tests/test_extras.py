@@ -5,7 +5,7 @@ from datetime import timedelta
 from app.core.clock import utcnow
 from app.core.departments import HAU_DEPARTMENTS
 from app.models import RecordLock
-from tests.conftest import API, check_in
+from tests.conftest import ACCOUNTS, API, check_in
 
 
 def test_locked_patient_record_is_read_only_for_others(nurse, doctor, patient):
@@ -131,6 +131,22 @@ def test_audit_log_records_access_and_is_coordinator_only(nurse, coordinator, pa
 
     logins = coordinator.get("/audit-logs", params={"action": "auth.login"}).json()
     assert logins["total"] >= 2
+
+
+def test_audit_log_names_the_person_and_their_role(nurse, coordinator, patient):
+    nurse.get(f"/patients/{patient['id']}")
+    entry = coordinator.get("/audit-logs", params={"action": "patient.view"}).json()["items"][0]
+    assert entry["user_full_name"] == ACCOUNTS["nurse"][1]
+    assert entry["user_role"] == "clinic_staff"
+    assert entry["user_job_title"] == "Nurse"
+
+
+def test_audit_log_entry_without_an_account_has_no_name_or_role(client, coordinator):
+    client.post(f"{API}/auth/login", data={"username": "nobody", "password": "wrong"})
+    entry = coordinator.get("/audit-logs", params={"action": "auth.login_failed"}).json()["items"][0]
+    assert entry["user_full_name"] is None
+    assert entry["user_role"] is None
+    assert entry["user_job_title"] is None
 
 
 def test_failed_login_is_audited(client, coordinator):

@@ -82,14 +82,23 @@ test('the nurse records vital signs and only the changed fields are sent', async
   const form = within(await screen.findByRole('form', { name: 'Visit record' }))
 
   expect(form.getByLabelText('Temperature')).toHaveValue('36.8')
+  expect(form.getByLabelText('Blood pressure')).toHaveValue('110/70')
   await user.clear(form.getByLabelText('Temperature'))
   await user.type(form.getByLabelText('Temperature'), '38.2')
+  await user.clear(form.getByLabelText('Blood pressure'))
+  await user.type(form.getByLabelText('Blood pressure'), '130 85')
   await user.type(form.getByLabelText('Weight'), '52')
   await user.type(form.getByLabelText('Remarks'), 'Advised to rest')
   await user.click(form.getByRole('button', { name: 'Save changes' }))
 
   expect(await screen.findByText('Record saved for Santos, Maria')).toBeInTheDocument()
-  expect(sent.body).toEqual({ temperature_c: 38.2, weight_kg: 52, remarks: 'Advised to rest' })
+  expect(sent.body).toEqual({
+    temperature_c: 38.2,
+    bp_systolic: 130,
+    bp_diastolic: 85,
+    weight_kg: 52,
+    remarks: 'Advised to rest',
+  })
 
   // Back on the record, with the new values, and the lock given back.
   expect(await screen.findByText('38.2 °C')).toBeInTheDocument()

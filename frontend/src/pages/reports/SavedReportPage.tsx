@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, DownloadIcon, Trash2Icon } from 'lucide-react'
+import { ArrowLeftIcon, Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
@@ -19,13 +19,9 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { formatTimeOfDay } from '@/lib/format'
+import { DownloadButtons } from '@/pages/reports/DownloadButtons'
 import { SummaryView } from '@/pages/reports/SummaryView'
-import {
-  formatPeriod,
-  useCsvDownload,
-  useDeleteReport,
-  useSavedReport,
-} from '@/pages/reports/useReports'
+import { formatPeriod, useDeleteReport, useSavedReport } from '@/pages/reports/useReports'
 
 /** A saved report at /reports/:reportId: the figures as they were when it was generated. */
 export function SavedReportPage() {
@@ -34,7 +30,6 @@ export function SavedReportPage() {
   const allowed = useCan()
   const reportId = /^\d+$/.test(params.reportId ?? '') ? Number(params.reportId) : null
   const { data: report, error, isPending } = useSavedReport(reportId)
-  const csv = useCsvDownload()
   const remove = useDeleteReport()
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
@@ -95,30 +90,10 @@ export function SavedReportPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {back}
-          <Button
-            variant="outline"
-            className="bg-card"
-            disabled={csv.isPending}
-            onClick={() =>
-              csv.mutate(
-                { path: `/reports/${report.id}/csv`, name: `clinic-report-${report.id}.csv` },
-                {
-                  onError: (failure) =>
-                    toast.error('The CSV could not be downloaded', {
-                      description:
-                        failure instanceof ApiError ? failure.message : 'Please try again.',
-                    }),
-                },
-              )
-            }
-          >
-            {csv.isPending ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <DownloadIcon data-icon="inline-start" />
-            )}
-            Download CSV
-          </Button>
+          <DownloadButtons
+            paths={{ xlsx: `/reports/${report.id}/xlsx`, csv: `/reports/${report.id}/csv` }}
+            fileStem={`clinic-report-${report.id}`}
+          />
           {allowed('reports:generate') ? (
             <AlertDialog
               open={isDeleteOpen}

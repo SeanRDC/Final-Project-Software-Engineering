@@ -6,6 +6,11 @@ export function humanize(value: string): string {
   return words.charAt(0).toUpperCase() + words.slice(1)
 }
 
+/** "Student", "Employee" or "Others", the clinic's names for the kinds of patient. */
+export function patientTypeLabel(type: string): string {
+  return type === 'other' ? 'Others' : humanize(type)
+}
+
 /** Parses "2026-10-04" as a local calendar day, not as midnight UTC. */
 export function parseDay(day: string): Date {
   const [year = 1970, month = 1, date = 1] = day.split('-').map(Number)

@@ -219,7 +219,7 @@ test('the record carries its form code, education level and medical history', as
   renderPatients(nurse, '/patients/1')
 
   const box = within(await screen.findByRole('group', { name: 'Form code' }))
-  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+  expect(box.getByText('FM-SSA-MDS-8012')).toBeInTheDocument()
   expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
   expect(screen.getByText('Basic education')).toBeInTheDocument()
   expect(screen.getByText('Hospitalized for dengue in 2023')).toBeInTheDocument()
@@ -326,6 +326,69 @@ test('registers a patient and opens the new record', async () => {
   expect(screen.getByTestId('address')).toHaveTextContent('/patients/12')
 })
 
+test('registers an Others patient with a description and no ID number', async () => {
+  const server = fakeServer({ 'GET /options': options() })
+  let sent: Record<string, unknown> = {}
+  server.on(
+    'POST /patients',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body)) as Record<string, unknown>
+      return patientRecord({ id: 13, full_name: 'Lopez, Rita', patient_type: 'other' })
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Others')
+  expect(
+    within(screen.getByRole('group', { name: /form code/i })).getByText('FM-SSA-MDS-XXXX'),
+  ).toBeInTheDocument()
+  expect(form.queryByLabelText('School or department')).not.toBeInTheDocument()
+  await user.type(form.getByLabelText('Last name'), 'Lopez')
+  await user.type(form.getByLabelText('First name'), 'Rita')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+  expect(form.getByText('Say who the person is, e.g. visitor or contractor.')).toBeInTheDocument()
+
+  await user.type(form.getByLabelText('Who they are'), 'Visitor – parent')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+
+  expect(await screen.findByText('Lopez, Rita registered')).toBeInTheDocument()
+  expect(sent).toMatchObject({
+    patient_type: 'other',
+    other_description: 'Visitor – parent',
+    id_number: null,
+    education_level: null,
+  })
+})
+
+test('names get their capital letters as they are typed', async () => {
+  fakeServer({ 'GET /options': options() })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  const last = form.getByLabelText('Last name')
+  await user.type(last, 'dela ')
+  expect(last).toHaveValue('Dela ')
+  await user.type(last, 'cruz')
+  await user.tab()
+  expect(last).toHaveValue('Dela Cruz')
+
+  await user.type(form.getByLabelText('First name'), 'juan miguel')
+  await user.type(form.getByLabelText('Middle name'), 'santos')
+  await user.type(form.getByLabelText('Name'), 'elena dela cruz')
+  await user.tab()
+  expect(form.getByLabelText('First name')).toHaveValue('Juan Miguel')
+  expect(form.getByLabelText('Middle name')).toHaveValue('Santos')
+  expect(form.getByLabelText('Name')).toHaveValue('Elena Dela Cruz')
+  // Not every field is a name.
+  await user.type(form.getByLabelText('Address'), 'angeles city')
+  await user.tab()
+  expect(form.getByLabelText('Address')).toHaveValue('angeles city')
+})
+
 test('registers a basic education student with a medical history', async () => {
   const server = fakeServer({ 'GET /options': options() })
   let sent: Record<string, unknown> = {}
@@ -381,15 +444,15 @@ test('the form carries the code of the form for the kind of patient', async () =
 
   const form = within(screen.getByRole('form', { name: 'Patient record' }))
   const box = within(form.getByRole('group', { name: 'Form code' }))
-  expect(box.getByText('FM-SSA-MOS-8013')).toBeInTheDocument()
+  expect(box.getByText('FM-SSA-MDS-8013')).toBeInTheDocument()
   expect(box.getByText('Revision: 0')).toBeInTheDocument()
   expect(box.getByText('Effectivity Date: May 1, 2025')).toBeInTheDocument()
 
   await user.selectOptions(form.getByLabelText('Education level'), 'Basic education')
-  expect(box.getByText('FM-SSA-MOS-8012')).toBeInTheDocument()
+  expect(box.getByText('FM-SSA-MDS-8012')).toBeInTheDocument()
 
   await user.selectOptions(form.getByLabelText('Patient type'), 'Employee')
-  expect(box.getByText('FM-SSA-MOS-8011')).toBeInTheDocument()
+  expect(box.getByText('FM-SSA-MDS-8011')).toBeInTheDocument()
 })
 
 test('states the data privacy law the record is kept under, beside the consent', async () => {

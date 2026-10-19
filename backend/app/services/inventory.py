@@ -57,6 +57,7 @@ def apply_movement(
     *,
     reason: str | None = None,
     visit_id: int | None = None,
+    medkit_request_id: int | None = None,
 ) -> Medicine:
     medicine = _lock_medicine(db, medicine_id)
     new_quantity = medicine.quantity_on_hand + quantity_change
@@ -74,6 +75,7 @@ def apply_movement(
             quantity_change=quantity_change,
             balance_after=new_quantity,
             visit_id=visit_id,
+            medkit_request_id=medkit_request_id,
             reason=reason,
             performed_by_id=actor.id,
         )

@@ -3,6 +3,8 @@
 from app.core.clock import clinic_today
 from tests.conftest import check_in
 
+XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
 
 def _employee(nurse):
     return nurse.post("/patients", json={
@@ -45,8 +47,8 @@ def test_report_summary_statistics(nurse, doctor, coordinator, patient, medicine
     assert counts("visits_by_patient_type") == {"student": 2, "employee": 1}
     assert counts("visits_by_type") == {"consultation": 2, "medicine_request": 1}
     assert summary["visits_by_type_and_patient_type"] == [
-        {"label": "consultation", "students": 1, "employees": 1},
-        {"label": "medicine_request", "students": 1, "employees": 0}]
+        {"label": "consultation", "students": 1, "employees": 1, "others": 0},
+        {"label": "medicine_request", "students": 1, "employees": 0, "others": 0}]
     assert counts("visits_by_department") == {"School of Computing": 2, "Registrar": 1}
     assert counts("top_complaints") == {"headache": 2, "dizziness": 1}
     assert counts("visits_by_disposition") == {"returned": 1, "referred": 1, "admitted": 1}
@@ -131,3 +133,65 @@ def test_empty_dashboard(doctor):
     assert dashboard["stats"]["open_visits"] == 0
     assert dashboard["todays_visits"] == []
     assert dashboard["low_stock"] == []
+
+
+def test_report_counts_others_patients_apart(nurse):
+    visitor = nurse.post("/patients", json={
+        "patient_type": "other", "last_name": "Lopez", "first_name": "Rita",
+        "other_description": "Visitor"}).json()
+    check_in(nurse, visitor["id"], complaint="Headache")
+    today = str(clinic_today())
+    summary = nurse.get("/reports/summary", params={"start": today, "end": today}).json()
+    assert summary["visits_by_type_and_patient_type"] == [
+        {"label": "consultation", "students": 0, "employees": 0, "others": 1}]
+    assert "Others" in nurse.get(
+        "/reports/summary.csv", params={"start": today, "end": today}).text
+
+
+def _workbook(response):
+    from io import BytesIO
+
+    from openpyxl import load_workbook
+
+    assert response.status_code == 200, response.text
+    assert response.headers["content-type"] == XLSX
+    return load_workbook(BytesIO(response.content))
+
+
+def _rows(sheet):
+    return [[cell for cell in row] for row in sheet.iter_rows(values_only=True)]
+
+
+def test_summary_downloads_as_a_formatted_workbook(nurse, doctor, coordinator, patient, medicine):
+    _seed_activity(nurse, doctor, coordinator, patient, medicine)
+    today = clinic_today()
+    response = nurse.get("/reports/summary.xlsx", params={"start": str(today), "end": str(today)})
+    assert "attachment" in response.headers["content-disposition"]
+    assert ".xlsx" in response.headers["content-disposition"]
+    sheet = _workbook(response).active
+
+    rows = _rows(sheet)
+    texts = [str(value) for row in rows for value in row if value is not None]
+    assert "HOLY ANGEL UNIVERSITY" in texts
+    assert "University Clinic" in texts
+    assert "Clinic summary report" in texts
+    assert any(text.startswith("Generated") and "Reyes, Ana" in text for text in texts)
+    assert ["Total visits", 3] in [row[:2] for row in rows]
+    assert ["Consultation", 2] in [row[:2] for row in rows]
+    assert len(sheet._images) == 1  # the university logo
+
+    header = next(row for row in sheet.iter_rows() if row[0].value == "Visits by type of request")
+    assert header[0].fill.fgColor.rgb.endswith("7A1C2A")
+    assert header[0].font.bold and header[0].font.color.rgb.endswith("FFFFFF")
+    assert sheet.page_setup.fitToWidth == 1
+
+
+def test_saved_report_downloads_as_a_workbook(nurse, doctor, coordinator, patient, medicine):
+    _seed_activity(nurse, doctor, coordinator, patient, medicine)
+    today = str(clinic_today())
+    report = coordinator.post("/reports", json={
+        "title": "First semester 2026", "period_start": today, "period_end": today}).json()
+    sheet = _workbook(nurse.get(f"/reports/{report['id']}/xlsx")).active
+    texts = [str(value) for row in _rows(sheet) for value in row if value is not None]
+    assert "First semester 2026" in texts
+    assert any(text.startswith("Generated") and "Salazar, CJ" in text for text in texts)

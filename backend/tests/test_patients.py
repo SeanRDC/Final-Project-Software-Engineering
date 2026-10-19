@@ -116,3 +116,71 @@ def test_an_employee_has_no_education_level(nurse, coordinator, patient):
     assert hired.json()["education_level"] is None
     entry = coordinator.get("/audit-logs", params={"action": "patient.update"}).json()["items"][-1]
     assert "education_level" in str(entry)
+
+
+def test_others_patient_needs_a_description(nurse):
+    response = nurse.post("/patients", json={
+        "patient_type": "other", "id_number": "VIS-001", "last_name": "Lopez", "first_name": "Rita"})
+    assert response.status_code == 422
+
+
+def test_others_patient_without_an_id_number_gets_one(nurse):
+    response = nurse.post("/patients", json={
+        "patient_type": "other", "last_name": "Lopez", "first_name": "Rita",
+        "other_description": "Visitor – parent of a Grade 3 student"})
+    assert response.status_code == 201, response.text
+    body = response.json()
+    assert body["id_number"] == f"OTH-{body['id']:06d}"
+    assert body["other_description"] == "Visitor – parent of a Grade 3 student"
+    assert body["education_level"] is None
+    assert nurse.get("/patients", params={"patient_type": "other"}).json()["total"] == 1
+
+
+def test_only_others_patients_may_leave_the_id_number_out(nurse):
+    response = nurse.post("/patients", json={
+        "patient_type": "student", "last_name": "Lopez", "first_name": "Rita"})
+    assert response.status_code == 422
+
+
+def test_generated_others_id_does_not_take_a_typed_one(nurse):
+    first = nurse.post("/patients", json={
+        "patient_type": "other", "last_name": "Uno", "first_name": "A",
+        "other_description": "Guest"}).json()
+    nurse.post("/patients", json={
+        "patient_type": "other", "id_number": f"OTH-{first['id'] + 1:06d}", "last_name": "Dos",
+        "first_name": "B", "other_description": "Guest"})
+    third = nurse.post("/patients", json={
+        "patient_type": "other", "last_name": "Tres", "first_name": "C",
+        "other_description": "Guest"})
+    assert third.status_code == 201, third.text
+    numbers = [p["id_number"] for p in nurse.get(
+        "/patients", params={"patient_type": "other"}).json()["items"]]
+    assert len(set(numbers)) == 3
+
+
+def test_others_description_is_cleared_when_the_type_changes(nurse):
+    other = nurse.post("/patients", json={
+        "patient_type": "other", "id_number": "VIS-002", "last_name": "Lopez",
+        "first_name": "Rita", "other_description": "Contractor"}).json()
+    body = nurse.patch(f"/patients/{other['id']}", json={"patient_type": "employee"}).json()
+    assert body["other_description"] is None
+
+
+def test_archive_lists_only_archived_patients_with_who_and_when(coordinator, nurse, patient):
+    _register(nurse, "20240556", "Panergo", "Mark", "School of Engineering")
+    coordinator.post(f"/patients/{patient['id']}/archive")
+
+    body = nurse.get("/patients", params={"archived_only": True}).json()
+    assert body["total"] == 1
+    archived = body["items"][0]
+    assert archived["id"] == patient["id"]
+    assert archived["archived_at"] is not None
+    assert archived["archived_by_name"] == "Salazar, CJ"
+
+
+def test_restore_clears_who_archived_the_patient(coordinator, nurse, patient):
+    coordinator.post(f"/patients/{patient['id']}/archive")
+    restored = coordinator.post(f"/patients/{patient['id']}/restore").json()
+    assert restored["archived_at"] is None
+    assert restored["archived_by_name"] is None
+    assert nurse.get("/patients", params={"archived_only": True}).json()["total"] == 0

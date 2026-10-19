@@ -85,6 +85,20 @@ class AuditLog(Base):
     detail: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, index=True)
 
+    user: Mapped[User | None] = relationship(lazy="joined")
+
+    @property
+    def user_full_name(self) -> str | None:
+        return self.user.full_name if self.user else None
+
+    @property
+    def user_role(self) -> str | None:
+        return self.user.role if self.user else None
+
+    @property
+    def user_job_title(self) -> str | None:
+        return self.user.job_title if self.user else None
+
 
 class Report(Base):
     __tablename__ = "reports"

@@ -40,12 +40,14 @@ def search_patients(
     department: str | None = None,
     patient_type: PatientType | None = None,
     include_archived: bool = False,
+    archived_only: bool = False,
     page: PageNumber = 1,
     page_size: PageSize = 20,
 ):
     items, total = patients.search(
         db, q=q, department=department, patient_type=patient_type,
-        include_archived=include_archived, page=page, page_size=page_size,
+        include_archived=include_archived, archived_only=archived_only,
+        page=page, page_size=page_size,
     )
     return Page(items=items, total=total, page=page, page_size=page_size)
 

@@ -14,6 +14,7 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
     id: 1,
     patient_type: 'student',
     education_level: 'college',
+    other_description: null,
     id_number: '20221187',
     last_name: 'Santos',
     first_name: 'Maria',
@@ -23,6 +24,8 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
     sex: 'female',
     department: 'School of Computing',
     is_archived: false,
+    archived_at: null,
+    archived_by_name: null,
     ...overrides,
   }
 }

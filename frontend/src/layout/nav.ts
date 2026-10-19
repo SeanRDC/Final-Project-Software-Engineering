@@ -4,10 +4,13 @@ import {
   BarChart3Icon,
   BellIcon,
   BoxesIcon,
+  BriefcaseMedicalIcon,
   CalendarDaysIcon,
   ClipboardPlusIcon,
   LayoutGridIcon,
+  ListChecksIcon,
   ListOrderedIcon,
+  PackageIcon,
   PillIcon,
   ScrollTextIcon,
   UserCogIcon,
@@ -72,6 +75,7 @@ export const NAV_GROUPS: NavGroup[] = [
         end: true,
         children: [
           { to: '/patients/new', label: 'Register patient', permission: 'patients:write' },
+          { to: '/patients/archive', label: 'Archive', permission: 'patients:read' },
         ],
       },
       {
@@ -97,6 +101,26 @@ export const NAV_GROUPS: NavGroup[] = [
         label: 'Release log',
         icon: BoxesIcon,
         permission: 'inventory:read',
+      },
+    ],
+  },
+  {
+    heading: 'Medical kit',
+    items: [
+      {
+        to: '/medkit',
+        label: 'Kit requests',
+        icon: BriefcaseMedicalIcon,
+        permission: 'medkits:read',
+        end: true,
+        children: [{ to: '/medkit/new', label: 'New request', permission: 'medkits:write' }],
+      },
+      { to: '/medkit/kits', label: 'Kits', icon: PackageIcon, permission: 'medkits:read' },
+      {
+        to: '/medkit/contents',
+        label: 'Kit contents',
+        icon: ListChecksIcon,
+        permission: 'medkits:read',
       },
     ],
   },

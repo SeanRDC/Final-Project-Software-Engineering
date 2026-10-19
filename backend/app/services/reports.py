@@ -115,6 +115,7 @@ def summarize(db: Session, start: date, end: date) -> ReportSummary:
                 label=label,
                 students=type_by_patient_type[label][PatientType.STUDENT.value],
                 employees=type_by_patient_type[label][PatientType.EMPLOYEE.value],
+                others=type_by_patient_type[label][PatientType.OTHER.value],
             )
             for label, _ in by_type.most_common()
         ],
@@ -217,9 +218,9 @@ def to_csv(summary: ReportSummary, title: str = "Clinic summary report") -> str:
 
     if summary.visits_by_type_and_patient_type:
         writer.writerow([])
-        writer.writerow(["Requests by students and employees", "Students", "Employees"])
+        writer.writerow(["Requests by type of patient", "Students", "Employees", "Others"])
         writer.writerows(
-            [item.label, item.students, item.employees]
+            [item.label, item.students, item.employees, item.others]
             for item in summary.visits_by_type_and_patient_type
         )
 

@@ -20,3 +20,9 @@ test('every change the dashboard shows refreshes the dashboard', () => {
 test('an unknown event refreshes nothing', () => {
   expect(staleQueriesFor('something.else')).toEqual([])
 })
+
+test('a medical kit change refreshes the kits and their requests', () => {
+  expect(staleQueriesFor('medkits.updated')).toEqual(['medkits', 'medkit-requests'])
+  // The kit contents show what is on hand, so a stock change refreshes them too.
+  expect(staleQueriesFor('inventory.updated')).toContain('medkits')
+})

@@ -94,7 +94,7 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
       <div className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
         <CountTable title="Visits by type" what="Type" items={summary.visits_by_type} readable />
         {summary.visits_by_type_and_patient_type.length > 0 ? (
-          <SectionCard title="Requests by students and employees">
+          <SectionCard title="Requests by type of patient">
             <table className="w-full text-[15px]">
               <thead>
                 <tr className="border-b text-[13px] text-muted-foreground">
@@ -104,8 +104,11 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
                   <th scope="col" className="px-4 py-2 text-right font-medium">
                     Students
                   </th>
-                  <th scope="col" className="py-2 pr-4 text-right font-medium">
+                  <th scope="col" className="px-4 py-2 text-right font-medium">
                     Employees
+                  </th>
+                  <th scope="col" className="py-2 pr-4 text-right font-medium">
+                    Others
                   </th>
                 </tr>
               </thead>
@@ -118,9 +121,10 @@ export function SummaryView({ summary }: { summary: ReportSummary }) {
                     <td className="px-4 py-2 text-right font-medium tabular-nums">
                       {item.students}
                     </td>
-                    <td className="py-2 pr-4 text-right font-medium tabular-nums">
+                    <td className="px-4 py-2 text-right font-medium tabular-nums">
                       {item.employees}
                     </td>
+                    <td className="py-2 pr-4 text-right font-medium tabular-nums">{item.others}</td>
                   </tr>
                 ))}
               </tbody>

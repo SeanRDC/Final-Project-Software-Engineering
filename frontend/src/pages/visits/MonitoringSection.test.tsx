@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { afterEach, expect, test, vi } from 'vitest'
@@ -70,6 +70,34 @@ test('the nurse adds a reading with only the values that were taken', async () =
   expect(sent).toEqual({ temperature_c: 38.6, note: null })
   expect(screen.getByText('38.6 °C')).toBeInTheDocument()
   expect(screen.queryByRole('form', { name: 'Add reading' })).not.toBeInTheDocument()
+})
+
+test('a reading takes the blood pressure as one value', async () => {
+  const start = visitRecord()
+  let sent: unknown
+  const server = fakeServer({ 'GET /visits/14': start, 'GET /inventory/medicines': [] })
+  server.on(
+    'POST /visits/14/vitals',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body))
+      return { ...start, vital_readings: [] }
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderPanel(nurse)
+
+  await user.click(await screen.findByRole('button', { name: 'Add reading' }))
+  const form = within(screen.getByRole('form', { name: 'Add reading' }))
+  await user.type(form.getByLabelText('Blood pressure'), '118')
+  await user.click(form.getByRole('button', { name: 'Save reading' }))
+  expect(form.getByText('Enter both numbers, e.g. 120/80.')).toBeInTheDocument()
+  expect(server.calls).not.toContain('POST /visits/14/vitals')
+
+  await user.type(form.getByLabelText('Blood pressure'), ' 76')
+  await user.click(form.getByRole('button', { name: 'Save reading' }))
+
+  await waitFor(() => expect(sent).toEqual({ bp_systolic: 118, bp_diastolic: 76, note: null }))
 })
 
 test('a reading recorded by mistake can be removed after confirming', async () => {

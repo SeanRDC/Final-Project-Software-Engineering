@@ -69,8 +69,8 @@ export function useDeleteReport() {
   })
 }
 
-/** Downloads a CSV file from the server and hands it to the browser to save. */
-export function useCsvDownload() {
+/** Downloads a report file (Excel or CSV) from the server and hands it to the browser to save. */
+export function useFileDownload() {
   return useMutation({
     mutationFn: async (target: { path: string; query?: Record<string, string>; name: string }) => {
       saveDownload(await apiDownload(target.path, target.name, { query: target.query }))

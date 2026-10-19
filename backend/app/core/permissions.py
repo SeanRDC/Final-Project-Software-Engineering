@@ -29,6 +29,10 @@ class Permission(StrEnum):
     INVENTORY_READ = "inventory:read"
     INVENTORY_WRITE = "inventory:write"
 
+    MEDKITS_READ = "medkits:read"
+    MEDKITS_WRITE = "medkits:write"
+    MEDKITS_MANAGE = "medkits:manage"
+
     REPORTS_VIEW = "reports:view"
     REPORTS_GENERATE = "reports:generate"
 
@@ -52,6 +56,8 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             P.APPOINTMENTS_WRITE,
             P.INVENTORY_READ,
             P.INVENTORY_WRITE,
+            P.MEDKITS_READ,
+            P.MEDKITS_WRITE,
             P.REPORTS_VIEW,
             P.ATTACHMENTS_READ,
             P.ATTACHMENTS_WRITE,
@@ -65,6 +71,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             P.VISITS_CONSULT,
             P.APPOINTMENTS_READ,
             P.INVENTORY_READ,
+            P.MEDKITS_READ,
             P.REPORTS_VIEW,
             P.ATTACHMENTS_READ,
             P.ATTACHMENTS_WRITE,

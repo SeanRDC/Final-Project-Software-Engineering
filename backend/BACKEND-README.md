@@ -26,6 +26,7 @@
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#roles-and-access">Roles and Access</a></li>
     <li><a href="#how-a-visit-works">How a Visit Works</a></li>
+    <li><a href="#how-a-medical-kit-works">How a Medical Kit Works</a></li>
     <li><a href="#api-overview">API Overview</a></li>
     <li><a href="#requirements-coverage">Requirements Coverage</a></li>
     <li><a href="#api-architecture">API Architecture</a></li>
@@ -150,6 +151,8 @@ Nurses and student assistants work at the same station, so they share one role w
 | Release an admitted patient from admission | ✅ | ✅ | |
 | Release medicine to a patient | ✅ | ✅ | |
 | Add stock, adjust stock, edit medicines | ✅ | ✅ | view only |
+| Request, issue, take back or mark lost a medical kit | ✅ | ✅ | view only |
+| Add kits, set the standard kit contents, put a replaced lost kit back | ✅ | | |
 | Book, reschedule and check in appointments | ✅ | ✅ | view only |
 | Confirm or cancel an appointment | ✅ | | |
 | View statistics and saved reports | ✅ | ✅ | ✅ |
@@ -176,6 +179,19 @@ A patient who is admitted to rest and later leaves is not checked in again. `POS
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## How a Medical Kit Works
+
+The clinic lends numbered medical kits to organizations for their activities. The kits draw on the same medicine stock as visits, so the inventory always shows what is really on the shelf.
+
+1. **Request** (`requested`). The request form (FM-SSA-MDS-8032): organization or department, activity, its date and venue, the person responsible and their number, who asked and when. Nothing leaves the stock yet, and the request can still be cancelled.
+2. **Issue** (`issued`). Staff choose an available kit and say what goes in it, usually the standard contents (`GET /medkits/template`, the boxed medicines of FM-SSA-MDS-8033) plus anything else from the inventory. Every item leaves the stock through `inventory.apply_movement` as a `release` tied to the request, in one transaction: if any item is short, the error names it and nothing moves. The kit becomes `out`.
+3. **Return** (`returned`). Each item is counted back. What came back returns to stock as `stock_in`, the rest counts as used, and the kit is `available` again. Every item must be counted (0 for used up), and no more can come back than went out.
+4. **Lost** (`lost`). A kit that does not come back: nothing returns to stock and the kit is `lost` until the coordinator puts the replacement back in service with `PATCH /medkits/{id}` (`status: available`).
+
+A kit still out after the day of its activity is `is_overdue`. There is no scheduler, so `GET /dashboard` and `GET /medkit-requests` check for newly overdue kits and send one `medkit_overdue` notification for each. Each step writes an audit entry (`medkit_request.create`, `.issue`, `.return`, `.lost`, `.cancel`) and publishes `medkits.updated`; issue and return also publish `inventory.updated`. In the release log (`GET /inventory/movements`) a kit's movements carry `medkit_label`, e.g. "Medical kit #3 – Intramurals 2026".
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## API Overview
 
 All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /health` needs an `Authorization: Bearer <token>` header. The full reference with request and response schemas is at `/docs`.
@@ -189,12 +205,13 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Medicine release | `POST /visits/{id}/medicines`, `DELETE /visits/{id}/medicines/{entry_id}` |
 | Appointments | `GET /appointments`, `GET /appointments/today`, `GET /appointments/calendar`, `POST /appointments`, `PATCH /appointments/{id}`, `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` |
 | Inventory | `GET /inventory/medicines`, `POST /inventory/medicines`, `PATCH /inventory/medicines/{id}`, `POST /inventory/medicines/{id}/stock-in`, `/adjust`, `GET /inventory/low-stock`, `GET /inventory/movements` (release log with `movement_type=release`) |
-| Reports | `GET /reports/summary`, `GET /reports/summary.csv`, `GET /reports`, `POST /reports`, `GET /reports/{id}`, `GET /reports/{id}/csv`, `DELETE /reports/{id}` |
+| Medical kits | `GET /medkits`, `POST /medkits`, `PATCH /medkits/{id}`, `GET /medkits/template`, `PUT /medkits/template`, `GET /medkit-requests` (`status`, `overdue_only`), `POST /medkit-requests`, `GET /medkit-requests/{id}`, `POST /medkit-requests/{id}/issue`, `/return`, `/lost`, `/cancel` |
+| Reports | `GET /reports/summary`, `GET /reports/summary.csv`, `GET /reports/summary.xlsx`, `GET /reports`, `POST /reports`, `GET /reports/{id}`, `GET /reports/{id}/csv`, `GET /reports/{id}/xlsx`, `DELETE /reports/{id}` |
 | Dashboard | `GET /dashboard` |
 | Notifications | `GET /notifications`, `POST /notifications/{id}/read`, `POST /notifications/read-all` |
 | Attachments | `GET /patients/{id}/attachments`, `POST /patients/{id}/attachments`, `GET /attachments/{id}/download`, `DELETE /attachments/{id}` |
 | Record locks | `GET`, `PUT`, `DELETE /locks/{patient\|visit}/{id}` |
-| Audit log | `GET /audit-logs` |
+| Audit log | `GET /audit-logs` (each entry names the account: `user_full_name`, `user_role`, `user_job_title`) |
 | System | `GET /health`, `GET /options`, `WS /ws?token=<token>` |
 
 ### Dashboard
@@ -209,7 +226,7 @@ Each station opens `ws://<server>:8000/api/v1/ws?token=<access token>` once. The
 {"event": "visits.updated", "data": {"visit_id": 12, "status": "open"}, "at": "2026-10-04T05:51:57+00:00"}
 ```
 
-Events: `visits.updated`, `appointments.updated`, `inventory.updated`, `notifications.updated`, `lock.updated`. Sending the text `ping` returns a `pong`, which the client can time for the "Clinic server connected · 3 ms" indicator.
+Events: `visits.updated`, `appointments.updated`, `inventory.updated`, `medkits.updated`, `notifications.updated`, `lock.updated`. Sending the text `ping` returns a `pong`, which the client can time for the "Clinic server connected · 3 ms" indicator.
 
 ### Record edit locking
 
@@ -283,7 +300,9 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 | `visit_vital_readings` | Vital signs taken again while a patient is monitored |
 | `appointments` | Scheduled appointments and the coordinator's decision |
 | `medicines` | Inventory items with quantity and low-stock threshold |
-| `stock_movements` | Every stock change; release rows are the release log |
+| `stock_movements` | Every stock change; release rows are the release log; `medkit_request_id` ties a row to a kit loan |
+| `medkits`, `medkit_template_items` | The numbered medical kits and what a kit normally carries |
+| `medkit_requests`, `medkit_request_items` | Each kit loan from request to return, and what went out and came back |
 | `notifications`, `notification_reads` | Alerts and per-user read state |
 | `record_locks` | Edit locks on patient and visit records |
 | `attachments` | Metadata of uploaded files (files are in `UPLOAD_DIR`) |
@@ -361,9 +380,12 @@ These follow the project paper, the interview with the clinic and the dashboard 
 - **Late entries.** `POST /visits` takes an optional `visit_date` for a visit written on paper and entered later. It may not be in the future, `checked_in_at` keeps the real entry time, and the audit entry records `entered_late_for`.
 - **Monitoring readings.** The first vital signs stay on the visit. Readings taken later, for a patient resting in a ward, are separate timed rows, so the record shows how the patient changed.
 - **Release from admission.** An admission is an outcome of a completed visit. Only a completed, admitted visit can be released, once, and not into another admission. Correcting the outcome away from "admitted" drops the release. The report counts where admitted patients went (`admission_releases`); reports saved before this was added show it as empty.
-- **Education level and form codes.** A student is in `basic_education` or `college`; an employee has no level. A level left out is read off the department (the Basic Education Department, otherwise college), and migration `0003` filled it in the same way for students already on record. The level decides which of the clinic's ISO form codes the screens print on the record: `FM-SSA-MOS-8011` for employees, `FM-SSA-MOS-8012` for basic education and `FM-SSA-MOS-8013` for college.
+- **Education level and form codes.** A student is in `basic_education` or `college`; an employee has no level. A level left out is read off the department (the Basic Education Department, otherwise college), and migration `0003` filled it in the same way for students already on record. The level decides which of the clinic's ISO form codes the screens print on the record: `FM-SSA-MDS-8011` for employees, `FM-SSA-MDS-8012` for basic education and `FM-SSA-MDS-8013` for college.
 - **Dosage.** The clinic calls the strength of a medicine its dosage, and the screens label it so. The column and the API field are still named `strength`.
-- **The report splits each type of request by students and employees** (`visits_by_type_and_patient_type`), the tally the clinic submits every semester. Reports saved before this was added show it as empty.
+- **Excel reports.** `GET /reports/summary.xlsx?start&end` and `GET /reports/{id}/xlsx` return the same statistics as the CSV routes as a formatted workbook (`app/services/report_xlsx.py`, openpyxl): the university logo (`app/assets/hau-logo.png`) and letterhead, the report title, period and who generated it, then each table under a header row in the clinic red (`#7A1C2A`) with shaded alternate rows, long text wrapped, and page setup for A4 one page wide with page numbers. The CSV routes stay for anyone who wants raw data.
+- **The archive.** `GET /patients?archived_only=true` lists archived records only, most recently archived first, each with `archived_at` and `archived_by_name`. Archiving sets both and restoring clears them. Migration `0007` adds the two columns and fills them for records archived earlier from the latest `patient.archive` audit entry. Only the coordinator (`patients:archive`) may archive or restore.
+- **Others patients.** `patient_type` `other` covers visitors, guests, contractors and parents. They need an `other_description` (e.g. "Visitor – parent of a Grade 3 student") and may be registered without an ID number, in which case the clinic numbers them `OTH-000123` from the record id. The description is cleared if the type is changed away from `other`. Migration `0006` adds the column; its downgrade turns Others patients into employees.
+- **The report splits each type of request by students, employees and others** (`visits_by_type_and_patient_type`, with an `others` column), the tally the clinic submits every semester. Reports saved before this was added show it as empty.
 - **Saved reports are snapshots.** `POST /reports` stores the figures at generation time so a submitted report does not change. `GET /reports/summary` always computes live figures.
 - **Times.** Timestamps are stored in UTC. "Today" and report periods follow `TIMEZONE` (default `Asia/Manila`).
 

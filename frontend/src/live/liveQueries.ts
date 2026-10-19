@@ -4,7 +4,8 @@
 const QUERIES_BY_EVENT: Record<string, readonly string[]> = {
   'visits.updated': ['dashboard', 'visits', 'patients'],
   'appointments.updated': ['dashboard', 'appointments'],
-  'inventory.updated': ['dashboard', 'inventory'],
+  'inventory.updated': ['dashboard', 'inventory', 'medkits'],
+  'medkits.updated': ['medkits', 'medkit-requests'],
   'notifications.updated': ['dashboard', 'notifications'],
   // An open visit record shows who is editing it.
   'lock.updated': ['locks', 'visits'],

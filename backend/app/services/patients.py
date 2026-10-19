@@ -1,10 +1,13 @@
 # Business logic for patient records, search, medical history and archiving.
 
+from uuid import uuid4
+
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from app.core.clock import utcnow
 from app.core.departments import BASIC_EDUCATION_PREFIX, HAU_DEPARTMENTS
-from app.core.exceptions import ConflictError
+from app.core.exceptions import AppError, ConflictError
 from app.models import Patient, User, Visit
 from app.models.enums import EducationLevel, PatientType, VisitStatus
 from app.schemas.patient import PatientCreate, PatientDetail, PatientOut, PatientUpdate
@@ -20,6 +23,24 @@ def _ensure_unique_id_number(db: Session, id_number: str, exclude_id: int | None
         query = query.where(Patient.id != exclude_id)
     if db.scalar(query) is not None:
         raise ConflictError(f"A patient with ID number '{id_number}' already exists")
+
+
+def _assign_others_id_number(db: Session, patient: Patient) -> None:
+    """An Others patient registered without a number gets OTH-000123 from its record id."""
+    base = f"OTH-{patient.id:06d}"
+    candidate, attempt = base, 1
+    while db.scalar(select(Patient.id).where(func.lower(Patient.id_number) == candidate.lower())):
+        attempt += 1
+        candidate = f"{base}-{attempt}"
+    patient.id_number = candidate
+
+
+def _settle_type_fields(patient: Patient) -> None:
+    """Only Others patients carry a description, and they must have one."""
+    if patient.patient_type != PatientType.OTHER:
+        patient.other_description = None
+    elif not patient.other_description:
+        raise AppError("Describe who an Others patient is, e.g. a visitor or contractor")
 
 
 def _settle_education_level(patient: Patient) -> None:
@@ -40,11 +61,19 @@ def search(
     department: str | None = None,
     patient_type: PatientType | None = None,
     include_archived: bool = False,
+    archived_only: bool = False,
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[Patient], int]:
     query = select(Patient).order_by(Patient.last_name, Patient.first_name, Patient.id)
-    if not include_archived:
+    if archived_only:
+        # The Archive page: most recently archived first.
+        query = (
+            select(Patient)
+            .where(Patient.is_archived.is_(True))
+            .order_by(Patient.archived_at.desc(), Patient.id.desc())
+        )
+    elif not include_archived:
         query = query.where(Patient.is_archived.is_(False))
     if patient_type:
         query = query.where(Patient.patient_type == patient_type)
@@ -76,20 +105,25 @@ def list_departments(db: Session) -> list[str]:
 
 
 def create(db: Session, data: PatientCreate, actor: User) -> Patient:
-    id_number = data.id_number.strip()
-    _ensure_unique_id_number(db, id_number)
+    id_number = data.id_number.strip() if data.id_number else None
+    if id_number:
+        _ensure_unique_id_number(db, id_number)
     values = data.model_dump()
     values.update(
-        id_number=id_number,
+        # A placeholder until the record has an id to number it from.
+        id_number=id_number or f"pending-{uuid4().hex[:20]}",
         last_name=data.last_name.strip(),
         first_name=data.first_name.strip(),
         created_by_id=actor.id,
     )
     patient = Patient(**values)
+    _settle_type_fields(patient)
     _settle_education_level(patient)
     db.add(patient)
     db.flush()
-    audit.record(db, actor, "patient.create", "patient", patient.id, id_number=id_number)
+    if not id_number:
+        _assign_others_id_number(db, patient)
+    audit.record(db, actor, "patient.create", "patient", patient.id, id_number=patient.id_number)
     db.commit()
     return patient
 
@@ -119,11 +153,14 @@ def update(db: Session, patient_id: int, data: PatientUpdate, actor: User) -> Pa
             changes[name] = changes[name].strip()
     if changes.get("id_number"):
         _ensure_unique_id_number(db, changes["id_number"], exclude_id=patient_id)
-    level_before = patient.education_level
+    level_before, description_before = patient.education_level, patient.other_description
     changed = apply_updates(patient, changes, required=REQUIRED_FIELDS)
+    _settle_type_fields(patient)
     _settle_education_level(patient)
     if patient.education_level != level_before and "education_level" not in changed:
         changed.append("education_level")
+    if patient.other_description != description_before and "other_description" not in changed:
+        changed.append("other_description")
     if changed:
         audit.record(db, actor, "patient.update", "patient", patient.id, fields=changed)
     db.commit()
@@ -134,6 +171,8 @@ def set_archived(db: Session, patient_id: int, archived: bool, actor: User) -> P
     patient = get_or_404(db, Patient, patient_id, "Patient")
     if patient.is_archived != archived:
         patient.is_archived = archived
+        patient.archived_at = utcnow() if archived else None
+        patient.archived_by = actor if archived else None
         action = "patient.archive" if archived else "patient.restore"
         audit.record(db, actor, action, "patient", patient.id)
     db.commit()

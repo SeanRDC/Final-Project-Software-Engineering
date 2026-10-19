@@ -22,6 +22,11 @@ export const REGISTER_PATIENT: Page = {
   title: 'Register Patient',
   permission: 'patients:write',
 }
+export const ARCHIVE: Page = {
+  path: '/patients/archive',
+  title: 'Archived Patients',
+  permission: 'patients:read',
+}
 export const APPOINTMENTS: Page = {
   path: '/appointments',
   title: 'Appointments',
@@ -43,6 +48,26 @@ export const RELEASE_LOG: Page = {
   title: 'Medicine Release Log',
   permission: 'inventory:read',
 }
+export const MEDKIT_REQUESTS: Page = {
+  path: '/medkit',
+  title: 'Medical Kit Requests',
+  permission: 'medkits:read',
+}
+export const NEW_MEDKIT_REQUEST: Page = {
+  path: '/medkit/new',
+  title: 'Request for Medical Kit',
+  permission: 'medkits:write',
+}
+export const MEDKITS: Page = {
+  path: '/medkit/kits',
+  title: 'Medical Kits',
+  permission: 'medkits:read',
+}
+export const KIT_CONTENTS: Page = {
+  path: '/medkit/contents',
+  title: 'Kit Contents',
+  permission: 'medkits:read',
+}
 export const NOTIFICATIONS: Page = { path: '/notifications', title: 'Notifications' }
 
 export const REPORTS: Page = { path: '/reports', title: 'Reports', permission: 'reports:view' }
@@ -56,10 +81,15 @@ export const PAGES: Page[] = [
   VISITS,
   PATIENTS,
   REGISTER_PATIENT,
+  ARCHIVE,
   APPOINTMENTS,
   NEW_APPOINTMENT,
   INVENTORY,
   RELEASE_LOG,
+  MEDKIT_REQUESTS,
+  NEW_MEDKIT_REQUEST,
+  MEDKITS,
+  KIT_CONTENTS,
   NOTIFICATIONS,
   REPORTS,
   USERS,

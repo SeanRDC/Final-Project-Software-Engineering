@@ -17,6 +17,7 @@ def enum_type(enum_cls: type[StrEnum]) -> SAEnum:
 class PatientType(StrEnum):
     STUDENT = "student"
     EMPLOYEE = "employee"
+    OTHER = "other"
 
 
 class EducationLevel(StrEnum):
@@ -72,3 +73,18 @@ class NotificationType(StrEnum):
     LOW_STOCK = "low_stock"
     APPOINTMENT_PENDING = "appointment_pending"
     APPOINTMENT_DECIDED = "appointment_decided"
+    MEDKIT_OVERDUE = "medkit_overdue"
+
+
+class MedkitStatus(StrEnum):
+    AVAILABLE = "available"
+    OUT = "out"
+    LOST = "lost"
+
+
+class MedkitRequestStatus(StrEnum):
+    REQUESTED = "requested"
+    ISSUED = "issued"
+    RETURNED = "returned"
+    LOST = "lost"
+    CANCELLED = "cancelled"

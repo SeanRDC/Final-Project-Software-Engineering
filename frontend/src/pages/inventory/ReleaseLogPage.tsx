@@ -269,6 +269,13 @@ export function ReleaseLogPage() {
                                 {movement.patient_id_number}
                               </div>
                             </>
+                          ) : movement.medkit_request_id !== null ? (
+                            <Link
+                              to={`/medkit/requests/${movement.medkit_request_id}`}
+                              className="rounded-sm text-[15px] font-medium outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              {movement.medkit_label}
+                            </Link>
                           ) : (
                             <span className="text-sm">
                               {movement.reason ?? <span className="text-muted-foreground">—</span>}

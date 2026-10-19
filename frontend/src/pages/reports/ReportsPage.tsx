@@ -1,4 +1,4 @@
-import { CircleAlertIcon, DownloadIcon, SaveIcon } from 'lucide-react'
+import { CircleAlertIcon, SaveIcon } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
@@ -22,12 +22,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { parseDay, toDayString } from '@/lib/format'
 import { useClinicToday } from '@/lib/useClinicToday'
+import { DownloadButtons } from '@/pages/reports/DownloadButtons'
 import { SummaryView } from '@/pages/reports/SummaryView'
 import { termPresets } from '@/pages/reports/terms'
 import {
   formatPeriod,
   isValidPeriod,
-  useCsvDownload,
   useGenerateReport,
   useSavedReports,
   useSummary,
@@ -132,7 +132,6 @@ export function ReportsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const today = useClinicToday()
   const allowed = useCan()
-  const csv = useCsvDownload()
   const saved = useSavedReports()
   const [isSaving, setIsSaving] = useState(false)
 
@@ -197,34 +196,13 @@ export function ReportsPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            className="h-9 bg-card"
-            disabled={!isValid || csv.isPending}
-            onClick={() =>
-              csv.mutate(
-                {
-                  path: '/reports/summary.csv',
-                  query: { start: period.start, end: period.end },
-                  name: `clinic-summary-${period.start}-to-${period.end}.csv`,
-                },
-                {
-                  onError: (failure) =>
-                    toast.error('The CSV could not be downloaded', {
-                      description:
-                        failure instanceof ApiError ? failure.message : 'Please try again.',
-                    }),
-                },
-              )
-            }
-          >
-            {csv.isPending ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <DownloadIcon data-icon="inline-start" />
-            )}
-            Download CSV
-          </Button>
+          <DownloadButtons
+            paths={{ xlsx: '/reports/summary.xlsx', csv: '/reports/summary.csv' }}
+            query={{ start: period.start, end: period.end }}
+            fileStem={`clinic-summary-${period.start}-to-${period.end}`}
+            disabled={!isValid}
+            className="h-9"
+          />
           {allowed('reports:generate') ? (
             <Button className="h-9" disabled={!isValid} onClick={() => setIsSaving(true)}>
               <SaveIcon data-icon="inline-start" />
