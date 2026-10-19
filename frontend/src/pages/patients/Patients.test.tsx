@@ -363,6 +363,32 @@ test('registers an Others patient with a description and no ID number', async ()
   })
 })
 
+test('names get their capital letters as they are typed', async () => {
+  fakeServer({ 'GET /options': options() })
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  const last = form.getByLabelText('Last name')
+  await user.type(last, 'dela ')
+  expect(last).toHaveValue('Dela ')
+  await user.type(last, 'cruz')
+  await user.tab()
+  expect(last).toHaveValue('Dela Cruz')
+
+  await user.type(form.getByLabelText('First name'), 'juan miguel')
+  await user.type(form.getByLabelText('Middle name'), 'santos')
+  await user.type(form.getByLabelText('Name'), 'elena dela cruz')
+  await user.tab()
+  expect(form.getByLabelText('First name')).toHaveValue('Juan Miguel')
+  expect(form.getByLabelText('Middle name')).toHaveValue('Santos')
+  expect(form.getByLabelText('Name')).toHaveValue('Elena Dela Cruz')
+  // Not every field is a name.
+  await user.type(form.getByLabelText('Address'), 'angeles city')
+  await user.tab()
+  expect(form.getByLabelText('Address')).toHaveValue('angeles city')
+})
+
 test('registers a basic education student with a medical history', async () => {
   const server = fakeServer({ 'GET /options': options() })
   let sent: Record<string, unknown> = {}

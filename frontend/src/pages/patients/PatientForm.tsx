@@ -1,5 +1,5 @@
 import { CircleAlertIcon } from 'lucide-react'
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 
 import { ApiError } from '@/api/client'
 import type { EducationLevel, PatientType, Sex } from '@/api/types'
@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
+import { capitalizeWords } from '@/lib/capitalize'
 import { toDayString } from '@/lib/format'
 import {
   BLOOD_TYPES,
@@ -64,6 +65,15 @@ export function PatientForm({
   const [today] = useState(() => toDayString(new Date()))
   const isStudent = values.patient_type === 'student'
   const isOther = values.patient_type === 'other'
+  // Where to put the caret back after a name was capitalised under it.
+  const pendingCaret = useRef<{ input: HTMLInputElement; caret: number } | null>(null)
+
+  useLayoutEffect(() => {
+    const pending = pendingCaret.current
+    if (!pending) return
+    pendingCaret.current = null
+    pending.input.setSelectionRange(pending.caret, pending.caret)
+  })
 
   function change(patch: Partial<PatientValues>) {
     const next = { ...values, ...patch }
@@ -102,9 +112,11 @@ export function PatientForm({
       list?: string
       spellCheck?: boolean
       max?: string
+      /** A person's name: each word gets its capital letter on space and on leaving the box. */
+      isName?: boolean
     } = {},
   ) {
-    const { description, ...inputProps } = options
+    const { description, isName, ...inputProps } = options
     return (
       <Field data-invalid={errors[name] ? true : undefined}>
         <FieldLabel htmlFor={name}>{label}</FieldLabel>
@@ -115,7 +127,21 @@ export function PatientForm({
           aria-invalid={errors[name] ? true : undefined}
           aria-describedby={errors[name] ? `${name}-error` : undefined}
           value={values[name]}
-          onChange={(event) => change({ [name]: event.target.value })}
+          onChange={(event) => {
+            const input = event.target
+            const caret = input.selectionStart ?? input.value.length
+            const typedSpace = input.value.charAt(caret - 1) === ' '
+            const value = isName && typedSpace ? capitalizeWords(input.value) : input.value
+            change({ [name]: value })
+            // Only letters change case, so the caret can go back where it was.
+            if (value !== input.value) pendingCaret.current = { input, caret }
+          }}
+          onBlur={() => {
+            const value = values[name]
+            if (isName && capitalizeWords(value) !== value) {
+              change({ [name]: capitalizeWords(value) })
+            }
+          }}
           {...inputProps}
         />
         {description ? <FieldDescription>{description}</FieldDescription> : null}
@@ -183,9 +209,9 @@ export function PatientForm({
                 })}
               </div>
             ) : null}
-            {text('last_name', 'Last name', { required: true })}
-            {text('first_name', 'First name', { required: true })}
-            {text('middle_name', 'Middle name')}
+            {text('last_name', 'Last name', { required: true, isName: true })}
+            {text('first_name', 'First name', { required: true, isName: true })}
+            {text('middle_name', 'Middle name', { isName: true })}
             {text('birth_date', 'Birth date', {
               type: 'date',
               max: today,
@@ -251,7 +277,7 @@ export function PatientForm({
         <FieldSet>
           <FieldLegend>Parent or guardian</FieldLegend>
           <div className="grid gap-4 sm:grid-cols-2">
-            {text('guardian_name', 'Name')}
+            {text('guardian_name', 'Name', { isName: true })}
             {text('guardian_relationship', 'Relationship to the patient')}
             {text('guardian_contact', 'Contact number', { type: 'tel', inputMode: 'tel' })}
           </div>
