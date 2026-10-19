@@ -63,6 +63,11 @@ export const MEDKITS: Page = {
   title: 'Medical Kits',
   permission: 'medkits:read',
 }
+export const KIT_CONTENTS: Page = {
+  path: '/medkit/contents',
+  title: 'Kit Contents',
+  permission: 'medkits:read',
+}
 export const NOTIFICATIONS: Page = { path: '/notifications', title: 'Notifications' }
 
 export const REPORTS: Page = { path: '/reports', title: 'Reports', permission: 'reports:view' }
@@ -84,6 +89,7 @@ export const PAGES: Page[] = [
   MEDKIT_REQUESTS,
   NEW_MEDKIT_REQUEST,
   MEDKITS,
+  KIT_CONTENTS,
   NOTIFICATIONS,
   REPORTS,
   USERS,

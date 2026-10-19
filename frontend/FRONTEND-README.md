@@ -62,23 +62,24 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 
 ## What Is Built
 
-| Screen                              | Address                                                             | Status                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Sign in                             | `/login`                                                            | Done                                                                               |
-| Clinic Main Menu (dashboard)        | `/`                                                                 | Done                                                                               |
-| Check-in / Walk-in                  | `/check-in`                                                         | Done                                                                               |
-| Today's visits and the visit record | `/visits`, `/visits/:id`                                            | Done: log, record, consultation, medicine release, complete, cancel                |
-| Patients                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit` | Done: list, register, record with visit history, correct, archive and restore      |
-| Archived patients                   | `/patients/archive`                                                 | Done: archived records with who archived them and when; restore (coordinator)      |
-| Appointments                        | `/appointments`, `/appointments/new`, `/appointments/:id/edit`      | Done: calendar, day schedule, book, reschedule, confirm, cancel, no-show, check-in |
-| Medicine inventory                  | `/inventory`                                                        | Done: stock list, add and edit medicines, stock in, count adjustment               |
-| Medicine release log                | `/inventory/releases`                                               | Done: releases to patients, plus all stock movements                               |
-| Notifications                       | `/notifications`                                                    | Done: list, unread filter, mark as read                                            |
-| Reports                             | `/reports`, `/reports/:id`                                          | Done: statistics for any period, Excel and CSV download, saved reports             |
-| Accounts                            | `/users`                                                            | Done: create, edit, deactivate, reset password (coordinator)                       |
-| Audit log                           | `/audit`                                                            | Done: who viewed or changed what, with filters (coordinator)                       |
-| Change password                     | `/account/password`                                                 | Done: for every account; required after a reset                                    |
-| Attachments                         | on `/patients/:id`                                                  | Done: upload, download, delete                                                     |
+| Screen                              | Address                                                                                                   | Status                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Sign in                             | `/login`                                                                                                  | Done                                                                                       |
+| Clinic Main Menu (dashboard)        | `/`                                                                                                       | Done                                                                                       |
+| Check-in / Walk-in                  | `/check-in`                                                                                               | Done                                                                                       |
+| Today's visits and the visit record | `/visits`, `/visits/:id`                                                                                  | Done: log, record, consultation, medicine release, complete, cancel                        |
+| Patients                            | `/patients`, `/patients/new`, `/patients/:id`, `/patients/:id/edit`                                       | Done: list, register, record with visit history, correct, archive and restore              |
+| Archived patients                   | `/patients/archive`                                                                                       | Done: archived records with who archived them and when; restore (coordinator)              |
+| Appointments                        | `/appointments`, `/appointments/new`, `/appointments/:id/edit`                                            | Done: calendar, day schedule, book, reschedule, confirm, cancel, no-show, check-in         |
+| Medicine inventory                  | `/inventory`                                                                                              | Done: stock list, add and edit medicines, stock in, count adjustment                       |
+| Medicine release log                | `/inventory/releases`                                                                                     | Done: releases to patients, plus all stock movements                                       |
+| Medical kit                         | `/medkit`, `/medkit/new`, `/medkit/requests/:id`, `/medkit/kits`, `/medkit/contents`, `/print/medkit/:id` | Done: requests, issue from stock, take back, lost, kits, standard contents, printable form |
+| Notifications                       | `/notifications`                                                                                          | Done: list, unread filter, mark as read                                                    |
+| Reports                             | `/reports`, `/reports/:id`                                                                                | Done: statistics for any period, Excel and CSV download, saved reports                     |
+| Accounts                            | `/users`                                                                                                  | Done: create, edit, deactivate, reset password (coordinator)                               |
+| Audit log                           | `/audit`                                                                                                  | Done: who viewed or changed what, with filters (coordinator)                               |
+| Change password                     | `/account/password`                                                                                       | Done: for every account; required after a reset                                            |
+| Attachments                         | on `/patients/:id`                                                                                        | Done: upload, download, delete                                                             |
 
 Sign in with a clinic account. For development, `python -m scripts.seed_demo` in `backend/` creates `coordinator`, `nurse`, `assistant` and `doctor`.
 
@@ -207,6 +208,29 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **The release log** starts on releases to patients, each linked to its visit, and can show deliveries and adjustments too.
 - **Dosage** is what the clinic calls the strength of a medicine ("500 mg"). The API field is still `strength`.
 - **The doctor** can view both screens but change nothing.
+- **Kit releases** show the kit and activity (e.g. "Medical kit #3 – Intramurals 2026") linked to the loan, where a visit release shows the patient.
+
+## Medical Kit
+
+The clinic lends numbered kits to organizations for their activities. Kits draw on the same medicine stock as visits (see "How a Medical Kit Works" in the backend README).
+
+| Part                              | API                                                         | Component                        |
+| --------------------------------- | ----------------------------------------------------------- | -------------------------------- |
+| Kit requests, filtered by state   | `GET /medkit-requests?status=&overdue_only=&page=`          | `MedkitRequestsPage`             |
+| Request form (FM-SSA-MDS-8032)    | `POST /medkit-requests`                                     | `NewMedkitRequestPage`           |
+| One loan, with its actions        | `GET /medkit-requests/{id}`                                 | `MedkitRequestPage`              |
+| Issue a kit                       | `POST /medkit-requests/{id}/issue`, `GET /medkits/template` | `IssueKitDialog`, `kitLines.ts`  |
+| Take a kit back (checklist)       | `POST /medkit-requests/{id}/return`                         | `ReturnKitDialog`, `kitLines.ts` |
+| Mark lost, cancel                 | `POST /medkit-requests/{id}/lost`, `/cancel`                | `MedkitRequestPage`              |
+| Dispensary form (FM-SSA-MDS-8033) | `GET /medkit-requests/{id}`                                 | `MedkitPrintPage`                |
+| Kits and where they are           | `GET /medkits`, `POST /medkits`, `PATCH /medkits/{id}`      | `KitsPage`                       |
+| Standard kit contents             | `GET`, `PUT /medkits/template`                              | `KitContentsPage`                |
+
+- **Issuing** starts from the standard contents with their usual quantities. Staff untick what is not going, change quantities and add any other inventory item. A quantity above what is on hand is refused before sending; the server issues everything or nothing.
+- **Taking back** is the checklist of the kit: what came back of each item (Returned complete fills them all in), with the used amount shown as it is typed. What came back returns to stock.
+- **Overdue** kits (still out after the activity) are marked in the list, on the loan and on the Kits page, and the clinic gets one notification each.
+- **The printable form** opens in its own tab at `/print/medkit/:id`, outside the app shell, with print styles that leave only the form.
+- **Who does what:** clinic staff and the coordinator request, issue, take back and close loans; the coordinator alone adds or retires kits, puts a replaced lost kit back and edits the standard contents; the doctor only looks.
 
 ## Notifications
 
@@ -214,13 +238,13 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 
 ## Reports
 
-| Part                    | API                                                 | Component                        |
-| ----------------------- | --------------------------------------------------- | -------------------------------- |
-| Statistics for a period | `GET /reports/summary?start=&end=`                  | `ReportsPage`, `SummaryView`     |
+| Part                    | API                                                   | Component                            |
+| ----------------------- | ----------------------------------------------------- | ------------------------------------ |
+| Statistics for a period | `GET /reports/summary?start=&end=`                    | `ReportsPage`, `SummaryView`         |
 | Excel download          | `GET /reports/summary.xlsx`, `GET /reports/{id}/xlsx` | `DownloadButtons`, `useFileDownload` |
-| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv` | `DownloadButtons`, `useFileDownload` |
-| Saved reports           | `GET /reports`, `GET /reports/{id}`                 | `ReportsPage`, `SavedReportPage` |
-| Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
+| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv`   | `DownloadButtons`, `useFileDownload` |
+| Saved reports           | `GET /reports`, `GET /reports/{id}`                   | `ReportsPage`, `SavedReportPage`     |
+| Save and delete         | `POST /reports`, `DELETE /reports/{id}`               | coordinator only                     |
 
 - **The period is in the address** (`/reports?from=2026-08-01&to=2026-12-15`); it starts on the current month.
 - **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.

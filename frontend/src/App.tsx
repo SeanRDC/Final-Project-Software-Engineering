@@ -10,6 +10,7 @@ import {
   CHANGE_PASSWORD,
   CHECK_IN,
   INVENTORY,
+  KIT_CONTENTS,
   MEDKIT_REQUESTS,
   MEDKITS,
   NEW_MEDKIT_REQUEST,
@@ -31,6 +32,7 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
+import { KitContentsPage } from '@/pages/medkit/KitContentsPage'
 import { KitsPage } from '@/pages/medkit/KitsPage'
 import { MedkitPrintPage } from '@/pages/medkit/MedkitPrintPage'
 import { MedkitRequestPage } from '@/pages/medkit/MedkitRequestPage'
@@ -117,6 +119,10 @@ function App() {
             element={guarded(NEW_MEDKIT_REQUEST.permission, <NewMedkitRequestPage />)}
           />
           <Route path={MEDKITS.path} element={guarded(MEDKITS.permission, <KitsPage />)} />
+          <Route
+            path={KIT_CONTENTS.path}
+            element={guarded(KIT_CONTENTS.permission, <KitContentsPage />)}
+          />
           <Route
             path="/medkit/requests/:requestId"
             element={guarded(MEDKIT_REQUESTS.permission, <MedkitRequestPage />)}

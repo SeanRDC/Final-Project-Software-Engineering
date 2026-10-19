@@ -8,6 +8,7 @@ import {
   CalendarDaysIcon,
   ClipboardPlusIcon,
   LayoutGridIcon,
+  ListChecksIcon,
   ListOrderedIcon,
   PackageIcon,
   PillIcon,
@@ -115,6 +116,12 @@ export const NAV_GROUPS: NavGroup[] = [
         children: [{ to: '/medkit/new', label: 'New request', permission: 'medkits:write' }],
       },
       { to: '/medkit/kits', label: 'Kits', icon: PackageIcon, permission: 'medkits:read' },
+      {
+        to: '/medkit/contents',
+        label: 'Kit contents',
+        icon: ListChecksIcon,
+        permission: 'medkits:read',
+      },
     ],
   },
   {
