@@ -36,8 +36,8 @@ Process 0 broken into its seven processes and seven data stores.
 | 1.0 Manage Patient Records | Register, search, update, archive, attachments | FR-02, FR-03, FR-04, FR-10 |
 | 2.0 Manage Appointments | Book, reschedule, confirm or cancel, arrivals | FR-07 |
 | 3.0 Record Visits and Consultations | Check-in, vital signs, assessment, consultation, medicine release | FR-05, FR-06, FR-08, FR-09 |
-| 4.0 Manage Medicine Inventory | Medicines, stock received, adjustments, release log | FR-11, FR-12 |
-| 5.0 Generate Reports and Statistics | Live statistics, saved semester and summer reports, CSV | FR-13, FR-14 |
+| 4.0 Manage Medicine Inventory | Medicines, stock received, adjustments, release log, medical kit loans | FR-11, FR-12 |
+| 5.0 Generate Reports and Statistics | Live statistics, saved semester and summer reports, Excel and CSV | FR-13, FR-14 |
 | 6.0 Sign In and Display Dashboard | Sign-in and the Clinic Main Menu with its notifications | FR-01, FR-12, FR-15 |
 | 7.0 Manage Accounts and Audit Log | Accounts, roles, password resets, the audit trail | FR-01 |
 
@@ -47,6 +47,9 @@ Process 0 broken into its seven processes and seven data stores.
   stock, the same rule the code follows (`inventory.apply_movement`).
 - **Audit entries.** Every process that changes a record writes an audit entry to D7. Only the
   flow from 7.0 is drawn, to keep the diagram readable.
+- **Medical kits belong to 4.0.** The clinic asked for kit loans at its first review, after the
+  diagrams were drawn. A kit is issued from the same stock and its unused medicines come back
+  to it, so the loans are inventory movements in D4 and need no process of their own.
 - **Left out on purpose.** The dashboard and the reports also read the appointments in D2, and
   every role can view the statistics. Those read-only flows are not drawn because they would
   only add crossing lines.
