@@ -123,3 +123,25 @@ test('explains an empty result and clears the filters', async () => {
 
   expect(screen.getByTestId('address')).toHaveTextContent(/\/audit$/)
 })
+
+test('a medical kit loan can be filtered for and opened from the log', async () => {
+  server([
+    {
+      ...entries[0]!,
+      id: 3,
+      action: 'medkit_request.issue',
+      entity_type: 'medkit_request',
+      entity_id: 5,
+    },
+  ])
+  renderPage()
+
+  const rows = within(await screen.findByRole('region', { name: 'Audit entries' })).getAllByRole(
+    'row',
+  )
+  expect(within(rows[1]!).getByRole('link', { name: 'Medkit request #5' })).toHaveAttribute(
+    'href',
+    '/medkit/requests/5',
+  )
+  expect(screen.getByRole('option', { name: 'Medkit request' })).toBeInTheDocument()
+})

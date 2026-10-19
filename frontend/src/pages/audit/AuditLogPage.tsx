@@ -38,7 +38,17 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/
 const PER_PAGE = 50
 
 /** The kinds of record the server writes audit entries about. */
-const RECORD_TYPES = ['patient', 'visit', 'appointment', 'medicine', 'attachment', 'report', 'user']
+const RECORD_TYPES = [
+  'patient',
+  'visit',
+  'appointment',
+  'medicine',
+  'medkit',
+  'medkit_request',
+  'attachment',
+  'report',
+  'user',
+]
 
 /** "patient.view" -> "Viewed patient"; anything unexpected is shown as the server wrote it. */
 function describeAction(action: string): string {
@@ -53,6 +63,7 @@ function recordLink(entry: AuditEntry): string | null {
   if (entry.entity_type === 'patient') return `/patients/${entry.entity_id}`
   if (entry.entity_type === 'visit') return `/visits/${entry.entity_id}`
   if (entry.entity_type === 'report') return `/reports/${entry.entity_id}`
+  if (entry.entity_type === 'medkit_request') return `/medkit/requests/${entry.entity_id}`
   return null
 }
 
