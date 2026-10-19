@@ -298,10 +298,10 @@ frontend/
 ├── src/
 │   ├── api/                  # Fetch client, generated schema and type aliases
 │   ├── auth/                 # Session storage, auth provider, permission helper
-│   ├── components/           # Shared components (SectionCard, StatusPill, Pager, FormCodeBox, calendar)
+│   ├── components/           # Shared components (SectionCard, StatusPill, Pager, FormCodeBox, BloodPressureInput, calendar)
 │   │   └── ui/               # shadcn/ui primitives, added with `npx shadcn add`
 │   ├── layout/               # App shell, top bar, sidebar, page and navigation lists
-│   ├── lib/                  # Formatting helpers, query client, status labels, record lock hook
+│   ├── lib/                  # Formatting, form codes, blood pressure and name rules, query client, status labels, record lock hook
 │   ├── live/                 # WebSocket connection and event-to-query mapping
 │   ├── pages/                # One folder or file per screen
 │   │   ├── account/          # Change password
@@ -310,8 +310,9 @@ frontend/
 │   │   ├── checkin/          # Walk-in form, patient picker, expected appointments
 │   │   ├── dashboard/        # The Clinic Main Menu and its panels
 │   │   ├── inventory/        # Stock list, medicine and stock dialogs, release log
+│   │   ├── medkit/           # Kit requests, issue and return dialogs, kits, standard contents, printable form
 │   │   ├── notifications/    # Notification list
-│   │   ├── reports/          # Statistics, saved reports
+│   │   ├── reports/          # Statistics, saved reports, Excel and CSV downloads
 │   │   ├── users/            # Accounts
 │   │   ├── patients/         # Patient list, record, register and edit form, archive
 │   │   └── visits/           # Visit log, visit panel, record and consultation forms, medicine release

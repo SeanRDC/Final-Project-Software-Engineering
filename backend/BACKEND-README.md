@@ -317,7 +317,9 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 backend/
 ├── app/
 │   ├── api/                  # Route handlers: auth, users, patients, visits, appointments,
-│   │                         # inventory, reports, misc (dashboard, notifications, locks, ws)
+│   │                         # inventory, medkits, reports, misc (dashboard, notifications,
+│   │                         # locks, ws), and serving of the built frontend
+│   ├── assets/               # The university logo printed on the Excel reports
 │   ├── core/                 # Settings, security, permissions, clock, errors, live events
 │   ├── db/                   # Engine, session and declarative base
 │   ├── models/               # SQLAlchemy ORM models and enumerations
