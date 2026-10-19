@@ -47,6 +47,10 @@ class StockMovement(Base):
     quantity_change: Mapped[int] = mapped_column(Integer)
     balance_after: Mapped[int] = mapped_column(Integer)
     visit_id: Mapped[int | None] = mapped_column(ForeignKey("visits.id"), index=True)
+    # Set when the stock went out in, or came back with, a medical kit.
+    medkit_request_id: Mapped[int | None] = mapped_column(
+        ForeignKey("medkit_requests.id"), index=True
+    )
     reason: Mapped[str | None] = mapped_column(String(255))
     performed_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, index=True)
@@ -54,6 +58,7 @@ class StockMovement(Base):
     medicine: Mapped[Medicine] = relationship(lazy="joined")
     performed_by: Mapped[User | None] = relationship(lazy="joined")
     visit: Mapped["Visit | None"] = relationship(lazy="joined")
+    medkit_request: Mapped["MedkitRequest | None"] = relationship(lazy="joined")
 
     @property
     def medicine_name(self) -> str:
@@ -70,3 +75,7 @@ class StockMovement(Base):
     @property
     def patient_id_number(self) -> str | None:
         return self.visit.patient.id_number if self.visit else None
+
+    @property
+    def medkit_label(self) -> str | None:
+        return self.medkit_request.label if self.medkit_request else None

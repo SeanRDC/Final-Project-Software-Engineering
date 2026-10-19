@@ -2,6 +2,7 @@
 
 from app.models.appointment import Appointment
 from app.models.inventory import Medicine, StockMovement
+from app.models.medkit import Medkit, MedkitRequest, MedkitRequestItem, MedkitTemplateItem
 from app.models.patient import Patient
 from app.models.support import (
     Attachment,
@@ -19,6 +20,10 @@ __all__ = [
     "Attachment",
     "AuditLog",
     "Medicine",
+    "Medkit",
+    "MedkitRequest",
+    "MedkitRequestItem",
+    "MedkitTemplateItem",
     "Notification",
     "NotificationRead",
     "Patient",
