@@ -44,6 +44,9 @@ class AuditLogOut(ORMModel):
     id: int
     user_id: int | None
     username: str | None
+    user_full_name: str | None
+    user_role: str | None
+    user_job_title: str | None
     action: str
     entity_type: str | None
     entity_id: int | None

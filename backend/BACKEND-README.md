@@ -194,7 +194,7 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Notifications | `GET /notifications`, `POST /notifications/{id}/read`, `POST /notifications/read-all` |
 | Attachments | `GET /patients/{id}/attachments`, `POST /patients/{id}/attachments`, `GET /attachments/{id}/download`, `DELETE /attachments/{id}` |
 | Record locks | `GET`, `PUT`, `DELETE /locks/{patient\|visit}/{id}` |
-| Audit log | `GET /audit-logs` |
+| Audit log | `GET /audit-logs` (each entry names the account: `user_full_name`, `user_role`, `user_job_title`) |
 | System | `GET /health`, `GET /options`, `WS /ws?token=<token>` |
 
 ### Dashboard
