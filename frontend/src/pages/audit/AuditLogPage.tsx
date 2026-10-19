@@ -31,6 +31,7 @@ import {
 import { formatTimeOfDay, humanize } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { describeDetail } from '@/pages/audit/auditDetail'
+import { roleLabel } from '@/pages/users/useUsers'
 
 const HEAD_CLASS = 'h-9 text-xs font-semibold tracking-[0.06em] text-muted-foreground uppercase'
 const DAY = /^\d{4}-\d{2}-\d{2}$/
@@ -53,6 +54,21 @@ function recordLink(entry: AuditEntry): string | null {
   if (entry.entity_type === 'visit') return `/visits/${entry.entity_id}`
   if (entry.entity_type === 'report') return `/reports/${entry.entity_id}`
   return null
+}
+
+/** The person who acted, with their job title and role beneath, e.g. "Nurse · Clinic staff". */
+function Account({ entry }: { entry: AuditEntry }) {
+  if (!entry.user_full_name) {
+    return entry.username ?? <span className="text-muted-foreground">—</span>
+  }
+  const role = entry.user_role ? roleLabel(entry.user_role) : null
+  const subtitle = [entry.user_job_title, role].filter(Boolean).join(' · ')
+  return (
+    <div className="flex flex-col">
+      <span className="font-medium">{entry.user_full_name}</span>
+      {subtitle ? <span className="text-xs text-muted-foreground">{subtitle}</span> : null}
+    </div>
+  )
 }
 
 function when(moment: string): string {
@@ -269,7 +285,7 @@ export function AuditLogPage() {
                           {when(entry.created_at)}
                         </TableCell>
                         <TableCell className="py-2.5 text-sm">
-                          {entry.username ?? <span className="text-muted-foreground">—</span>}
+                          <Account entry={entry} />
                         </TableCell>
                         <TableCell className="py-2.5 text-sm">
                           <span title={entry.action}>{describeAction(entry.action)}</span>

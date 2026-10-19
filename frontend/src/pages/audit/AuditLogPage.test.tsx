@@ -18,6 +18,9 @@ const entries: AuditEntry[] = [
     id: 2,
     user_id: 2,
     username: 'nurse',
+    user_full_name: 'Reyes, Ana',
+    user_role: 'clinic_staff',
+    user_job_title: 'Nurse',
     action: 'patient.view',
     entity_type: 'patient',
     entity_id: 1,
@@ -28,6 +31,9 @@ const entries: AuditEntry[] = [
     id: 1,
     user_id: null,
     username: null,
+    user_full_name: null,
+    user_role: null,
+    user_job_title: null,
     action: 'auth.login_failed',
     entity_type: null,
     entity_id: null,
@@ -71,7 +77,8 @@ test('lists who did what, with a link to records that have a screen', async () =
   const rows = within(await screen.findByRole('region', { name: 'Audit entries' })).getAllByRole(
     'row',
   )
-  expect(rows[1]).toHaveTextContent('nurse')
+  expect(rows[1]).toHaveTextContent('Reyes, Ana')
+  expect(rows[1]).toHaveTextContent('Nurse · Clinic staff')
   expect(rows[1]).toHaveTextContent('Patient: view')
   expect(within(rows[1]!).getByRole('link', { name: 'Patient #1' })).toHaveAttribute(
     'href',

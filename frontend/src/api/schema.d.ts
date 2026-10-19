@@ -1026,6 +1026,12 @@ export interface components {
             user_id: number | null;
             /** Username */
             username: string | null;
+            /** User Full Name */
+            user_full_name: string | null;
+            /** User Role */
+            user_role: string | null;
+            /** User Job Title */
+            user_job_title: string | null;
             /** Action */
             action: string;
             /** Entity Type */

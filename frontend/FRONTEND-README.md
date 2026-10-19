@@ -239,7 +239,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 
 ## Audit Log
 
-`AuditLogPage` lists `GET /audit-logs` for the coordinator: when, which account, what action, which record and the detail. Filters (kind of record, exact action, date range) and the page are kept in the address. Entries about a patient, visit or report link to it.
+`AuditLogPage` lists `GET /audit-logs` for the coordinator: when, who (the person's name, with their job title and role beneath, e.g. "Nurse · Clinic staff"), what action, which record and the detail. Filters (kind of record, exact action, date range) and the page are kept in the address. Entries about a patient, visit or report link to it.
 
 ## Attachments
 
