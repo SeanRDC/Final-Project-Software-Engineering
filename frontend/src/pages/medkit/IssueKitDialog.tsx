@@ -157,7 +157,7 @@ function IssueForm({ request, initialLines, onClose }: IssueFormProps) {
                         />
                       </td>
                       <td className="py-2 pt-3.5 align-top font-medium">{line.name}</td>
-                      <td className="px-3 py-2 pt-3.5 text-right align-top text-muted-foreground tabular-nums">
+                      <td className="px-3 py-2 pt-3.5 text-right align-top whitespace-nowrap text-muted-foreground tabular-nums">
                         {line.on_hand} {line.unit}
                       </td>
                       <td className="py-2 pr-3 align-top">

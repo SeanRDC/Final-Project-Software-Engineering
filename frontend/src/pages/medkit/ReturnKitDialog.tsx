@@ -97,7 +97,7 @@ function ReturnForm({ request, onClose }: { request: MedkitRequest; onClose: () 
                 return (
                   <tr key={item.id}>
                     <td className="py-2 pt-3.5 pl-3 align-top font-medium">{item.medicine_name}</td>
-                    <td className="px-3 py-2 pt-3.5 text-right align-top tabular-nums">
+                    <td className="px-3 py-2 pt-3.5 text-right align-top whitespace-nowrap tabular-nums">
                       {item.quantity_issued} {item.unit}
                     </td>
                     <td className="py-2 align-top">
@@ -118,7 +118,7 @@ function ReturnForm({ request, onClose }: { request: MedkitRequest; onClose: () 
                         <p className="mt-1 text-xs text-danger">{errors[item.id]}</p>
                       ) : null}
                     </td>
-                    <td className="px-3 py-2 pt-3.5 text-right align-top text-muted-foreground tabular-nums">
+                    <td className="px-3 py-2 pt-3.5 text-right align-top whitespace-nowrap text-muted-foreground tabular-nums">
                       {used === null ? '—' : `${used} used`}
                     </td>
                   </tr>
