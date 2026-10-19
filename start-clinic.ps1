@@ -23,15 +23,22 @@ function Stop-WithHelp([string]$message) {
     exit 1
 }
 
-# 1. The backend's own Python and packages.
+# 1. The backend's own Python and packages, installed again whenever an update changes the list.
 if (-not (Test-Path $python)) {
     if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
         Stop-WithHelp 'Python is not installed on this computer.'
     }
     Write-Host 'Setting up the backend (first run only)...'
     python -m venv (Join-Path $backend '.venv')
-    & $python -m pip install --quiet --disable-pip-version-check -r (Join-Path $backend 'requirements.txt')
+}
+$requirements = Join-Path $backend 'requirements.txt'
+$installed = Join-Path $backend '.venvequirements.installed'
+$wanted = (Get-FileHash $requirements).Hash
+if (-not (Test-Path $installed) -or (Get-Content $installed -Raw).Trim() -ne $wanted) {
+    Write-Host 'Installing the backend packages...'
+    & $python -m pip install --quiet --disable-pip-version-check -r $requirements
     if ($LASTEXITCODE -ne 0) { Stop-WithHelp 'the backend packages could not be installed.' }
+    Set-Content -Path $installed -Value $wanted
 }
 
 # 2. The settings file holds the secret key, so it is never created with placeholder values.
