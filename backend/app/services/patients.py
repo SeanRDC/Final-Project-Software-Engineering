@@ -5,6 +5,7 @@ from uuid import uuid4
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from app.core.clock import utcnow
 from app.core.departments import BASIC_EDUCATION_PREFIX, HAU_DEPARTMENTS
 from app.core.exceptions import AppError, ConflictError
 from app.models import Patient, User, Visit
@@ -60,11 +61,19 @@ def search(
     department: str | None = None,
     patient_type: PatientType | None = None,
     include_archived: bool = False,
+    archived_only: bool = False,
     page: int = 1,
     page_size: int = 20,
 ) -> tuple[list[Patient], int]:
     query = select(Patient).order_by(Patient.last_name, Patient.first_name, Patient.id)
-    if not include_archived:
+    if archived_only:
+        # The Archive page: most recently archived first.
+        query = (
+            select(Patient)
+            .where(Patient.is_archived.is_(True))
+            .order_by(Patient.archived_at.desc(), Patient.id.desc())
+        )
+    elif not include_archived:
         query = query.where(Patient.is_archived.is_(False))
     if patient_type:
         query = query.where(Patient.patient_type == patient_type)
@@ -162,6 +171,8 @@ def set_archived(db: Session, patient_id: int, archived: bool, actor: User) -> P
     patient = get_or_404(db, Patient, patient_id, "Patient")
     if patient.is_archived != archived:
         patient.is_archived = archived
+        patient.archived_at = utcnow() if archived else None
+        patient.archived_by = actor if archived else None
         action = "patient.archive" if archived else "patient.restore"
         audit.record(db, actor, action, "patient", patient.id)
     db.commit()

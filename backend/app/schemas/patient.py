@@ -71,6 +71,8 @@ class PatientSummary(ORMModel):
     sex: Sex | None
     department: str | None
     is_archived: bool
+    archived_at: datetime | None
+    archived_by_name: str | None
 
 
 class PatientAlerts(ORMModel):

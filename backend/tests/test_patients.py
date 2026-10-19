@@ -164,3 +164,23 @@ def test_others_description_is_cleared_when_the_type_changes(nurse):
         "first_name": "Rita", "other_description": "Contractor"}).json()
     body = nurse.patch(f"/patients/{other['id']}", json={"patient_type": "employee"}).json()
     assert body["other_description"] is None
+
+
+def test_archive_lists_only_archived_patients_with_who_and_when(coordinator, nurse, patient):
+    _register(nurse, "20240556", "Panergo", "Mark", "School of Engineering")
+    coordinator.post(f"/patients/{patient['id']}/archive")
+
+    body = nurse.get("/patients", params={"archived_only": True}).json()
+    assert body["total"] == 1
+    archived = body["items"][0]
+    assert archived["id"] == patient["id"]
+    assert archived["archived_at"] is not None
+    assert archived["archived_by_name"] == "Salazar, CJ"
+
+
+def test_restore_clears_who_archived_the_patient(coordinator, nurse, patient):
+    coordinator.post(f"/patients/{patient['id']}/archive")
+    restored = coordinator.post(f"/patients/{patient['id']}/restore").json()
+    assert restored["archived_at"] is None
+    assert restored["archived_by_name"] is None
+    assert nurse.get("/patients", params={"archived_only": True}).json()["total"] == 0

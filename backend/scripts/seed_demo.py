@@ -211,6 +211,13 @@ def main() -> int:
             start_time=time(9, 0), end_time=time(9, 30), reason="Follow-up check"), nurse)
 
         seed_history(db, people, nurse, today)
+        # A record taken out of use, so the Archive page has something to show.
+        archived = patients.create(db, PatientCreate(
+            patient_type=PatientType.STUDENT, id_number="20190233", last_name="Aquino",
+            first_name="Leo", sex=Sex.MALE, birth_date=date(today.year - 25, 1, 15),
+            department="School of Business and Accountancy", consent_on_file=True), nurse)
+        patients.set_archived(db, archived.id, True, coordinator)
+        people["Aquino"] = archived
 
         visit_count = db.scalar(select(func.count()).select_from(Visit))
 
