@@ -326,6 +326,43 @@ test('registers a patient and opens the new record', async () => {
   expect(screen.getByTestId('address')).toHaveTextContent('/patients/12')
 })
 
+test('registers an Others patient with a description and no ID number', async () => {
+  const server = fakeServer({ 'GET /options': options() })
+  let sent: Record<string, unknown> = {}
+  server.on(
+    'POST /patients',
+    ({ init }: { init: RequestInit }) => {
+      sent = JSON.parse(String(init.body)) as Record<string, unknown>
+      return patientRecord({ id: 13, full_name: 'Lopez, Rita', patient_type: 'other' })
+    },
+    201,
+  )
+  const user = userEvent.setup()
+  renderPatients(nurse, '/patients/new')
+
+  const form = within(screen.getByRole('form', { name: 'Patient record' }))
+  await user.selectOptions(form.getByLabelText('Patient type'), 'Others')
+  expect(
+    within(screen.getByRole('group', { name: /form code/i })).getByText('FM-SSA-MDS-XXXX'),
+  ).toBeInTheDocument()
+  expect(form.queryByLabelText('School or department')).not.toBeInTheDocument()
+  await user.type(form.getByLabelText('Last name'), 'Lopez')
+  await user.type(form.getByLabelText('First name'), 'Rita')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+  expect(form.getByText('Say who the person is, e.g. visitor or contractor.')).toBeInTheDocument()
+
+  await user.type(form.getByLabelText('Who they are'), 'Visitor – parent')
+  await user.click(form.getByRole('button', { name: 'Register patient' }))
+
+  expect(await screen.findByText('Lopez, Rita registered')).toBeInTheDocument()
+  expect(sent).toMatchObject({
+    patient_type: 'other',
+    other_description: 'Visitor – parent',
+    id_number: null,
+    education_level: null,
+  })
+})
+
 test('registers a basic education student with a medical history', async () => {
   const server = fakeServer({ 'GET /options': options() })
   let sent: Record<string, unknown> = {}

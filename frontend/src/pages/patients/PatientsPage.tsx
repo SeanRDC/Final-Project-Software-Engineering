@@ -29,7 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { humanize } from '@/lib/format'
+import { humanize, patientTypeLabel } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { PATIENTS_PER_PAGE, usePatientList } from '@/pages/patients/usePatients'
 
@@ -39,10 +39,11 @@ const TYPES: { value: PatientType | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'student', label: 'Students' },
   { value: 'employee', label: 'Employees' },
+  { value: 'other', label: 'Others' },
 ]
 
 function parseType(value: string | null): PatientType | '' {
-  return value === 'student' || value === 'employee' ? value : ''
+  return value === 'student' || value === 'employee' || value === 'other' ? value : ''
 }
 
 /** The search box. Keyed by the term in the address, so a search from the sidebar shows here too. */
@@ -225,7 +226,7 @@ export function PatientsPage() {
                         {patient.id_number}
                       </TableCell>
                       <TableCell className="py-3 text-sm">
-                        {humanize(patient.patient_type)}
+                        {patientTypeLabel(patient.patient_type)}
                       </TableCell>
                       <TableCell className="py-3 text-sm tabular-nums">
                         {patient.age ?? '—'}

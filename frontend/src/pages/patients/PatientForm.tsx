@@ -63,6 +63,7 @@ export function PatientForm({
   const departments = useDepartments()
   const [today] = useState(() => toDayString(new Date()))
   const isStudent = values.patient_type === 'student'
+  const isOther = values.patient_type === 'other'
 
   function change(patch: Partial<PatientValues>) {
     const next = { ...values, ...patch }
@@ -162,12 +163,26 @@ export function PatientForm({
               >
                 <NativeSelectOption value="student">Student</NativeSelectOption>
                 <NativeSelectOption value="employee">Employee</NativeSelectOption>
+                <NativeSelectOption value="other">Others</NativeSelectOption>
               </NativeSelect>
             </Field>
-            {text('id_number', isStudent ? 'Student number' : 'Employee number', {
-              required: true,
-              spellCheck: false,
-            })}
+            {isOther
+              ? text('id_number', 'ID number', {
+                  spellCheck: false,
+                  description: 'Optional. Left blank, the clinic numbers them OTH-000123.',
+                })
+              : text('id_number', isStudent ? 'Student number' : 'Employee number', {
+                  required: true,
+                  spellCheck: false,
+                })}
+            {isOther ? (
+              <div className="sm:col-span-2">
+                {text('other_description', 'Who they are', {
+                  required: true,
+                  description: 'e.g. Visitor – parent of a Grade 3 student, or Contractor.',
+                })}
+              </div>
+            ) : null}
             {text('last_name', 'Last name', { required: true })}
             {text('first_name', 'First name', { required: true })}
             {text('middle_name', 'Middle name')}
@@ -191,36 +206,38 @@ export function PatientForm({
           </div>
         </FieldSet>
 
-        <FieldSet>
-          <FieldLegend>{isStudent ? 'School details' : 'Work details'}</FieldLegend>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {isStudent ? (
-              <Field>
-                <FieldLabel htmlFor="education_level">Education level</FieldLabel>
-                <NativeSelect
-                  id="education_level"
-                  name="education_level"
-                  value={values.education_level}
-                  onChange={(event) =>
-                    change({ education_level: event.target.value as EducationLevel })
-                  }
-                >
-                  <NativeSelectOption value="basic_education">Basic education</NativeSelectOption>
-                  <NativeSelectOption value="college">College</NativeSelectOption>
-                </NativeSelect>
-              </Field>
-            ) : null}
-            {text('department', isStudent ? 'School or department' : 'Department or office', {
-              list: 'department-options',
-            })}
-            <datalist id="department-options">
-              {(departments.data ?? []).map((department) => (
-                <option key={department} value={department} />
-              ))}
-            </datalist>
-            {text('program_or_position', isStudent ? 'Program and year' : 'Position')}
-          </div>
-        </FieldSet>
+        {isOther ? null : (
+          <FieldSet>
+            <FieldLegend>{isStudent ? 'School details' : 'Work details'}</FieldLegend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {isStudent ? (
+                <Field>
+                  <FieldLabel htmlFor="education_level">Education level</FieldLabel>
+                  <NativeSelect
+                    id="education_level"
+                    name="education_level"
+                    value={values.education_level}
+                    onChange={(event) =>
+                      change({ education_level: event.target.value as EducationLevel })
+                    }
+                  >
+                    <NativeSelectOption value="basic_education">Basic education</NativeSelectOption>
+                    <NativeSelectOption value="college">College</NativeSelectOption>
+                  </NativeSelect>
+                </Field>
+              ) : null}
+              {text('department', isStudent ? 'School or department' : 'Department or office', {
+                list: 'department-options',
+              })}
+              <datalist id="department-options">
+                {(departments.data ?? []).map((department) => (
+                  <option key={department} value={department} />
+                ))}
+              </datalist>
+              {text('program_or_position', isStudent ? 'Program and year' : 'Position')}
+            </div>
+          </FieldSet>
+        )}
 
         <FieldSet>
           <FieldLegend>Contact</FieldLegend>

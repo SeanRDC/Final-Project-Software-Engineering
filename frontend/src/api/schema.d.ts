@@ -1481,6 +1481,8 @@ export interface components {
         /** PatientCreate */
         PatientCreate: {
             education_level?: components["schemas"]["EducationLevel"] | null;
+            /** Other Description */
+            other_description?: string | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Birth Date */
@@ -1518,7 +1520,7 @@ export interface components {
             notes?: string | null;
             patient_type: components["schemas"]["PatientType"];
             /** Id Number */
-            id_number: string;
+            id_number?: string | null;
             /** Last Name */
             last_name: string;
             /** First Name */
@@ -1543,6 +1545,8 @@ export interface components {
             id: number;
             patient_type: components["schemas"]["PatientType"];
             education_level: components["schemas"]["EducationLevel"] | null;
+            /** Other Description */
+            other_description: string | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1613,6 +1617,8 @@ export interface components {
             id: number;
             patient_type: components["schemas"]["PatientType"];
             education_level: components["schemas"]["EducationLevel"] | null;
+            /** Other Description */
+            other_description: string | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1671,6 +1677,8 @@ export interface components {
             id: number;
             patient_type: components["schemas"]["PatientType"];
             education_level: components["schemas"]["EducationLevel"] | null;
+            /** Other Description */
+            other_description: string | null;
             /** Id Number */
             id_number: string;
             /** Last Name */
@@ -1693,10 +1701,12 @@ export interface components {
          * PatientType
          * @enum {string}
          */
-        PatientType: "student" | "employee";
+        PatientType: "student" | "employee" | "other";
         /** PatientUpdate */
         PatientUpdate: {
             education_level?: components["schemas"]["EducationLevel"] | null;
+            /** Other Description */
+            other_description?: string | null;
             /** Middle Name */
             middle_name?: string | null;
             /** Birth Date */
@@ -1941,6 +1951,11 @@ export interface components {
             students: number;
             /** Employees */
             employees: number;
+            /**
+             * Others
+             * @default 0
+             */
+            others: number;
         };
         /** UserCreate */
         UserCreate: {

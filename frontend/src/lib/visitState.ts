@@ -2,7 +2,7 @@
 
 import type { PatientSummary, VisitSummary } from '@/api/types'
 import type { StatusTone } from '@/components/StatusPill'
-import { humanize, minutesBetween } from '@/lib/format'
+import { minutesBetween, patientTypeLabel } from '@/lib/format'
 
 // An open visit that has been waiting this long is drawn in amber, then red.
 export const LONG_WAIT_MINUTES = 20
@@ -55,6 +55,6 @@ export function visitState(visit: VisitTiming, now: Date): VisitState {
 
 /** "20 yrs · Student", or just "Employee" when the record has no birth date. */
 export function describePatient(patient: Pick<PatientSummary, 'age' | 'patient_type'>): string {
-  const type = humanize(patient.patient_type)
+  const type = patientTypeLabel(patient.patient_type)
   return patient.age === null ? type : `${patient.age} yrs · ${type}`
 }

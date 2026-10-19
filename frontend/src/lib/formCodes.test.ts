@@ -19,3 +19,7 @@ test('an employee keeps the employee form whatever level is left over', () => {
     'FM-SSA-MDS-8011',
   )
 })
+
+test('an Others patient shows a placeholder code until the clinic issues one', () => {
+  expect(formCode({ patient_type: 'other', education_level: null })).toBe('FM-SSA-MDS-XXXX')
+})

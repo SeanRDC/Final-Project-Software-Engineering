@@ -160,7 +160,8 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Records are never deleted.** The coordinator can archive a record, which hides it from search and from check-in, and restore it at any time.
 - **One form** registers a patient and corrects a record. A correction sends only the fields that changed (`patientValues.ts`).
 - **The university's schools are offered as suggestions** for the department (`backend/app/core/departments.py`), followed by any other department or office already on record, so one school is not spelled several ways.
-- **The form code box** (`FormCodeBox`) sits at the top right of the patient form and of the record, as on the clinic's paper forms: the ISO code, the revision and the effectivity date. The code follows the kind of patient (`lib/formCodes.ts`): `FM-SSA-MDS-8011` for an employee, `FM-SSA-MDS-8012` for a basic education student, `FM-SSA-MDS-8013` for a college student. It changes on the form as the patient type or education level is changed.
+- **The form code box** (`FormCodeBox`) sits at the top right of the patient form and of the record, as on the clinic's paper forms: the ISO code, the revision and the effectivity date. The code follows the kind of patient (`lib/formCodes.ts`): `FM-SSA-MDS-8011` for an employee, `FM-SSA-MDS-8012` for a basic education student, `FM-SSA-MDS-8013` for a college student. It changes on the form as the patient type or education level is changed. An Others patient (visitor, guest, contractor, parent) shows `FM-SSA-MDS-XXXX`, a placeholder until the clinic issues the real code.
+- **Others patients** are registered with a "Who they are" description instead of school or work details. Their ID number is optional; left blank, the server numbers them `OTH-000123`. They are labelled "Others" in the list, its filter and the visit cards.
 - **Education level** is asked of students only and follows the department when the Basic Education Department is chosen.
 - **The data privacy notice** above the consent tick cites Republic Act No. 10173, the Data Privacy Act of 2012.
 - **The visit history** shows the check-in time under each date, except for a visit entered on a later day, whose time of entry would mislead.
@@ -220,7 +221,7 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 - **Semester and summer-term periods** are one click (`terms.ts`): the latest first semester (August to December), second semester (January to May) and summer term (June and July). A term still running ends today.
 - **A saved report is a snapshot**: it keeps the figures as they were when it was generated, so a submitted report does not change.
 - **Downloads need the token**, so the file is fetched through the API client (`apiDownload`) and handed to the browser to save. A plain link would be refused.
-- **Requests by students and employees** is its own table, the tally the clinic submits each term.
+- **Requests by type of patient** (students, employees and others) is its own table, the tally the clinic submits each term.
 - **After admission** counts where admitted patients went once they had rested.
 - **Charts.** Visits by month is a column chart (`VisitsByMonthChart`), drawn when the period covers two months or more; months without visits are filled in as zero. Each breakdown table has a bar under every name, measured against the table's largest count. Both are plain HTML and CSS in one colour (`--chart-1`), so no chart library is loaded, and every figure stays in a table for screen readers.
 

@@ -29,6 +29,7 @@ const TEXT_FIELDS = {
   activity_restrictions: 0,
   medical_history: 0,
   notes: 0,
+  other_description: 120,
 } as const
 
 type TextField = keyof typeof TEXT_FIELDS
@@ -89,9 +90,14 @@ export function patientValues(patient: PatientRecord): PatientValues {
 export function validatePatient(values: PatientValues, today: Date = new Date()): PatientErrors {
   const errors: PatientErrors = {}
   const idLabel = values.patient_type === 'student' ? 'student number' : 'employee number'
+  const isOther = values.patient_type === 'other'
 
-  if (!values.id_number.trim()) errors.id_number = `Enter the ${idLabel}.`
+  // An Others patient may come without an ID; the clinic then numbers them OTH-000123.
+  if (!values.id_number.trim() && !isOther) errors.id_number = `Enter the ${idLabel}.`
   else if (values.id_number.trim().length > 30) errors.id_number = 'Use 30 characters or fewer.'
+  if (isOther && !values.other_description.trim()) {
+    errors.other_description = 'Say who the person is, e.g. visitor or contractor.'
+  }
   if (!values.last_name.trim()) errors.last_name = 'Enter the last name.'
   else if (values.last_name.trim().length > 80) errors.last_name = 'Use 80 characters or fewer.'
   if (!values.first_name.trim()) errors.first_name = 'Enter the first name.'
@@ -132,7 +138,9 @@ function normalise(values: PatientValues): Normalised {
     patient_type: values.patient_type,
     // Only a student has a level.
     education_level: values.patient_type === 'student' ? values.education_level : null,
-    id_number: values.id_number.trim(),
+    // Only an Others patient has a description, and only they may leave the ID out.
+    other_description: values.patient_type === 'other' ? texts.other_description : null,
+    id_number: values.id_number.trim() || null,
     last_name: values.last_name.trim(),
     first_name: values.first_name.trim(),
     birth_date: values.birth_date || null,

@@ -62,12 +62,20 @@ function Details({ patient }: { patient: Patient }) {
               </Detail>
             </div>
           ) : null}
-          <Detail label={isStudent ? 'School or department' : 'Department or office'}>
-            {patient.department}
-          </Detail>
-          <Detail label={isStudent ? 'Program and year' : 'Position'}>
-            {patient.program_or_position}
-          </Detail>
+          {patient.patient_type === 'other' ? (
+            <div className="col-span-2">
+              <Detail label="Who they are">{patient.other_description}</Detail>
+            </div>
+          ) : (
+            <>
+              <Detail label={isStudent ? 'School or department' : 'Department or office'}>
+                {patient.department}
+              </Detail>
+              <Detail label={isStudent ? 'Program and year' : 'Position'}>
+                {patient.program_or_position}
+              </Detail>
+            </>
+          )}
           <Detail label="Contact number">{patient.contact_number}</Detail>
           <Detail label="Email">{patient.email}</Detail>
           <div className="col-span-2">

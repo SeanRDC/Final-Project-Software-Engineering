@@ -39,8 +39,8 @@ const summary: ReportSummary = {
   ],
   visits_by_department: [{ label: 'School of Computing', count: 5 }],
   visits_by_type_and_patient_type: [
-    { label: 'consultation', students: 6, employees: 2 },
-    { label: 'medicine_request', students: 3, employees: 1 },
+    { label: 'consultation', students: 6, employees: 2, others: 1 },
+    { label: 'medicine_request', students: 3, employees: 1, others: 0 },
   ],
   visits_by_month: [{ label: '2026-10', count: 12 }],
   visits_by_disposition: [{ label: 'sent_home', count: 3 }],
@@ -129,15 +129,13 @@ test('shows this month’s statistics by default, with readable labels', async (
   expect(screen.getByRole('link', { name: 'Santos, Maria' })).toHaveAttribute('href', '/patients/1')
 })
 
-test('splits each type of request between students and employees', async () => {
+test('splits each type of request between students, employees and others', async () => {
   clinic()
   renderReports(nurse, '/reports')
 
-  const table = within(
-    await screen.findByRole('region', { name: 'Requests by students and employees' }),
-  )
-  expect(table.getByRole('row', { name: 'Consultation 6 2' })).toBeInTheDocument()
-  expect(table.getByRole('row', { name: 'Medicine request 3 1' })).toBeInTheDocument()
+  const table = within(await screen.findByRole('region', { name: 'Requests by type of patient' }))
+  expect(table.getByRole('row', { name: 'Consultation 6 2 1' })).toBeInTheDocument()
+  expect(table.getByRole('row', { name: 'Medicine request 3 1 0' })).toBeInTheDocument()
 })
 
 test('changes the period with a preset and keeps it in the address', async () => {
