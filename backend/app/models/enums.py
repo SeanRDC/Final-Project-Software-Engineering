@@ -17,6 +17,7 @@ def enum_type(enum_cls: type[StrEnum]) -> SAEnum:
 class PatientType(StrEnum):
     STUDENT = "student"
     EMPLOYEE = "employee"
+    OTHER = "other"
 
 
 class EducationLevel(StrEnum):

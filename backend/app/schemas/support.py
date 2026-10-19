@@ -63,6 +63,7 @@ class TypeByPatientType(BaseModel):
     label: str
     students: int
     employees: int
+    others: int = 0
 
 
 class FrequentVisitor(BaseModel):

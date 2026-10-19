@@ -136,6 +136,11 @@ def main() -> int:
                 first_name=first, sex=Sex(sex), birth_date=date(today.year - age, 1, 15),
                 department=department, allergies=allergies, medical_conditions=conditions,
                 activity_restrictions=activity, consent_on_file=True), nurse)
+        # A visitor: the clinic numbers Others patients itself when they have no ID.
+        people["Domingo"] = patients.create(db, PatientCreate(
+            patient_type=PatientType.OTHER, last_name="Domingo", first_name="Teresa",
+            other_description="Visitor – parent of a Grade 3 student", sex=Sex.FEMALE,
+            birth_date=date(today.year - 38, 1, 15), consent_on_file=True), nurse)
 
         stock = {}
         for name, strength, form, quantity, threshold in MEDICINES:
@@ -209,7 +214,7 @@ def main() -> int:
 
         visit_count = db.scalar(select(func.count()).select_from(Visit))
 
-    print(f"Seeded {len(USERS)} accounts, {len(PATIENTS)} patients, {len(MEDICINES)} medicines "
+    print(f"Seeded {len(USERS)} accounts, {len(people)} patients, {len(MEDICINES)} medicines "
           f"and {visit_count} visits.")
     print(f"Log in as coordinator, nurse, assistant or doctor with password: {DEMO_PASSWORD}")
     return 0

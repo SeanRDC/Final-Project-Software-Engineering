@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.models.enums import EducationLevel, PatientType, Sex
 from app.schemas.common import OptionalText, ORMModel
@@ -10,6 +10,7 @@ from app.schemas.common import OptionalText, ORMModel
 
 class PatientBase(BaseModel):
     education_level: EducationLevel | None = None
+    other_description: OptionalText = Field(default=None, max_length=120)
     middle_name: OptionalText = Field(default=None, max_length=80)
     birth_date: date | None = None
     sex: Sex | None = None
@@ -32,10 +33,20 @@ class PatientBase(BaseModel):
 
 class PatientCreate(PatientBase):
     patient_type: PatientType
-    id_number: str = Field(min_length=1, max_length=30)
+    # Only an Others patient may leave it out; the clinic then assigns OTH-000123.
+    id_number: OptionalText = Field(default=None, max_length=30)
     last_name: str = Field(min_length=1, max_length=80)
     first_name: str = Field(min_length=1, max_length=80)
     consent_on_file: bool = False
+
+    @model_validator(mode="after")
+    def _check_type_fields(self) -> "PatientCreate":
+        if self.patient_type == PatientType.OTHER:
+            if not self.other_description:
+                raise ValueError("Describe who an Others patient is, e.g. a visitor or contractor")
+        elif not self.id_number:
+            raise ValueError("Students and employees need an ID number")
+        return self
 
 
 class PatientUpdate(PatientBase):
@@ -50,6 +61,7 @@ class PatientSummary(ORMModel):
     id: int
     patient_type: PatientType
     education_level: EducationLevel | None
+    other_description: str | None
     id_number: str
     last_name: str
     first_name: str

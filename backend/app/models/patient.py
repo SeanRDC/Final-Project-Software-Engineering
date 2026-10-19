@@ -17,6 +17,8 @@ class Patient(Base):
     patient_type: Mapped[PatientType] = mapped_column(enum_type(PatientType), index=True)
     # Students only. It decides which of the clinic's ISO forms the record is filed under.
     education_level: Mapped[EducationLevel | None] = mapped_column(enum_type(EducationLevel))
+    # Others only: who the person is, e.g. "Visitor – parent of a Grade 3 student".
+    other_description: Mapped[str | None] = mapped_column(String(120))
     id_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     last_name: Mapped[str] = mapped_column(String(80), index=True)
     first_name: Mapped[str] = mapped_column(String(80))
