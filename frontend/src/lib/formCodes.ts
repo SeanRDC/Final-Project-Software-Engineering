@@ -5,9 +5,9 @@ import type { EducationLevel, PatientType } from '@/api/types'
 export const FORM_REVISION = '0'
 export const FORM_EFFECTIVITY_DATE = 'May 1, 2025'
 
-const EMPLOYEE_FORM = 'FM-SSA-MOS-8011'
-const BASIC_EDUCATION_FORM = 'FM-SSA-MOS-8012'
-const COLLEGE_FORM = 'FM-SSA-MOS-8013'
+const EMPLOYEE_FORM = 'FM-SSA-MDS-8011'
+const BASIC_EDUCATION_FORM = 'FM-SSA-MDS-8012'
+const COLLEGE_FORM = 'FM-SSA-MDS-8013'
 
 type Filed = {
   patient_type: PatientType
