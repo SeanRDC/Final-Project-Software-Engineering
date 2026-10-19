@@ -21,7 +21,7 @@
   </p>
 </div>
 
-> **🚧 UNDER TEST:** Every feature in the project paper is built except the urgent-case queue, which the team left out. The system is being tested by the team before it is shown to the University Clinic. **Use made-up data only.** Never enter real patient details while testing.
+> **🚧 UNDER TEST:** Every feature in the project paper is built except the urgent-case queue, which the team left out. The system was shown to the University Clinic on 19 October 2026, and the changes the clinic asked for (the medical kit, Excel reports, the archive page, the Others patient type and more) are built and under test. **Use made-up data only.** Never enter real patient details while testing.
 
 <details>
   <summary>Table of Contents</summary>
@@ -56,7 +56,7 @@ HAU-Sync is the final project of third-year Computer Science students from secti
 
 The University Clinic keeps its patient log, records and medicine inventory on paper. HAU-Sync replaces that with a system that runs on the clinic's own network: the front desk logs a patient, the nurse records the visit, and the doctor sees the same record at once, with no paper handed over. Nothing leaves the clinic's computers, in keeping with the Data Privacy Act of 2012 (Republic Act No. 10173).
 
-The requirements come from the project paper and the interview with the Clinic Coordinator; the interview, the requirements list and the diagrams are in [`docs/`](docs/).
+The requirements come from the project paper and the interview with the Clinic Coordinator, and the clinic reviews the system as it is built. The interview, the review sessions, the requirements list and the diagrams are in [`docs/`](docs/).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -66,13 +66,14 @@ The requirements come from the project paper and the interview with the Clinic C
 | --- | --- |
 | **Dashboard** | See today's visits, appointments, low-stock medicines and notifications on one screen, updated live |
 | **Check-in** | Log a walk-in in a few taps, with one-tap common complaints; enter a visit written on paper for an earlier date |
-| **Visits** | Record the complaint, vital signs, assessment, treatment, referral and outcome; the doctor adds consultation notes to the same record; an admitted patient is released when they leave |
+| **Visits** | Record the complaint, vital signs (blood pressure typed in one box as `120/80`), assessment, treatment, referral and outcome; the doctor adds consultation notes to the same record; an admitted patient is released when they leave |
 | **Monitoring** | Add repeat vital-sign readings for a patient resting in the clinic |
-| **Patients** | Register, search by ID number, name or department, see allergies and restrictions first, keep the medical history and attachments such as lab results; each record carries the ISO form code for a basic education student, a college student or an employee |
+| **Patients** | Register students, employees and others (visitors, guests, contractors, parents), search by ID number, name or department, see allergies and restrictions first, keep the medical history and attachments such as lab results; each record carries the clinic's ISO form code (`FM-SSA-MDS-8011` to `8013`); archived records have their own page and can be restored |
 | **Appointments** | Book and reschedule; the coordinator confirms or cancels |
 | **Inventory** | Track medicine stock, release medicine during a visit, get a low-stock warning, read the release log |
-| **Reports** | Statistics for any period with charts, semester and summer-term presets, CSV download, saved reports |
-| **Accounts and audit** | The coordinator manages accounts and reads who viewed or changed what |
+| **Medical kit** | Lend numbered kits to organizations for their activities (forms `FM-SSA-MDS-8032` and `8033`): request, issue from the medicine stock, take back with a checklist, mark lost, print the dispensary form; overdue kits are flagged |
+| **Reports** | Statistics for any period with charts, semester and summer-term presets, Excel (with the university letterhead) and CSV download, saved reports |
+| **Accounts and audit** | The coordinator manages accounts and reads who viewed or changed what, by name and role |
 | **Privacy** | Role-based access, per-tab sessions, automatic sign-out after an hour unused, every view of patient data audited |
 
 Three roles use the system. A nurse and a student assistant share one role.
@@ -84,8 +85,9 @@ Three roles use the system. A nurse and a student assistant share one role.
 | Book appointments | ✅ | ✅ | view only |
 | Confirm or cancel appointments | ✅ | | |
 | Manage inventory | ✅ | ✅ | view only |
+| Request, issue and take back medical kits | ✅ | ✅ | view only |
 | View reports | ✅ | ✅ | ✅ |
-| Save reports, manage accounts, read the audit log, archive patients | ✅ | | |
+| Save reports, manage accounts, read the audit log, archive and restore patients, manage kits and their standard contents | ✅ | | |
 
 The full table is in [`backend/BACKEND-README.md`](backend/BACKEND-README.md#roles-and-access).
 
@@ -170,7 +172,7 @@ cd backend
 cd ..
 ```
 
-This creates four accounts, nine made-up patients, six medicines, today's visits and appointments, and about eight months of past visits so the reports have something to show. It only runs on an empty database.
+This creates four accounts, eleven made-up patients (one of them an Others visitor and one archived), eleven medicines, today's visits and appointments, about eight months of past visits so the reports have something to show, and three medical kits with one loan returned, one out and one waiting. It only runs on an empty database.
 
 **4. Start it again and open it.**
 
@@ -259,7 +261,7 @@ cd ..\frontend
 npm install
 ```
 
-Then start it as before. With Option A, start it once with `.\start-clinic.ps1 -Rebuild` so the screens are built again from the new code.
+Then start it as before. With Option A, `start-clinic.ps1` installs the backend packages again on its own when `requirements.txt` has changed; start it once with `.\start-clinic.ps1 -Rebuild` so the screens are built again from the new code.
 
 ### Starting Over With Fresh Demo Data
 
@@ -283,7 +285,7 @@ Walk through the system the way the clinic would. Each step says who to sign in 
 **A patient walks in** (`nurse`)
 
 1. On the dashboard, choose **Check in patient**, search for a patient, tap a common complaint and check them in.
-2. In the visit that opens, choose **Record** and enter vital signs, an assessment and a treatment. Try an impossible value, such as an oxygen saturation of 120; it should be refused.
+2. In the visit that opens, choose **Record** and enter vital signs, an assessment and a treatment. Type the blood pressure as `120 80`; it should become `120/80`. Try an impossible value, such as an oxygen saturation of 120 or a blood pressure of `120/`; it should be refused.
 3. Under **Medicine released**, release a medicine. Check that the stock in **Inventory** went down and the release is in the **Release log**.
 4. Under **Monitoring**, add a second set of vital signs.
 
@@ -301,21 +303,31 @@ Walk through the system the way the clinic would. Each step says who to sign in 
 
 **Records and reports** (`coordinator`)
 
-11. Register a new patient with made-up details, then find them by ID number, by last name and by department.
-12. Open a patient record, read the visit history and upload a small attachment.
-13. Open **Reports**, choose **This year**, and check the chart and tables. Download the CSV and save a report.
-14. Open **Accounts**, create an account, sign in as it in another tab, and confirm it must change its password first.
-15. Open the **Audit log** and find the actions you just took.
+11. Register a new patient with made-up details, typing the names in lower case; each word should get its capital letter. Then find them by ID number, by last name and by department.
+12. Register an **Others** patient (a visitor) without an ID number. The record should get an `OTH-` number and the form code box should read `FM-SSA-MDS-XXXX`.
+13. Open a patient record, read the visit history and upload a small attachment. Archive the patient, find them under **Patients → Archive** with your name beside them, and restore them.
+14. Open **Reports**, choose **This year**, and check the chart and tables. Download the Excel file and open it, download the CSV, and save a report.
+15. Open **Accounts**, create an account, sign in as it in another tab, and confirm it must change its password first.
+16. Open the **Audit log** and find the actions you just took, under your name.
+
+**A medical kit goes out** (`nurse`, then `coordinator`)
+
+17. Under **Medical kit**, choose **New request** and fill in the activity. Nothing leaves the stock yet.
+18. Open the request, choose **Issue kit**, pick an available kit, use **Add item** for one more medicine and issue it. The stock in **Inventory** should go down, and the **Release log** should name the kit and the activity.
+19. **Print form** opens the dispensary form (FM-SSA-MDS-8033) ready for paper.
+20. Choose **Take back kit**, use **Returned complete**, then lower one item to show some was used. What came back returns to stock, and the kit is available again on **Kits**.
+21. As the coordinator, open **Kit contents** and change a default quantity.
 
 **Limits by role**
 
-16. As the `doctor`, confirm there is no check-in, no way to release medicine and no Accounts or Audit log.
-17. As the `nurse`, confirm an appointment cannot be confirmed or cancelled, and a patient cannot be archived.
+22. As the `doctor`, confirm there is no check-in, no way to release medicine or issue a kit, and no Accounts or Audit log.
+23. As the `nurse`, confirm an appointment cannot be confirmed or cancelled, a patient cannot be archived or restored, and the kit contents cannot be changed.
 
 **Worth trying to break**
 
 * Check in a patient who already has an open visit.
-* Release more medicine than is in stock.
+* Release more medicine than is in stock, or issue a kit with more of a medicine than is on hand; nothing should leave the stock.
+* Take back more of an item than went out in the kit.
 * Check in for an earlier date (a "late entry"), then find the visit in the patient's history.
 * Shrink the browser to phone width and use the main screens.
 * Stop the backend while signed in. The dot beside the bell should turn red, and return to green when the backend is back.
@@ -366,6 +378,7 @@ Final-Project-Software-Engineering/
 ├── backend/                     # Python API
 │   ├── app/
 │   │   ├── api/                 # Routers (thin), and serving of the built frontend
+│   │   ├── assets/              # The university logo for the Excel reports
 │   │   ├── services/            # Business rules, audit entries, commits
 │   │   ├── models/              # SQLAlchemy tables
 │   │   ├── schemas/             # Request and response shapes
@@ -389,12 +402,13 @@ Final-Project-Software-Engineering/
 │   ├── package.json
 │   └── FRONTEND-README.md       # Frontend reference
 ├── docs/                        # Project documentation
-│   ├── interview/               # Questions, transcriptions and photos
+│   ├── sessions/                # The first interview and each review session with the clinic
 │   ├── requirements/            # Functional and non-functional requirements
 │   ├── diagrams/                # Level 0, Level 1, use case and site context diagrams
 │   ├── site-context/            # Site justification and analysis
 │   ├── letters/                 # Clinic support letter
-│   └── presentation/            # Clinic pitch, video presentation and its script
+│   ├── presentation/            # Clinic pitch, video presentation and its script
+│   └── superpowers/             # Design specs and plans for changes
 ├── start-clinic.ps1             # Starts the whole system on one address
 ├── start-clinic.bat             # Double-click version of the same
 └── README.md
@@ -443,7 +457,9 @@ A longer explanation goes in an optional body, one blank line below the descript
 - [x] **Phase 4: Frontend and integration.** Every screen built against the API, with live updates.
 - [ ] **Phase 5: Evaluation and testing** *(current)*
   - [ ] Team testing on each member's computer.
-  - [ ] Walkthrough and testing with clinic personnel.
+  - [x] First walkthrough with clinic personnel (19 October 2026).
+  - [x] Changes the clinic asked for: medical kit, Excel reports, archive page, Others patients, audit names, one-box blood pressure.
+  - [ ] Testing the changes with clinic personnel.
   - [ ] Installation on the clinic's server computer and turnover.
 
 Installing at the clinic is described in [`backend/BACKEND-README.md`](backend/BACKEND-README.md#running-at-the-clinic).
