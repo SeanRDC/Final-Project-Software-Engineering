@@ -74,7 +74,7 @@ $env:BACKEND_URL = "http://192.168.1.10:8000"; npm run dev
 | Medicine inventory                  | `/inventory`                                                        | Done: stock list, add and edit medicines, stock in, count adjustment               |
 | Medicine release log                | `/inventory/releases`                                               | Done: releases to patients, plus all stock movements                               |
 | Notifications                       | `/notifications`                                                    | Done: list, unread filter, mark as read                                            |
-| Reports                             | `/reports`, `/reports/:id`                                          | Done: statistics for any period, CSV download, saved reports                       |
+| Reports                             | `/reports`, `/reports/:id`                                          | Done: statistics for any period, Excel and CSV download, saved reports             |
 | Accounts                            | `/users`                                                            | Done: create, edit, deactivate, reset password (coordinator)                       |
 | Audit log                           | `/audit`                                                            | Done: who viewed or changed what, with filters (coordinator)                       |
 | Change password                     | `/account/password`                                                 | Done: for every account; required after a reset                                    |
@@ -217,7 +217,8 @@ The visit panel (`/visits/:id`) switches between the record and a form.
 | Part                    | API                                                 | Component                        |
 | ----------------------- | --------------------------------------------------- | -------------------------------- |
 | Statistics for a period | `GET /reports/summary?start=&end=`                  | `ReportsPage`, `SummaryView`     |
-| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv` | `useCsvDownload`                 |
+| Excel download          | `GET /reports/summary.xlsx`, `GET /reports/{id}/xlsx` | `DownloadButtons`, `useFileDownload` |
+| CSV download            | `GET /reports/summary.csv`, `GET /reports/{id}/csv` | `DownloadButtons`, `useFileDownload` |
 | Saved reports           | `GET /reports`, `GET /reports/{id}`                 | `ReportsPage`, `SavedReportPage` |
 | Save and delete         | `POST /reports`, `DELETE /reports/{id}`             | coordinator only                 |
 

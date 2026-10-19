@@ -217,6 +217,39 @@ test('downloads the statistics as a CSV file through the api', async () => {
   await waitFor(() => expect(createObjectURL).toHaveBeenCalledOnce())
 })
 
+test('downloads the statistics as an Excel workbook through the api', async () => {
+  const { server } = clinic()
+  let asked = ''
+  server.on('GET /reports/summary.xlsx', ({ url }: { url: URL }) => {
+    asked = url.search
+    return 'xlsx-bytes'
+  })
+  const createObjectURL = vi.fn(() => 'blob:report')
+  vi.stubGlobal('URL', Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() }))
+  const user = userEvent.setup()
+  renderReports(nurse, '/reports')
+
+  await user.click(await screen.findByRole('button', { name: 'Download Excel' }))
+
+  await waitFor(() => expect(server.calls).toContain('GET /reports/summary.xlsx'))
+  await waitFor(() => expect(createObjectURL).toHaveBeenCalledOnce())
+  expect(asked).toBe('?start=2026-10-01&end=2026-10-04')
+})
+
+test('a saved report downloads as Excel too', async () => {
+  const { server } = clinic()
+  server.on('GET /reports/3/xlsx', 'xlsx-bytes')
+  vi.stubGlobal(
+    'URL',
+    Object.assign(URL, { createObjectURL: vi.fn(() => 'blob:r'), revokeObjectURL: vi.fn() }),
+  )
+  const user = userEvent.setup()
+  renderReports(nurse, '/reports/3')
+
+  await user.click(await screen.findByRole('button', { name: 'Download Excel' }))
+  await waitFor(() => expect(server.calls).toContain('GET /reports/3/xlsx'))
+})
+
 test('opens a saved report and lets the coordinator delete it after confirmation', async () => {
   const { server } = clinic()
   server.on('DELETE /reports/3', null, 204)
