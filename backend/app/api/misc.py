@@ -23,7 +23,7 @@ from app.schemas.support import (
     Options,
 )
 from app.schemas.visit import LockInfo
-from app.services import attachments, audit, dashboard, locks, notifications, patients
+from app.services import attachments, audit, dashboard, locks, medkits, notifications, patients
 
 router = APIRouter()
 
@@ -31,6 +31,9 @@ router = APIRouter()
 @router.get("/dashboard", response_model=Dashboard, tags=["Dashboard"],
             summary="Everything on the Clinic Main Menu (FR-15)")
 def get_dashboard(db: DbSession, user: CurrentUser):
+    # No scheduler runs in the clinic, so kits gone overdue are noticed when someone looks.
+    if medkits.flag_overdue(db):
+        broadcaster.publish("notifications.updated")
     return dashboard.build(db, user)
 
 

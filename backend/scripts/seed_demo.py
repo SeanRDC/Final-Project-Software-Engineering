@@ -14,6 +14,15 @@ from app.models import Patient, User, Visit
 from app.models.enums import PatientType, Sex, VisitDisposition, VisitType
 from app.schemas.appointment import AppointmentCreate
 from app.schemas.inventory import MedicineCreate
+from app.schemas.medkit import (
+    IssueLine,
+    MedkitCreate,
+    MedkitIssue,
+    MedkitRequestCreate,
+    MedkitReturn,
+    ReturnLine,
+    TemplateItemIn,
+)
 from app.schemas.patient import PatientCreate
 from app.schemas.user import UserCreate
 from app.schemas.visit import (
@@ -25,7 +34,7 @@ from app.schemas.visit import (
     ReleaseFromAdmission,
     VisitRecordUpdate,
 )
-from app.services import appointments, inventory, patients, users, visits
+from app.services import appointments, inventory, medkits, patients, users, visits
 
 DEMO_PASSWORD = "hau-sync-demo"
 
@@ -83,6 +92,66 @@ PAST_OUTCOMES = (
     [VisitDisposition.RETURNED] * 7 + [VisitDisposition.SENT_HOME] * 2
     + [VisitDisposition.REFERRED]
 )
+
+
+# The medicines boxed on the dispensary form (FM-SSA-MDS-8033) that are not in MEDICINES yet.
+KIT_MEDICINES = [
+    ("Meclizine Hydrochloride", "25 mg", "tablet", 60, 15),
+    ("Phenylpropanolamine HCl + Chlorphenamine Maleate + Paracetamol", "", "tablet", 80, 20),
+    ("Hyoscine N-Butylbromide", "10 mg", "tablet", 50, 15),
+    ("Aluminum OH + Magnesium OH + Simethicone", "", "tablet", 60, 15),
+    ("Loratadine", "10 mg", "tablet", 70, 15),
+]
+
+# The standard contents in the form's order, with how many of each go in a kit.
+KIT_CONTENTS = [
+    ("Meclizine Hydrochloride", 10),
+    ("Phenylpropanolamine HCl + Chlorphenamine Maleate + Paracetamol", 10),
+    ("Hyoscine N-Butylbromide", 10),
+    ("Aluminum OH + Magnesium OH + Simethicone", 10),
+    ("Loperamide", 10),
+    ("Loratadine", 10),
+    ("Mefenamic Acid", 10),
+    ("Paracetamol", 20),
+]
+
+
+def seed_medkits(db, stock: dict, nurse: User, coordinator: User, today: date) -> None:
+    """Three kits, the standard contents, and one loan in each state."""
+    for name, strength, form, quantity, threshold in KIT_MEDICINES:
+        stock[name] = inventory.create(db, MedicineCreate(
+            name=name, strength=strength, form=form, unit=form,
+            quantity_on_hand=quantity, low_stock_threshold=threshold), coordinator)
+    medkits.set_template(db, [
+        TemplateItemIn(medicine_id=stock[name].id, default_quantity=quantity)
+        for name, quantity in KIT_CONTENTS], coordinator)
+    kits = [medkits.create_kit(db, MedkitCreate(kit_number=number, label=label), coordinator)
+            for number, label in [(1, "Red bag"), (2, "Blue bag"), (3, "Grey box")]]
+
+    def request(activity, organization, days_ahead, person):
+        return medkits.create_request(db, MedkitRequestCreate(
+            organization=organization, activity=activity,
+            activity_date=today + timedelta(days=days_ahead), venue="University gym",
+            person_responsible=person, contact_number="0917 555 0111",
+            requested_by=person, request_date=today + timedelta(days=min(days_ahead, 0) - 2)),
+            nurse)
+
+    def contents(*names):
+        return [IssueLine(medicine_id=stock[name].id, quantity=quantity)
+                for name, quantity in KIT_CONTENTS if name in names]
+
+    done = request("Freshmen orientation", "Office of Student Affairs", -7, "Tan, Carla")
+    done = medkits.issue(db, done.id, MedkitIssue(
+        medkit_id=kits[0].id, items=contents("Paracetamol", "Mefenamic Acid", "Loperamide")), nurse)
+    medkits.return_kit(db, done.id, MedkitReturn(items=[
+        ReturnLine(item_id=item.id, quantity_returned=item.quantity_issued - 3)
+        for item in done.items]), nurse)
+
+    out = request("Intramurals 2026", "Junior Philippine Computer Society", 1, "Ramos, Paul")
+    medkits.issue(db, out.id, MedkitIssue(
+        medkit_id=kits[1].id, items=contents(*(name for name, _ in KIT_CONTENTS))), nurse)
+
+    request("Foundation day fun run", "HAU Athletics Office", 6, "Navarro, Liza")
 
 
 def seed_history(db, people: dict, nurse: User, today: date) -> None:
@@ -218,10 +287,11 @@ def main() -> int:
             department="School of Business and Accountancy", consent_on_file=True), nurse)
         patients.set_archived(db, archived.id, True, coordinator)
         people["Aquino"] = archived
+        seed_medkits(db, stock, nurse, coordinator, today)
 
         visit_count = db.scalar(select(func.count()).select_from(Visit))
 
-    print(f"Seeded {len(USERS)} accounts, {len(people)} patients, {len(MEDICINES)} medicines "
+    print(f"Seeded {len(USERS)} accounts, {len(people)} patients, {len(MEDICINES) + len(KIT_MEDICINES)} medicines "
           f"and {visit_count} visits.")
     print(f"Log in as coordinator, nurse, assistant or doctor with password: {DEMO_PASSWORD}")
     return 0

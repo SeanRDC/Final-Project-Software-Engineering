@@ -63,6 +63,8 @@ class StockMovementOut(ORMModel):
     visit_id: int | None
     patient_name: str | None
     patient_id_number: str | None
+    medkit_request_id: int | None
+    medkit_label: str | None
     reason: str | None
     performed_by_name: str | None
     created_at: datetime

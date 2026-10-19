@@ -26,6 +26,7 @@
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#roles-and-access">Roles and Access</a></li>
     <li><a href="#how-a-visit-works">How a Visit Works</a></li>
+    <li><a href="#how-a-medical-kit-works">How a Medical Kit Works</a></li>
     <li><a href="#api-overview">API Overview</a></li>
     <li><a href="#requirements-coverage">Requirements Coverage</a></li>
     <li><a href="#api-architecture">API Architecture</a></li>
@@ -150,6 +151,8 @@ Nurses and student assistants work at the same station, so they share one role w
 | Release an admitted patient from admission | ✅ | ✅ | |
 | Release medicine to a patient | ✅ | ✅ | |
 | Add stock, adjust stock, edit medicines | ✅ | ✅ | view only |
+| Request, issue, take back or mark lost a medical kit | ✅ | ✅ | view only |
+| Add kits, set the standard kit contents, put a replaced lost kit back | ✅ | | |
 | Book, reschedule and check in appointments | ✅ | ✅ | view only |
 | Confirm or cancel an appointment | ✅ | | |
 | View statistics and saved reports | ✅ | ✅ | ✅ |
@@ -176,6 +179,19 @@ A patient who is admitted to rest and later leaves is not checked in again. `POS
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## How a Medical Kit Works
+
+The clinic lends numbered medical kits to organizations for their activities. The kits draw on the same medicine stock as visits, so the inventory always shows what is really on the shelf.
+
+1. **Request** (`requested`). The request form (FM-SSA-MDS-8032): organization or department, activity, its date and venue, the person responsible and their number, who asked and when. Nothing leaves the stock yet, and the request can still be cancelled.
+2. **Issue** (`issued`). Staff choose an available kit and say what goes in it, usually the standard contents (`GET /medkits/template`, the boxed medicines of FM-SSA-MDS-8033) plus anything else from the inventory. Every item leaves the stock through `inventory.apply_movement` as a `release` tied to the request, in one transaction: if any item is short, the error names it and nothing moves. The kit becomes `out`.
+3. **Return** (`returned`). Each item is counted back. What came back returns to stock as `stock_in`, the rest counts as used, and the kit is `available` again. Every item must be counted (0 for used up), and no more can come back than went out.
+4. **Lost** (`lost`). A kit that does not come back: nothing returns to stock and the kit is `lost` until the coordinator puts the replacement back in service with `PATCH /medkits/{id}` (`status: available`).
+
+A kit still out after the day of its activity is `is_overdue`. There is no scheduler, so `GET /dashboard` and `GET /medkit-requests` check for newly overdue kits and send one `medkit_overdue` notification for each. Each step writes an audit entry (`medkit_request.create`, `.issue`, `.return`, `.lost`, `.cancel`) and publishes `medkits.updated`; issue and return also publish `inventory.updated`. In the release log (`GET /inventory/movements`) a kit's movements carry `medkit_label`, e.g. "Medical kit #3 – Intramurals 2026".
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## API Overview
 
 All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /health` needs an `Authorization: Bearer <token>` header. The full reference with request and response schemas is at `/docs`.
@@ -189,7 +205,8 @@ All routes are under `/api/v1`. Every route except `POST /auth/login` and `GET /
 | Medicine release | `POST /visits/{id}/medicines`, `DELETE /visits/{id}/medicines/{entry_id}` |
 | Appointments | `GET /appointments`, `GET /appointments/today`, `GET /appointments/calendar`, `POST /appointments`, `PATCH /appointments/{id}`, `POST /appointments/{id}/confirm`, `/cancel`, `/no-show`, `/check-in` |
 | Inventory | `GET /inventory/medicines`, `POST /inventory/medicines`, `PATCH /inventory/medicines/{id}`, `POST /inventory/medicines/{id}/stock-in`, `/adjust`, `GET /inventory/low-stock`, `GET /inventory/movements` (release log with `movement_type=release`) |
-| Reports | `GET /reports/summary`, `GET /reports/summary.csv`, `GET /reports`, `POST /reports`, `GET /reports/{id}`, `GET /reports/{id}/csv`, `DELETE /reports/{id}` |
+| Medical kits | `GET /medkits`, `POST /medkits`, `PATCH /medkits/{id}`, `GET /medkits/template`, `PUT /medkits/template`, `GET /medkit-requests` (`status`, `overdue_only`), `POST /medkit-requests`, `GET /medkit-requests/{id}`, `POST /medkit-requests/{id}/issue`, `/return`, `/lost`, `/cancel` |
+| Reports | `GET /reports/summary`, `GET /reports/summary.csv`, `GET /reports/summary.xlsx`, `GET /reports`, `POST /reports`, `GET /reports/{id}`, `GET /reports/{id}/csv`, `GET /reports/{id}/xlsx`, `DELETE /reports/{id}` |
 | Dashboard | `GET /dashboard` |
 | Notifications | `GET /notifications`, `POST /notifications/{id}/read`, `POST /notifications/read-all` |
 | Attachments | `GET /patients/{id}/attachments`, `POST /patients/{id}/attachments`, `GET /attachments/{id}/download`, `DELETE /attachments/{id}` |
@@ -209,7 +226,7 @@ Each station opens `ws://<server>:8000/api/v1/ws?token=<access token>` once. The
 {"event": "visits.updated", "data": {"visit_id": 12, "status": "open"}, "at": "2026-10-04T05:51:57+00:00"}
 ```
 
-Events: `visits.updated`, `appointments.updated`, `inventory.updated`, `notifications.updated`, `lock.updated`. Sending the text `ping` returns a `pong`, which the client can time for the "Clinic server connected · 3 ms" indicator.
+Events: `visits.updated`, `appointments.updated`, `inventory.updated`, `medkits.updated`, `notifications.updated`, `lock.updated`. Sending the text `ping` returns a `pong`, which the client can time for the "Clinic server connected · 3 ms" indicator.
 
 ### Record edit locking
 
@@ -283,7 +300,9 @@ NFR-05, 06 and 13 (usability, interface clarity, consistency) belong to the fron
 | `visit_vital_readings` | Vital signs taken again while a patient is monitored |
 | `appointments` | Scheduled appointments and the coordinator's decision |
 | `medicines` | Inventory items with quantity and low-stock threshold |
-| `stock_movements` | Every stock change; release rows are the release log |
+| `stock_movements` | Every stock change; release rows are the release log; `medkit_request_id` ties a row to a kit loan |
+| `medkits`, `medkit_template_items` | The numbered medical kits and what a kit normally carries |
+| `medkit_requests`, `medkit_request_items` | Each kit loan from request to return, and what went out and came back |
 | `notifications`, `notification_reads` | Alerts and per-user read state |
 | `record_locks` | Edit locks on patient and visit records |
 | `attachments` | Metadata of uploaded files (files are in `UPLOAD_DIR`) |
