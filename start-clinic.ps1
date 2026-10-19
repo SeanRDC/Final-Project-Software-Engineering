@@ -32,7 +32,7 @@ if (-not (Test-Path $python)) {
     python -m venv (Join-Path $backend '.venv')
 }
 $requirements = Join-Path $backend 'requirements.txt'
-$installed = Join-Path $backend '.venvequirements.installed'
+$installed = Join-Path $backend '.venv\requirements.installed'
 $wanted = (Get-FileHash $requirements).Hash
 if (-not (Test-Path $installed) -or (Get-Content $installed -Raw).Trim() -ne $wanted) {
     Write-Host 'Installing the backend packages...'
