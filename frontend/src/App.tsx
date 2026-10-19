@@ -11,6 +11,7 @@ import {
   CHECK_IN,
   INVENTORY,
   MEDKIT_REQUESTS,
+  MEDKITS,
   NEW_MEDKIT_REQUEST,
   NEW_APPOINTMENT,
   NOTIFICATIONS,
@@ -30,6 +31,7 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
+import { KitsPage } from '@/pages/medkit/KitsPage'
 import { MedkitPrintPage } from '@/pages/medkit/MedkitPrintPage'
 import { MedkitRequestPage } from '@/pages/medkit/MedkitRequestPage'
 import { MedkitRequestsPage } from '@/pages/medkit/MedkitRequestsPage'
@@ -114,6 +116,7 @@ function App() {
             path={NEW_MEDKIT_REQUEST.path}
             element={guarded(NEW_MEDKIT_REQUEST.permission, <NewMedkitRequestPage />)}
           />
+          <Route path={MEDKITS.path} element={guarded(MEDKITS.permission, <KitsPage />)} />
           <Route
             path="/medkit/requests/:requestId"
             element={guarded(MEDKIT_REQUESTS.permission, <MedkitRequestPage />)}

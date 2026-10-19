@@ -27,6 +27,7 @@ test('shows the front desk everything it works with', () => {
     'Release log',
     'Kit requests',
     'New request',
+    'Kits',
     'Reports',
     'Notifications',
   ])
