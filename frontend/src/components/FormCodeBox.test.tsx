@@ -19,3 +19,9 @@ test('changes its code with the kind of patient', () => {
   rerender(<FormCodeBox patientType="employee" educationLevel={null} />)
   expect(screen.getByText('FM-SSA-MDS-8011')).toBeInTheDocument()
 })
+
+test('shows a form code given outright, such as the medical kit forms', () => {
+  render(<FormCodeBox code="FM-SSA-MDS-8033" />)
+  expect(screen.getByText('FM-SSA-MDS-8033')).toBeInTheDocument()
+  expect(screen.getByText('Revision: 0')).toBeInTheDocument()
+})

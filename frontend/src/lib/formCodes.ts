@@ -11,6 +11,10 @@ const COLLEGE_FORM = 'FM-SSA-MDS-8013'
 // The clinic has not issued a code for the Others form yet; the Xs mark the placeholder.
 const OTHERS_FORM = 'FM-SSA-MDS-XXXX'
 
+/** The medical kit forms: the request (8032) and the dispensary list (8033). */
+export const MEDKIT_REQUEST_FORM = 'FM-SSA-MDS-8032'
+export const MEDKIT_DISPENSARY_FORM = 'FM-SSA-MDS-8033'
+
 type Filed = {
   patient_type: PatientType
   education_level: EducationLevel | null

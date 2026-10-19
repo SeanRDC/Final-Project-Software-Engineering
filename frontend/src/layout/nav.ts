@@ -4,6 +4,7 @@ import {
   BarChart3Icon,
   BellIcon,
   BoxesIcon,
+  BriefcaseMedicalIcon,
   CalendarDaysIcon,
   ClipboardPlusIcon,
   LayoutGridIcon,
@@ -98,6 +99,19 @@ export const NAV_GROUPS: NavGroup[] = [
         label: 'Release log',
         icon: BoxesIcon,
         permission: 'inventory:read',
+      },
+    ],
+  },
+  {
+    heading: 'Medical kit',
+    items: [
+      {
+        to: '/medkit',
+        label: 'Kit requests',
+        icon: BriefcaseMedicalIcon,
+        permission: 'medkits:read',
+        end: true,
+        children: [{ to: '/medkit/new', label: 'New request', permission: 'medkits:write' }],
       },
     ],
   },

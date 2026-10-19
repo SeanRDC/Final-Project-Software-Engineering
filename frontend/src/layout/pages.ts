@@ -48,6 +48,16 @@ export const RELEASE_LOG: Page = {
   title: 'Medicine Release Log',
   permission: 'inventory:read',
 }
+export const MEDKIT_REQUESTS: Page = {
+  path: '/medkit',
+  title: 'Medical Kit Requests',
+  permission: 'medkits:read',
+}
+export const NEW_MEDKIT_REQUEST: Page = {
+  path: '/medkit/new',
+  title: 'Request for Medical Kit',
+  permission: 'medkits:write',
+}
 export const NOTIFICATIONS: Page = { path: '/notifications', title: 'Notifications' }
 
 export const REPORTS: Page = { path: '/reports', title: 'Reports', permission: 'reports:view' }
@@ -66,6 +76,8 @@ export const PAGES: Page[] = [
   NEW_APPOINTMENT,
   INVENTORY,
   RELEASE_LOG,
+  MEDKIT_REQUESTS,
+  NEW_MEDKIT_REQUEST,
   NOTIFICATIONS,
   REPORTS,
   USERS,

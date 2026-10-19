@@ -10,6 +10,8 @@ import {
   CHANGE_PASSWORD,
   CHECK_IN,
   INVENTORY,
+  MEDKIT_REQUESTS,
+  NEW_MEDKIT_REQUEST,
   NEW_APPOINTMENT,
   NOTIFICATIONS,
   PATIENTS,
@@ -28,6 +30,8 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
+import { MedkitRequestsPage } from '@/pages/medkit/MedkitRequestsPage'
+import { NewMedkitRequestPage } from '@/pages/medkit/NewMedkitRequestPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { NotificationsPage } from '@/pages/notifications/NotificationsPage'
 import { ArchivePage } from '@/pages/patients/ArchivePage'
@@ -94,6 +98,14 @@ function App() {
           <Route
             path={RELEASE_LOG.path}
             element={guarded(RELEASE_LOG.permission, <ReleaseLogPage />)}
+          />
+          <Route
+            path={MEDKIT_REQUESTS.path}
+            element={guarded(MEDKIT_REQUESTS.permission, <MedkitRequestsPage />)}
+          />
+          <Route
+            path={NEW_MEDKIT_REQUEST.path}
+            element={guarded(NEW_MEDKIT_REQUEST.permission, <NewMedkitRequestPage />)}
           />
           <Route path={NOTIFICATIONS.path} element={<NotificationsPage />} />
 
