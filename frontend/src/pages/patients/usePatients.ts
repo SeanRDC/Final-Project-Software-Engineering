@@ -42,6 +42,24 @@ export function usePatientList(params: PatientListParams) {
   })
 }
 
+/** One page of archived records, most recently archived first. */
+export function useArchivedPatients(params: { q: string; page: number }) {
+  return useQuery({
+    queryKey: ['patients', 'archive', params],
+    queryFn: ({ signal }) =>
+      api<PatientPage>('/patients', {
+        query: {
+          q: params.q,
+          archived_only: true,
+          page: params.page,
+          page_size: PATIENTS_PER_PAGE,
+        },
+        signal,
+      }),
+    placeholderData: keepPreviousData,
+  })
+}
+
 /** One patient record. The server writes an audit entry each time it is read. */
 export function usePatient(patientId: number | null) {
   return useQuery({

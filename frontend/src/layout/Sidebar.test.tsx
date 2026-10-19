@@ -21,6 +21,7 @@ test('shows the front desk everything it works with', () => {
     "Today's visits",
     'Patients',
     'Register patient',
+    'Archive',
     'Appointments',
     'Inventory',
     'Release log',

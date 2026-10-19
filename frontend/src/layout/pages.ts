@@ -22,6 +22,11 @@ export const REGISTER_PATIENT: Page = {
   title: 'Register Patient',
   permission: 'patients:write',
 }
+export const ARCHIVE: Page = {
+  path: '/patients/archive',
+  title: 'Archived Patients',
+  permission: 'patients:read',
+}
 export const APPOINTMENTS: Page = {
   path: '/appointments',
   title: 'Appointments',
@@ -56,6 +61,7 @@ export const PAGES: Page[] = [
   VISITS,
   PATIENTS,
   REGISTER_PATIENT,
+  ARCHIVE,
   APPOINTMENTS,
   NEW_APPOINTMENT,
   INVENTORY,

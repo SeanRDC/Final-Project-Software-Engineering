@@ -24,6 +24,8 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
     sex: 'female',
     department: 'School of Computing',
     is_archived: false,
+    archived_at: null,
+    archived_by_name: null,
     ...overrides,
   }
 }

@@ -1564,6 +1564,10 @@ export interface components {
             department: string | null;
             /** Is Archived */
             is_archived: boolean;
+            /** Archived At */
+            archived_at: string | null;
+            /** Archived By Name */
+            archived_by_name: string | null;
             /** Birth Date */
             birth_date: string | null;
             /** Program Or Position */
@@ -1636,6 +1640,10 @@ export interface components {
             department: string | null;
             /** Is Archived */
             is_archived: boolean;
+            /** Archived At */
+            archived_at: string | null;
+            /** Archived By Name */
+            archived_by_name: string | null;
             /** Birth Date */
             birth_date: string | null;
             /** Program Or Position */
@@ -1696,6 +1704,10 @@ export interface components {
             department: string | null;
             /** Is Archived */
             is_archived: boolean;
+            /** Archived At */
+            archived_at: string | null;
+            /** Archived By Name */
+            archived_by_name: string | null;
         };
         /**
          * PatientType
@@ -2498,6 +2510,7 @@ export interface operations {
                 department?: string | null;
                 patient_type?: components["schemas"]["PatientType"] | null;
                 include_archived?: boolean;
+                archived_only?: boolean;
                 page?: number;
                 page_size?: number;
             };

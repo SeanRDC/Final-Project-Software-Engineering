@@ -5,6 +5,7 @@ import type { Permission } from '@/auth/permissions'
 import { AppShell } from '@/layout/AppShell'
 import {
   APPOINTMENTS,
+  ARCHIVE,
   AUDIT_LOG,
   CHANGE_PASSWORD,
   CHECK_IN,
@@ -29,6 +30,7 @@ import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { NotificationsPage } from '@/pages/notifications/NotificationsPage'
+import { ArchivePage } from '@/pages/patients/ArchivePage'
 import { EditPatientPage } from '@/pages/patients/EditPatientPage'
 import { PatientPage } from '@/pages/patients/PatientPage'
 import { PatientsPage } from '@/pages/patients/PatientsPage'
@@ -65,6 +67,7 @@ function App() {
             path={REGISTER_PATIENT.path}
             element={guarded(REGISTER_PATIENT.permission, <RegisterPatientPage />)}
           />
+          <Route path={ARCHIVE.path} element={guarded(ARCHIVE.permission, <ArchivePage />)} />
           <Route
             path="/patients/:patientId"
             element={guarded(PATIENTS.permission, <PatientPage />)}

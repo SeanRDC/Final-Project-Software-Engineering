@@ -72,6 +72,7 @@ export const NAV_GROUPS: NavGroup[] = [
         end: true,
         children: [
           { to: '/patients/new', label: 'Register patient', permission: 'patients:write' },
+          { to: '/patients/archive', label: 'Archive', permission: 'patients:read' },
         ],
       },
       {
