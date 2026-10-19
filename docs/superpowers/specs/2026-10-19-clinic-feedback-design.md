@@ -57,7 +57,7 @@ For people who are neither students nor employees: visitors, guests, contractors
   focus it shows `120/80` with "mmHg" beside it.
 - Parsing lives in a pure function `parseBloodPressure(text)`, which returns
   `{ systolic, diastolic }`, `null` for empty input, or an error message.
-- Rules: both parts are whole numbers, systolic 50–300, diastolic 30–200, and systolic
+- Rules: both parts are whole numbers, systolic 40–300, diastolic 20–200 (the ranges the form already uses), and systolic
   greater than diastolic. A half-written reading such as `120/` shows the error under the
   box and the form will not save.
 - The existing abnormal-reading flags and reports are unchanged.
