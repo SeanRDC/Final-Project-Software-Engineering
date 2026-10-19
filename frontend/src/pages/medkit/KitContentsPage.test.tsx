@@ -1,5 +1,6 @@
 // The standard contents of a kit: what is filled in when a kit is issued.
 
+import { focusManager } from '@tanstack/react-query'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
@@ -101,4 +102,33 @@ test('a quantity must be a whole number of 1 or more', async () => {
 
   expect(list.getByText('Enter 1 or more.')).toBeInTheDocument()
   await waitFor(() => expect(server.calls).not.toContain('PUT /medkits/template'))
+})
+
+test('a stock change elsewhere does not wipe the coordinator’s unsaved edits', async () => {
+  let fetches = 0
+  fakeServer({
+    'GET /medkits/template': () => {
+      fetches += 1
+      // A medicine released at the front desk changes what is on hand.
+      return fetches === 1 ? contents : contents.map((line) => ({ ...line, quantity_on_hand: 1 }))
+    },
+    'GET /inventory/medicines': [],
+  })
+  const user = userEvent.setup()
+  renderContents(coordinator)
+
+  const list = within(await screen.findByRole('region', { name: 'Standard kit contents' }))
+  await user.clear(list.getByLabelText('How many Paracetamol 500 mg'))
+  await user.type(list.getByLabelText('How many Paracetamol 500 mg'), '30')
+
+  // The live update refetches the contents, as a returning window does.
+  focusManager.setFocused(false)
+  focusManager.setFocused(true)
+  await waitFor(() => expect(fetches).toBe(2))
+
+  expect(
+    within(screen.getByRole('region', { name: 'Standard kit contents' })).getByLabelText(
+      'How many Paracetamol 500 mg',
+    ),
+  ).toHaveValue('30')
 })

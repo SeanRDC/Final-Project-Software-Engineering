@@ -71,6 +71,8 @@ function ContentsEditor({ saved }: { saved: KitContentsLine[] }) {
   )
   const [toAdd, setToAdd] = useState('')
   const [errors, setErrors] = useState<Record<number, string>>({})
+  // What is on hand changes while editing; always show the latest figure.
+  const onHand = new Map(saved.map((line) => [line.medicine_id, line.quantity_on_hand]))
   const addable = (medicines.data ?? []).filter(
     (medicine) => !lines.some((line) => line.medicine_id === medicine.id),
   )
@@ -178,7 +180,7 @@ function ContentsEditor({ saved }: { saved: KitContentsLine[] }) {
                     ) : null}
                   </td>
                   <td className="px-3 py-2 pt-3.5 text-right align-top tabular-nums">
-                    {line.quantity_on_hand}
+                    {onHand.get(line.medicine_id) ?? line.quantity_on_hand}
                   </td>
                   <td className="py-2 pr-3 text-right align-top whitespace-nowrap">
                     <Button
@@ -284,7 +286,12 @@ export function KitContentsPage() {
       ) : null}
       {data ? (
         allowed('medkits:manage') ? (
-          <ContentsEditor key={JSON.stringify(data)} saved={data} />
+          // Starts again only when the saved lines change, not when stock on hand moves,
+          // so a release at the front desk does not wipe edits in progress.
+          <ContentsEditor
+            key={data.map((line) => `${line.medicine_id}:${line.default_quantity}`).join(',')}
+            saved={data}
+          />
         ) : (
           <SectionCard title="Standard kit contents">
             {data.length === 0 ? (
