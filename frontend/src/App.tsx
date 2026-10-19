@@ -30,6 +30,7 @@ import { CheckInPage } from '@/pages/checkin/CheckInPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { InventoryPage } from '@/pages/inventory/InventoryPage'
 import { ReleaseLogPage } from '@/pages/inventory/ReleaseLogPage'
+import { MedkitRequestPage } from '@/pages/medkit/MedkitRequestPage'
 import { MedkitRequestsPage } from '@/pages/medkit/MedkitRequestsPage'
 import { NewMedkitRequestPage } from '@/pages/medkit/NewMedkitRequestPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -106,6 +107,10 @@ function App() {
           <Route
             path={NEW_MEDKIT_REQUEST.path}
             element={guarded(NEW_MEDKIT_REQUEST.permission, <NewMedkitRequestPage />)}
+          />
+          <Route
+            path="/medkit/requests/:requestId"
+            element={guarded(MEDKIT_REQUESTS.permission, <MedkitRequestPage />)}
           />
           <Route path={NOTIFICATIONS.path} element={<NotificationsPage />} />
 
