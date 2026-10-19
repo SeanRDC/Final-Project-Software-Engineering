@@ -21,7 +21,7 @@
   </p>
 </div>
 
-> **🚧 UNDER TEST:** Every feature in the project paper is built except the urgent-case queue, which the team left out. The system was shown to the University Clinic on 19 October 2026, and the changes the clinic asked for (the medical kit, Excel reports, the archive page, the Others patient type and more) are built and under test. **Use made-up data only.** Never enter real patient details while testing.
+> **🚧 UNDER TEST:** Every feature in the project paper is built except the urgent-case queue, which the team left out. The clinic has reviewed the system in three Agile sessions (7, 13 and 19 October 2026), and the changes it asked for at the last one (the medical kit, Excel reports, the archive page, the Others patient type and more) are built and under test. **Use made-up data only.** Never enter real patient details while testing.
 
 <details>
   <summary>Table of Contents</summary>
@@ -457,8 +457,9 @@ A longer explanation goes in an optional body, one blank line below the descript
 - [x] **Phase 4: Frontend and integration.** Every screen built against the API, with live updates.
 - [ ] **Phase 5: Evaluation and testing** *(current)*
   - [ ] Team testing on each member's computer.
-  - [x] First walkthrough with clinic personnel (19 October 2026).
-  - [x] Changes the clinic asked for: medical kit, Excel reports, archive page, Others patients, audit names, one-box blood pressure.
+  - [x] Pre-interview with the Clinic Coordinator (30 September 2026).
+  - [x] Agile review sessions with clinic personnel (7, 13 and 19 October 2026).
+  - [x] Changes the clinic asked for on 19 October: medical kit, Excel reports, archive page, Others patients, audit names, one-box blood pressure.
   - [ ] Testing the changes with clinic personnel.
   - [ ] Installation on the clinic's server computer and turnover.
 
