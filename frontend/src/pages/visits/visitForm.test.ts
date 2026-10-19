@@ -15,7 +15,7 @@ test('starts the form from the saved visit, with blanks for what was not recorde
   expect(values).toMatchObject({
     complaint: 'Difficulty breathing',
     temperature_c: '36.8',
-    bp_systolic: '110',
+    bp: '110/70',
     weight_kg: '',
     remarks: '',
     guardian_notified: true,
@@ -101,11 +101,22 @@ test('rejects vital signs that are not numbers, not whole, or out of range', () 
 test('asks for both halves of a blood pressure reading', () => {
   const values = recordValues(visitRecord())
 
-  expect(validateRecord({ ...values, bp_diastolic: '' }).bp_diastolic).toBe(
-    'Enter the diastolic value too.',
+  expect(validateRecord({ ...values, bp: '120/' }).bp).toBe('Enter both numbers, e.g. 120/80.')
+  expect(validateRecord({ ...values, bp: '80/120' }).bp).toBe(
+    'The first number (systolic) should be higher than the second.',
   )
-  expect(validateRecord({ ...values, bp_systolic: '' }).bp_systolic).toBe(
-    'Enter the systolic value too.',
-  )
-  expect(validateRecord({ ...values, bp_systolic: '', bp_diastolic: '' })).toEqual({})
+  expect(validateRecord({ ...values, bp: '' })).toEqual({})
+})
+
+test('sends the one blood pressure value as its two numbers', () => {
+  const visit = visitRecord()
+
+  expect(recordChanges(visit, { ...recordValues(visit), bp: '130 85' })).toEqual({
+    bp_systolic: 130,
+    bp_diastolic: 85,
+  })
+  expect(recordChanges(visit, { ...recordValues(visit), bp: '' })).toEqual({
+    bp_systolic: null,
+    bp_diastolic: null,
+  })
 })

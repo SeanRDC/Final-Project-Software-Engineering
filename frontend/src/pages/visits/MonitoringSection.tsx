@@ -20,24 +20,26 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { Input } from '@/components/ui/input'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Spinner } from '@/components/ui/spinner'
+import { BloodPressureInput } from '@/components/BloodPressureInput'
+import { bloodPressureError, parseBloodPressure } from '@/lib/bloodPressure'
 import { formatTimeOfDay } from '@/lib/format'
 import { useAddVitalReading, useRemoveVitalReading } from '@/pages/visits/useVisits'
 import { vitalError, VITALS } from '@/pages/visits/visitForm'
 
-type ReadingKey = Exclude<keyof VitalReadingCreate, 'note'>
+type ReadingKey = Exclude<keyof VitalReadingCreate, 'note' | 'bp_systolic' | 'bp_diastolic'>
 
 // Weight and height do not change while a patient rests, so a reading leaves them out.
 const READING_FIELDS = VITALS.filter(
   (field) => field.key !== 'weight_kg' && field.key !== 'height_cm',
 ) as ((typeof VITALS)[number] & { key: ReadingKey })[]
 
-type Values = Record<ReadingKey, string>
-type Errors = Partial<Record<ReadingKey | 'form', string>>
+/** The blood pressure is typed as one value, "120/80". */
+type Values = Record<ReadingKey, string> & { bp: string }
+type Errors = Partial<Record<ReadingKey | 'bp' | 'form', string>>
 
 const EMPTY: Values = {
+  bp: '',
   temperature_c: '',
-  bp_systolic: '',
-  bp_diastolic: '',
   pulse_rate: '',
   respiratory_rate: '',
   oxygen_saturation: '',
@@ -49,10 +51,8 @@ function validate(values: Values): Errors {
     const error = vitalError(field, values[field.key])
     if (error) errors[field.key] = error
   }
-  const systolic = values.bp_systolic.trim()
-  const diastolic = values.bp_diastolic.trim()
-  if (systolic && !diastolic) errors.bp_diastolic ??= 'Enter the diastolic value too.'
-  if (diastolic && !systolic) errors.bp_systolic ??= 'Enter the systolic value too.'
+  const bpError = bloodPressureError(values.bp)
+  if (bpError) errors.bp = bpError
   if (Object.values(values).every((value) => !value.trim())) {
     errors.form = 'Enter at least one vital sign.'
   }
@@ -85,11 +85,18 @@ function AddReadingForm({ visit, onClose }: { visit: Visit; onClose: () => void 
     setErrors(found)
     const firstInvalid = Object.keys(found)[0]
     if (firstInvalid) {
-      const target = firstInvalid === 'form' ? READING_FIELDS[0]!.key : firstInvalid
+      const target = firstInvalid === 'form' ? 'bp' : firstInvalid
       document.getElementById(`reading-${target}`)?.focus()
       return
     }
-    const reading: VitalReadingCreate = { note: note.trim() || null }
+    const pressure = parseBloodPressure(values.bp)
+    const reading: VitalReadingCreate = pressure
+      ? {
+          bp_systolic: pressure.systolic,
+          bp_diastolic: pressure.diastolic,
+          note: note.trim() || null,
+        }
+      : { note: note.trim() || null }
     for (const field of READING_FIELDS) {
       const raw = values[field.key].trim()
       if (raw) reading[field.key] = Number(raw)
@@ -111,6 +118,16 @@ function AddReadingForm({ visit, onClose }: { visit: Visit; onClose: () => void 
     >
       <FieldGroup className="gap-3">
         <div className="grid grid-cols-2 gap-3">
+          <BloodPressureInput
+            id="reading-bp"
+            value={values.bp}
+            inputClassName="bg-card"
+            error={errors.bp}
+            onChange={(bp) => {
+              setValues({ ...values, bp })
+              setErrors({})
+            }}
+          />
           {READING_FIELDS.map((field) => (
             <Field key={field.key} data-invalid={errors[field.key] ? true : undefined}>
               <FieldLabel htmlFor={`reading-${field.key}`}>{field.label}</FieldLabel>

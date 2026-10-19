@@ -8,11 +8,11 @@ import type {
   VisitRecordUpdate,
   VisitType,
 } from '@/api/types'
+import { bloodPressureError, formatBloodPressure, parseBloodPressure } from '@/lib/bloodPressure'
 
+// Blood pressure is not among them: it is typed as one value, "120/80" (lib/bloodPressure.ts).
 type VitalKey =
   | 'temperature_c'
-  | 'bp_systolic'
-  | 'bp_diastolic'
   | 'pulse_rate'
   | 'respiratory_rate'
   | 'oxygen_saturation'
@@ -32,8 +32,6 @@ export type VitalField = {
 // The limits are the ones the API enforces (backend/app/schemas/visit.py).
 export const VITALS: VitalField[] = [
   { key: 'temperature_c', label: 'Temperature', unit: '°C', min: 30, max: 45, integer: false },
-  { key: 'bp_systolic', label: 'BP systolic', unit: 'mmHg', min: 40, max: 300, integer: true },
-  { key: 'bp_diastolic', label: 'BP diastolic', unit: 'mmHg', min: 20, max: 200, integer: true },
   { key: 'pulse_rate', label: 'Pulse rate', unit: 'bpm', min: 20, max: 250, integer: true },
   {
     key: 'respiratory_rate',
@@ -57,6 +55,8 @@ export const VITALS: VitalField[] = [
 
 /** The nurse's form. Numbers are kept as typed text until they are sent. */
 export type RecordValues = Record<VitalKey, string> & {
+  /** "120/80" as typed. */
+  bp: string
   complaint: string
   visit_type: VisitType
   assessment: string
@@ -89,8 +89,7 @@ export function recordValues(visit: Visit): RecordValues {
     complaint: visit.complaint,
     visit_type: visit.visit_type,
     temperature_c: numberText(visit.temperature_c),
-    bp_systolic: numberText(visit.bp_systolic),
-    bp_diastolic: numberText(visit.bp_diastolic),
+    bp: formatBloodPressure(visit.bp_systolic, visit.bp_diastolic),
     pulse_rate: numberText(visit.pulse_rate),
     respiratory_rate: numberText(visit.respiratory_rate),
     oxygen_saturation: numberText(visit.oxygen_saturation),
@@ -137,10 +136,8 @@ export function validateRecord(values: RecordValues): FormErrors<RecordValues> {
     if (error) errors[field.key] = error
   }
   // Half a blood pressure reading is a slip, not a measurement.
-  const systolic = values.bp_systolic.trim()
-  const diastolic = values.bp_diastolic.trim()
-  if (systolic && !diastolic) errors.bp_diastolic ??= 'Enter the diastolic value too.'
-  if (diastolic && !systolic) errors.bp_systolic ??= 'Enter the systolic value too.'
+  const bpError = bloodPressureError(values.bp)
+  if (bpError) errors.bp = bpError
   return errors
 }
 
@@ -150,8 +147,8 @@ export function recordChanges(visit: Visit, values: RecordValues): VisitRecordUp
     complaint: values.complaint.trim(),
     visit_type: values.visit_type,
     temperature_c: toNumber(values.temperature_c),
-    bp_systolic: toNumber(values.bp_systolic),
-    bp_diastolic: toNumber(values.bp_diastolic),
+    bp_systolic: parseBloodPressure(values.bp)?.systolic ?? null,
+    bp_diastolic: parseBloodPressure(values.bp)?.diastolic ?? null,
     pulse_rate: toNumber(values.pulse_rate),
     respiratory_rate: toNumber(values.respiratory_rate),
     oxygen_saturation: toNumber(values.oxygen_saturation),

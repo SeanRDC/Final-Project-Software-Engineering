@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
 
 import type { Visit, VisitType } from '@/api/types'
+import { BloodPressureInput } from '@/components/BloodPressureInput'
 import {
   Field,
   FieldError,
@@ -106,6 +107,12 @@ export function RecordForm({ visit, onDone, onDirtyChange }: RecordFormProps) {
         <FieldSet>
           <FieldLegend>Vital signs</FieldLegend>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+            <BloodPressureInput
+              id="bp"
+              value={values.bp}
+              error={errors.bp}
+              onChange={(bp) => change({ bp })}
+            />
             {VITALS.map((vital) => (
               <Field key={vital.key} data-invalid={errors[vital.key] ? true : undefined}>
                 <FieldLabel htmlFor={vital.key}>{vital.label}</FieldLabel>
